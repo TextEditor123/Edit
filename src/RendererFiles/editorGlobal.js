@@ -5625,6 +5625,21 @@ I keep trying to take a break but then I come back.
     - [ ] That being said, whether this matters or not I'm not sure.
     - [ ] It depends if it scrolled by like 1 px or something.
     - [ ] Although what you could do is track the amount it needs to scroll by in order to cause an effect rather than an idempotent result.
+
+I actually also still need to eat something.
+
+I ate something at like 6:30 it was:
+- 2 quickcheck breakfast burritos
+- 1 elite fairlife milk protein 42g of protein thing
+
+Then I worked for 2 hours and 10 minutes.
+
+And I haven't had anything since.
+
+The only thing left to eat is:
+1lb of 98% ground chicken with sriracha
+cause I been eating just those first two things then the chicken with sriracha everyday in order
+to keep things lean and such
 */
 
 /**
