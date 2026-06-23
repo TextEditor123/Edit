@@ -7457,4 +7457,6 @@ After everything.
 I like to believe that I can live with myself because
 I understand the lifelong complexity that resulted in a person
 who behaved in such a way.
+
+But I don't know if I just tell myself this because I want it to be true or if it is the true nature of the scenario that played out.
 */
