@@ -410,7 +410,6 @@ TODO: Is it better to have one virtualization element that has both the width an
   position: absolute;
 
   left: 0;
-
   
   /*font-variant-ligatures: none;
   letter-spacing: 0;*/
@@ -418,6 +417,24 @@ TODO: Is it better to have one virtualization element that has both the width an
   /*will-change: transform;
   transform: translateZ(0);*/ /* Explicitly forces 3D layer permanence */
 }
+
+/*
+Google AI Overview
+"
+I transform every line. Should I instead force a 3D layer on a parent element that contains the many lines.
+Thereby reducing the VRAM overhead by having a single 3D layer shared among all the lines due to inheriting it from the parent element.
+":
+############```paraphraseStart
+No, moving the 3D layer promotion to a single parent element will not achieve your goal.
+In fact, it will likely increase your Cumulative Layout Shift (CLS), break your virtualization optimization,
+and it won't actually reduce VRAM overhead the way you expect.
+
+...
+
+1. The Myth of Layer Inheritance:
+...
+############```paraphraseEnd
+*/
 
 /*.eT span {
   display: inline;
