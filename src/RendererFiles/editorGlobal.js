@@ -7448,3 +7448,8 @@ function PLAINTEXT_line_lex(div, substart, lineEnd, childIndex) {
 
     return childIndex;
 }
+
+/*
+I'm gonna try and take another look.
+The anxiety is unbearable.
+*/
