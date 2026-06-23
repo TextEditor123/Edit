@@ -5640,6 +5640,11 @@ The only thing left to eat is:
 1lb of 98% ground chicken with sriracha
 cause I been eating just those first two things then the chicken with sriracha everyday in order
 to keep things lean and such
+
+oh I get the chocolate version cause it has 8% iron when the other ones don't.
+I actually don't like the taste as much as the vanilla, it isn't bad but vanilla on the other hand literally tastes like vanilla icecream it is wild
+but the 8% iron.
+I also think the chocolate has more potassium I looked at all the flavors and compared the nutrition labels but that was a long long time ago.
 */
 
 /**
