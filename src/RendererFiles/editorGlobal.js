@@ -7474,4 +7474,8 @@ I don't even think I can add any songs to it without it seeming non-authentic an
 I can say for certain though:
 I don't want anything.
 The closest thing I could describe to wanting is complete catharsis.
+
+Maybe I'll look more at the syntax highlighting tonight, maybe I won't.
+I think I mostly wanted to give an attempt at saying these things, they eat at me all of the time.
+So again I'm sorry
 */
