@@ -472,6 +472,10 @@ const set_EDITOR_ONSCROLLvirtualLineIndex = (int) => EDITOR_int_fields[18] = int
 // This set used to be -1 to indicate a non existent value, 500 "seems to work" but a proof of it being an equivalent solution has not thoroughly been thought out, only a sort of "yeah that probably works" kinda vibe.
 set_EDITOR_ONSCROLLvirtualLineIndex(500);
 
+let EDITOR_bbb_ONSCROLLvirtualLineIndex = 500;
+let EDITOR_bbb_ONSCROLLvirtualCount = 0;
+let EDITOR_bbb_ONSCROLLscrollTop = 500;
+
 const get_EDITOR_ONSCROLLvirtualCount = () => EDITOR_int_fields[19];
 const set_EDITOR_ONSCROLLvirtualCount = (int) => EDITOR_int_fields[19] = int;
 set_EDITOR_ONSCROLLvirtualCount(0);
@@ -783,6 +787,7 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
     EDITOR_drawGutter_Width();
     // Force 'case 3' within 'EDITOR_onScroll_bbb();' downstream
     set_EDITOR_ONSCROLLvirtualLineIndex(get_EDITOR_virtualCount());
+    EDITOR_bbb_ONSCROLLvirtualLineIndex = get_EDITOR_virtualCount();
     EDITOR_onScroll_bbb();
 }
 
@@ -5805,9 +5810,9 @@ function EDITOR_onScroll_bbb() {
     EDITOR_finalizeAllCursors();
     update_VirtualLineIndex();
 
-    if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
-        get_EDITOR_ONSCROLLvirtualLineIndex() === get_EDITOR_virtualLineIndex() &&
-        get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount()) {
+    if (EDITOR_bbb_ONSCROLLscrollTop === EDITOR_baseElement.scrollTop &&
+        EDITOR_bbb_ONSCROLLvirtualLineIndex === get_EDITOR_virtualLineIndex() &&
+        EDITOR_bbb_ONSCROLLvirtualCount === get_EDITOR_virtualCount()) {
             // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
             // TODO: this code is duplicated inside EDITOR_drawHorizontalScrollbar, reduce duplication?
             if (get_EDITOR_horizontal_scrollbar().scrollLeft !== EDITOR_baseElement.scrollLeft) {
@@ -5816,16 +5821,18 @@ function EDITOR_onScroll_bbb() {
             return;
     }
 
+    EDITOR_bbb_ONSCROLLscrollTop = EDITOR_baseElement.scrollTop;
     set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
 
-    // If I delay setting 'set_EDITOR_ONSCROLLvirtualLineIndex()' then I can just use that.
+    // If I delay setting 'EDITOR_bbb_ONSCROLLvirtualLineIndex' then I can just use that.
     // I can't bear to do that right now though. I'm just gonna make this variable.
-    let prevVli = get_EDITOR_ONSCROLLvirtualLineIndex();
+    let prevVli = EDITOR_bbb_ONSCROLLvirtualLineIndex;
     let currVli = get_EDITOR_virtualLineIndex();
 
+    EDITOR_bbb_ONSCROLLvirtualLineIndex = get_EDITOR_virtualLineIndex();
     set_EDITOR_ONSCROLLvirtualLineIndex(get_EDITOR_virtualLineIndex());
 
-    if (get_EDITOR_ONSCROLLvirtualCount() !== get_EDITOR_virtualCount() ||
+    if (EDITOR_bbb_ONSCROLLvirtualCount !== get_EDITOR_virtualCount() ||
         get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
         get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount()) {
             // Force case 3
@@ -5835,7 +5842,7 @@ function EDITOR_onScroll_bbb() {
             EDITOR_createViewport();
     }
 
-    if (get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount() &&
+    if (EDITOR_bbb_ONSCROLLvirtualCount === get_EDITOR_virtualCount() &&
         get_EDITOR_gutter().children.length === get_EDITOR_virtualCount() &&
         get_EDITOR_textElement().children.length === get_EDITOR_virtualCount()) {
 
@@ -5858,8 +5865,8 @@ function EDITOR_onScroll_bbb() {
         if (diff > 0 && diff < get_EDITOR_virtualCount()) {
             onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
             // firstIndexLineThatWasNotAlreadyRendered
-            trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + get_EDITOR_ONSCROLLvirtualCount());
-            lowerBound = prevVli + get_EDITOR_ONSCROLLvirtualCount();
+            trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + EDITOR_bbb_ONSCROLLvirtualCount);
+            lowerBound = prevVli + EDITOR_bbb_ONSCROLLvirtualCount;
             upperBound = lowerBound + diff;
 
             vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
@@ -5956,6 +5963,7 @@ function EDITOR_onScroll_bbb() {
 
 function EDITOR_createViewport() {
     set_EDITOR_ONSCROLLvirtualCount(get_EDITOR_virtualCount());
+    EDITOR_bbb_ONSCROLLvirtualCount = get_EDITOR_virtualCount();
 
     get_EDITOR_gutter().innerHTML = '';
     get_EDITOR_textElement().innerHTML = '';
