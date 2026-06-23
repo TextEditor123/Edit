@@ -7452,4 +7452,9 @@ function PLAINTEXT_line_lex(div, substart, lineEnd, childIndex) {
 /*
 I'm gonna try and take another look.
 The anxiety is unbearable.
+
+After everything.
+I like to believe that I can live with myself because
+I understand the lifelong complexity that resulted in a person
+who behaved in such a way.
 */
