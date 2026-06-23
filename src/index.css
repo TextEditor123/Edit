@@ -463,6 +463,27 @@ I thought the problem was either:
 It isn't to say that it is the sole issue or that none of those things I listed are problematic.
 It just to say that this wasn't even on the list of reasons for high CLS scoring so that's interesting.
 (it isn't even to say that it is contributing the a high CLS, again just the mentioning of that being a possibility is massive it wasn't on my list)
+
+Google AI Overview
+... more of the response that came from "
+If I click and drag the scrollbar slider, there is a lot of ghosting. And if I really go fast, it is pretty much only ghosting.
+":
+############```paraphraseStart
+
+...
+
+Synchronous Layout + Asynchronous Coloring (The Gold Standard)
+
+Syntax highlighting tokenizers are computationally heavy.
+If you run full regex tokenization on 50 lines synchronously on every single pixel of a scrollbar drag, you will drop frames.
+
+The secret used by high-performance editors like VS Code is to split the virtualizer into two phases:
+- Phase 1: The Synchronous Skeleton (Instant, Monochromatic)
+- Phase 2: The Asynchronous Tokenizer (Lazy Coloring)
+
+
+...
+############```paraphraseEnd
 */
 
 /*.eT span {
