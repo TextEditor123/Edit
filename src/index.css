@@ -452,6 +452,13 @@ causing a massive, compounding penalty from the Cumulative Layout Shift (CLS) al
 ############```paraphraseEnd
 
 "causing a massive, compounding penalty from the Cumulative Layout Shift (CLS) algorithm." what???
+
+I thought the problem was either:
+- tab characters
+- null characters
+- text kerning
+- "text kerning specifically relating to the syntax highlighting so micro-spacing changes between spans when syntaxhighlighting"
+- making a 3D layer per line of text
 */
 
 /*.eT span {
