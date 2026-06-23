@@ -7449,33 +7449,3 @@ function PLAINTEXT_line_lex(div, substart, lineEnd, childIndex) {
     return childIndex;
 }
 
-/*
-I'm gonna try and take another look.
-The anxiety is unbearable.
-
-After everything.
-I like to believe that I can live with myself because
-I understand the lifelong complexity that resulted in a person
-who behaved in such a way.
-
-But I don't know if I just tell myself this because I want it to be true or if it is the true nature of the scenario that played out.
-
-I have always anxiety.
-But these days I additionally feel it after thinking back on this all.
-And I am extremely sorry for everything.
-
-I'm doing "the thing again" btw.
-I realize I was doing it while typing this all.
-
-I think during heavy emotions I find comfort in it is all it is.
-I'll private this one too eventually, and at this point now after acknowledging it
-I don't even think I can add any songs to it without it seeming non-authentic and something forced.
-
-I can say for certain though:
-I don't want anything.
-The closest thing I could describe to wanting is complete catharsis.
-
-Maybe I'll look more at the syntax highlighting tonight, maybe I won't.
-I think I mostly wanted to give an attempt at saying these things, they eat at me all of the time.
-So again I'm sorry
-*/
