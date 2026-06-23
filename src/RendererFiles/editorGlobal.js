@@ -5618,6 +5618,8 @@ function EDITOR_onScroll_timeoutFunc() {
 
 /*
 I'm actually kinda getting a bunch of ideas
+
+I keep trying to take a break but then I come back.
 */
 
 /**
