@@ -5620,6 +5620,11 @@ function EDITOR_onScroll_timeoutFunc() {
 I'm actually kinda getting a bunch of ideas
 
 I keep trying to take a break but then I come back.
+
+- [ ] When you scroll you don't have to divide the whole you just have to subtract the previous and the current then divide that.
+    - [ ] That being said, whether this matters or not I'm not sure.
+    - [ ] It depends if it scrolled by like 1 px or something.
+    - [ ] Although what you could do is track the amount it needs to scroll by in order to cause an effect rather than an idempotent result.
 */
 
 /**
