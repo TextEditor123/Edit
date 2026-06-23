@@ -5591,6 +5591,10 @@ function EDITOR_drawHorizontalScrollbar() {
     }
 }
 
+/*
+I think I can fix the syntax highlighting but I'm extremely tired it's gonna take a while
+*/
+
 function EDITOR_onScroll_WRAPIT() {
 	set_EDITOR_onScroll_bool(true);
 
