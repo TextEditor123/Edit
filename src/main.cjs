@@ -1661,6 +1661,10 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 	}
 }
 
+/*
+stress was getting too high, I need at least another 24 hours of rest before I come back to this
+*/
+
 /* sec0
 //========
 /*
