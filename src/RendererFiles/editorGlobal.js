@@ -781,9 +781,9 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
     }
 
     EDITOR_drawGutter_Width();
-    // Force 'case 3' within 'EDITOR_onScroll();' downstream
+    // Force 'case 3' within 'EDITOR_onScroll_bbb();' downstream
     set_EDITOR_ONSCROLLvirtualLineIndex(get_EDITOR_virtualCount());
-    EDITOR_onScroll();
+    EDITOR_onScroll_bbb();
 }
 
 /**
@@ -5549,7 +5549,7 @@ function EDITOR_onResize() {
     update_virtualCount();
     if (get_EDITOR_virtualCount() !== remember_virtualCount) {
         update_verticalVirtualizationBoundary(EDITOR_lineEndPositionList.count + 1);
-        EDITOR_onScroll();
+        EDITOR_onScroll_bbb();
         // # Redraw cursor selection virtualization
         // Code Duplication: # Redraw cursor selection virtualization... TODO: This is using 'EDITOR_primaryCursor' rather than 'EDITOR_cursorList[i]' so it is surely incorrect?
         for (let i = 0; i < EDITOR_cursorList.length; i++) {
@@ -5585,7 +5585,7 @@ function EDITOR_drawHorizontalScrollbar() {
     }
     
     // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
-    // TODO: this code is duplicated inside EDITOR_onScroll when it returns early due to nothing vertically having changed, reduce duplication?
+    // TODO: this code is duplicated inside EDITOR_onScroll_bbb when it returns early due to nothing vertically having changed, reduce duplication?
     if (get_EDITOR_horizontal_scrollbar().scrollLeft !== EDITOR_baseElement.scrollLeft) {
         get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
     }
@@ -5593,19 +5593,197 @@ function EDITOR_drawHorizontalScrollbar() {
 
 function EDITOR_onScroll_WRAPIT() {
 	set_EDITOR_onScroll_bool(true);
-	
+
+    // TODO: These will run when scrolling horizontally at the moment, this is unfortunate, I am moving code around.
+    update_VirtualLineIndex();
+    //
+    // If I delay setting 'set_EDITOR_ONSCROLLvirtualLineIndex()' then I can just use that.
+    // I can't bear to do that right now though. I'm just gonna make this variable.
+    let prevVli = get_EDITOR_ONSCROLLvirtualLineIndex();
+    let currVli = get_EDITOR_virtualLineIndex();
+    //
+    set_EDITOR_ONSCROLLvirtualLineIndex(get_EDITOR_virtualLineIndex());
+
     if (!EDITOR_timer) {
-        if (true /*options.leading*/) {
-            EDITOR_onScroll();
+        // options.leading
+        EDITOR_finalizeAllCursors();
+        //update_VirtualLineIndex();
+        if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
+            prevVli === get_EDITOR_virtualLineIndex() &&
+            get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount()) {
+                // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
+                // TODO: this code is duplicated inside EDITOR_drawHorizontalScrollbar, reduce duplication?
+                if (get_EDITOR_horizontal_scrollbar().scrollLeft !== EDITOR_baseElement.scrollLeft) {
+                    get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
+                }
+                return;
         }
+
         EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 100);
+
+        if (get_EDITOR_ONSCROLLvirtualCount() !== get_EDITOR_virtualCount() ||
+            get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
+            get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount()) {
+                // Force case 3
+                prevVli = 0;
+                currVli = get_EDITOR_virtualCount();
+
+                // TODO: Duplicated setting of scrolltop; this case and just baseline everytime vertical scrolls it is done in this method elsewhere
+                set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
+                EDITOR_createViewport();
+        }
     }
+
+    // TODO: Duplicated setting of scrolltop; this case and just baseline everytime vertical scrolls it is done in this method elsewhere;; THIS IS THE BASELINE
+    set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
+
+    // The same count of lines is on the UI so you can probably
+    // redraw them one by one and save "some" of the existing HTML.
+
+    let diff = currVli - prevVli;
+
+    let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
+
+    //let trackedSyntax_I;
+    let lowerBound;
+    let upperBound;
+    let loopCounter = 0;
+    //let baseIndex;
+    let vertical;
+    let origin;
+    let lastIndex; // TODO: lastIndex can probably be origin?
+
+    if (diff > 0 && diff < get_EDITOR_virtualCount()) {
+        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
+        // firstIndexLineThatWasNotAlreadyRendered
+        //trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + get_EDITOR_ONSCROLLvirtualCount());
+        lowerBound = prevVli + get_EDITOR_ONSCROLLvirtualCount();
+        upperBound = lowerBound + diff;
+
+        vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
+        origin = EDITOR_domLineNodesZerothIndex;
+
+        EDITOR_domLineNodesZerothIndex = origin + diff;
+        if (EDITOR_domLineNodesZerothIndex >= get_EDITOR_textElement().children.length) {
+            EDITOR_domLineNodesZerothIndex -= get_EDITOR_textElement().children.length;
+        }
+    }
+    else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
+        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 2;
+        //trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(currVli);
+        lowerBound = currVli;
+        upperBound = lowerBound + diff;
+
+        vertical = currVli * get_EDITOR_lineHeight();
+        
+        if (EDITOR_domLineNodesZerothIndex === 0) {
+            lastIndex = get_EDITOR_textElement().children.length - 1;
+        }
+        else {
+            lastIndex = EDITOR_domLineNodesZerothIndex - 1;
+        }
+        EDITOR_domLineNodesZerothIndex = lastIndex - (diff - 1);
+
+        if (EDITOR_domLineNodesZerothIndex < 0) {
+            EDITOR_domLineNodesZerothIndex += get_EDITOR_textElement().children.length;
+        }
+
+        origin = EDITOR_domLineNodesZerothIndex;
+    }
+    else {
+        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
+        //trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(get_EDITOR_virtualLineIndex());
+        lowerBound = get_EDITOR_virtualLineIndex();
+        upperBound = lowerBound + get_EDITOR_virtualCount();
+
+        vertical = get_EDITOR_virtualLineIndex() * get_EDITOR_lineHeight();
+        origin = EDITOR_domLineNodesZerothIndex;
+    }
+
+    //if (trackedSyntax_I === NaN || trackedSyntax_I === -1) {
+    //    trackedSyntax_I = EDITOR_trackedSyntaxList.count_abstract;
+    //}
+
+    for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
+        let transform = `translateY(${vertical}px)`;
+
+        vertical += get_EDITOR_lineHeight();
+
+        let aaa = origin + loopCounter;
+        if (aaa >= get_EDITOR_textElement().children.length) {
+            aaa -= get_EDITOR_textElement().children.length;
+        }
+
+        let gutter = get_EDITOR_gutter().children[aaa];
+        let div = get_EDITOR_textElement().children[aaa];
+        loopCounter++;
+
+        gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
+            ? '~'
+            : indexLine + 1;
+
+        gutter.style.transform = transform;
+        div.style.transform = transform;
+
+        let lineStart;
+        let lineEnd;
+        if (indexLine < EDITOR_lineEndPositionList.count) {
+            if (indexLine === 0) {
+                lineStart = 0;
+                lineEnd = EDITOR_lineEndPositionList.data[indexLine] - 0;
+            }
+            else {
+                lineStart = (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
+                lineEnd = EDITOR_lineEndPositionList.data[indexLine];
+            }
+        }
+        else {
+            lineStart = 0;
+            lineEnd = 0;
+        }
+
+        let childIndex = 0;
+
+        if (lineStart === lineEnd) {
+            if (childIndex < div.children.length) {
+                let span = div.children[childIndex++];
+                span.textContent = '';
+                span.className = '';
+            }
+            else {
+                div.appendChild(document.createElement('span'));
+                childIndex++;
+            }
+        }
+        else {
+            if (lineStart < lineEnd) {
+                let span;
+                if (childIndex < div.children.length) {
+                    span = div.children[childIndex++];
+                    span.className = '';
+                }
+                else {
+                    span = document.createElement('span');
+                    div.appendChild(span);
+                    childIndex++;
+                }
+                span.textContent = EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd));
+            }
+        }
+
+        let bbb = div.children.length - childIndex;
+        for (let i = 0; i < bbb; i++) {
+            div.removeChild(div.children[childIndex]);
+        }
+    }
+
+    //EDITOR_drawHorizontalScrollbar();
 }
 
 function EDITOR_onScroll_timeoutFunc() {
     if (/*trailing && lastArgs*/ get_EDITOR_onScroll_bool()) {
         set_EDITOR_onScroll_bool(false);
-        EDITOR_onScroll();
+        //EDITOR_onScroll_bbb();
         EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 100);
     } else {
         EDITOR_timer = null;
@@ -5616,42 +5794,11 @@ function EDITOR_onScroll_timeoutFunc() {
     }
 }
 
-/*
-I'm actually kinda getting a bunch of ideas
-
-I keep trying to take a break but then I come back.
-
-- [ ] When you scroll you don't have to divide the whole you just have to subtract the previous and the current then divide that.
-    - [ ] That being said, whether this matters or not I'm not sure.
-    - [ ] It depends if it scrolled by like 1 px or something.
-    - [ ] Although what you could do is track the amount it needs to scroll by in order to cause an effect rather than an idempotent result.
-
-I actually also still need to eat something.
-
-I ate something at like 6:30 it was:
-- 2 quickcheck breakfast burritos
-- 1 elite fairlife milk protein 42g of protein thing
-
-Then I worked for 2 hours and 10 minutes.
-
-And I haven't had anything since.
-
-The only thing left to eat is:
-1lb of 98% ground chicken with sriracha
-cause I been eating just those first two things then the chicken with sriracha everyday in order
-to keep things lean and such
-
-oh I get the chocolate version cause it has 8% iron when the other ones don't.
-I actually don't like the taste as much as the vanilla, it isn't bad but vanilla on the other hand literally tastes like vanilla icecream it is wild
-but the 8% iron.
-I also think the chocolate has more potassium I looked at all the flavors and compared the nutrition labels but that was a long long time ago.
-*/
-
 /**
  * TODO: Too many verbose comments that are just ramblings
  */
-function EDITOR_onScroll() {
-	EDITOR_finalizeAllCursors();
+function EDITOR_onScroll_bbb() {
+    EDITOR_finalizeAllCursors();
     update_VirtualLineIndex();
 
     if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
