@@ -5616,6 +5616,10 @@ function EDITOR_onScroll_timeoutFunc() {
     }
 }
 
+/*
+I'm actually kinda getting a bunch of ideas
+*/
+
 /**
  * TODO: Too many verbose comments that are just ramblings
  */
