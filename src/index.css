@@ -459,6 +459,9 @@ I thought the problem was either:
 - text kerning
 - "text kerning specifically relating to the syntax highlighting so micro-spacing changes between spans when syntaxhighlighting"
 - making a 3D layer per line of text
+
+It isn't to say that it is the sole issue or that none of those things I listed are problematic.
+It just to say that this wasn't even on the list of reasons for high CLS scoring so that's interesting.
 */
 
 /*.eT span {
