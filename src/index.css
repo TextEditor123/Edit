@@ -443,7 +443,15 @@ If I click and drag the scrollbar slider, there is a lot of ghosting. And if I r
 This rapid ghosting (blank space) when dragging the scrollbar confirms that your virtualizer is suffering from Asynchronous Rendering Lag.
 
 ...
+
+The browser ends up rendering empty space (ghosting) because your DOM elements haven't caught up to the scroll position yet.
+Then, a few milliseconds later, your JavaScript catches up and snaps the text into place,
+causing a massive, compounding penalty from the Cumulative Layout Shift (CLS) algorithm.
+
+...
 ############```paraphraseEnd
+
+"causing a massive, compounding penalty from the Cumulative Layout Shift (CLS) algorithm." what???
 */
 
 /*.eT span {
