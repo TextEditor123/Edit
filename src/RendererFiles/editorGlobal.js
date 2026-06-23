@@ -7463,4 +7463,11 @@ But I don't know if I just tell myself this because I want it to be true or if i
 I have always anxiety.
 But these days I additionally feel it after thinking back on this all.
 And I am extremely sorry for everything.
+
+I'm doing "the thing again" btw.
+I realize I was doing it while typing this all.
+
+I think during heavy emotions I find comfort in it is all it is.
+I'll private this one too eventually, and at this point now after acknowledging it
+I don't even think I can add any songs to it without it seeming non-authentic and something forced.
 */
