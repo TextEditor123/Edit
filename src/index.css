@@ -479,7 +479,9 @@ If you run full regex tokenization on 50 lines synchronously on every single pix
 
 The secret used by high-performance editors like VS Code is to split the virtualizer into two phases:
 - Phase 1: The Synchronous Skeleton (Instant, Monochromatic)
+    - ...
 - Phase 2: The Asynchronous Tokenizer (Lazy Coloring)
+    - ...
 
 
 ...
