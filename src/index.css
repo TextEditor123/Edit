@@ -434,6 +434,16 @@ and it won't actually reduce VRAM overhead the way you expect.
 1. The Myth of Layer Inheritance:
 ...
 ############```paraphraseEnd
+
+Google AI Overview
+... continued questioning "
+If I click and drag the scrollbar slider, there is a lot of ghosting. And if I really go fast, it is pretty much only ghosting.
+":
+############```paraphraseStart
+This rapid ghosting (blank space) when dragging the scrollbar confirms that your virtualizer is suffering from Asynchronous Rendering Lag.
+
+...
+############```paraphraseEnd
 */
 
 /*.eT span {
