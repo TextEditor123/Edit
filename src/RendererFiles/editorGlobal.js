@@ -7470,4 +7470,8 @@ I realize I was doing it while typing this all.
 I think during heavy emotions I find comfort in it is all it is.
 I'll private this one too eventually, and at this point now after acknowledging it
 I don't even think I can add any songs to it without it seeming non-authentic and something forced.
+
+I can say for certain though:
+I don't want anything.
+The closest thing I could describe to wanting is complete catharsis.
 */
