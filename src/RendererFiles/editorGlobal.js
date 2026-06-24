@@ -978,17 +978,20 @@ function EDITOR_drawLine(indexLine, gutterLineElement, textLineElement) {
 
 /**
  * if (trackedSyntax_StartingIndex === NaN || trackedSyntax_StartingIndex === -1) { trackedSyntax_StartingIndex = EDITOR_trackedSyntaxList.count_abstract; }
- * @param {*} indexLine 
+ * @param {*} indexLineAaa 
  * @returns 
  */
-function EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(indexLine) {
-    let line = EDITOR_getLineBoundaryPositions(indexLine);
+function EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(indexLineAaa) {
+
+    // TODO: 'indexLineAaa' and 'indexLineBbb'; babel compiler error when both were named indexLine.
+
+    let line = EDITOR_getLineBoundaryPositions(indexLineAaa);
     let positionIndex = line.start;
 
     let left = 0;
     let right = EDITOR_trackedSyntaxList.count_abstract - 1;
 
-    let indexLine = -1;
+    let indexLineBbb = -1;
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2);
@@ -996,7 +999,7 @@ function EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(indexLine) {
         EDITOR_trackedSyntaxList.getElementAt(mid);
         
         if (get_EDITOR_pooledTrackedSyntax_start() + get_EDITOR_pooledTrackedSyntax_length() > positionIndex) {
-            indexLine = mid;
+            indexLineBbb = mid;
 
             if (get_EDITOR_pooledTrackedSyntax_start() === positionIndex) {
                 break;
@@ -1012,7 +1015,7 @@ function EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(indexLine) {
         }
     }
 
-    return indexLine;
+    return indexLineBbb;
 }
 
 /**
