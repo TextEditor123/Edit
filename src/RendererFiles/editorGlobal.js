@@ -70,6 +70,11 @@ let EDITOR_textByteList = new ByteList(1024);
 const EDITOR_encoder = new TextEncoder();
 const EDITOR_decoder = new TextDecoder();
 
+// I need like type generation or something
+// like the baseline instances should all pool their state
+// then if you wanna multicursor you create an 'EDITOR_Cursor' just the same as
+// the primary cursor but now you aren't pooling the state it instead is a field of its own on the instance.
+
 class EDITOR_Cursor {
 
     static STATIC_CURSOR_ID = 1;
