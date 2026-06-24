@@ -83,6 +83,8 @@ function aaa(fileName) {
       - [ ] The marker is specifically "//__#__" being the first non-whitespace found in a text file.
       - [ ] It doesn't have to start at character index 0, but it needs to appear prior to any other text.
       - [ ] A warning message is written to the console if "//__#__" is found at any location other than what was just described.
+      - [ ] The main idea is to permit javascript header files.
+      - [ ] I'm not getting lsp results in vscode unless I add an import, but I don't need the import when I smush it all into 1 file.
 
       //__#__
       // preprocessor.js
