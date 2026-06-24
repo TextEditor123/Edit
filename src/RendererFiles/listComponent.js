@@ -333,13 +333,13 @@ class ListComponent {
                 event.preventDefault();
                 this.state_cursor_setIndex(
                     this.state_cursor_validateIndex(this.cursorIndex));
-                let relativeIndex = this.cursorIndex - this.virtualIndex_ofScrollTop;
-                if (relativeIndex >= 0 && relativeIndex < this.itemListElement.children.length) { // check if is in virtualization space
-                    relativeIndex += this.beltIndexZero; // then map the "relativeIndex" by the origin aka:'this.beltIndexZero'... i.e.: which line in the dom is the first line from the top of the screen down.
-                    if (relativeIndex >= this.itemListElement.children.length) {
-                        relativeIndex -= this.itemListElement.children.length;
+                let virtualIndex_ofEvent = this.cursorIndex - this.virtualIndex_ofScrollTop;
+                if (virtualIndex_ofEvent >= 0 && virtualIndex_ofEvent < this.itemListElement.children.length) { // check if is in virtualization space
+                    virtualIndex_ofEvent += this.beltIndexZero; // then map the "relativeIndex" by the origin aka:'this.beltIndexZero'... i.e.: which line in the dom is the first line from the top of the screen down.
+                    if (virtualIndex_ofEvent >= this.itemListElement.children.length) {
+                        virtualIndex_ofEvent -= this.itemListElement.children.length;
                     }
-                    this.onkeydownAction(this.itemListElement.children[relativeIndex], this.cursorIndex);
+                    this.onkeydownAction(this.itemListElement.children[virtualIndex_ofEvent], this.cursorIndex);
                 }
                 break;
         }
