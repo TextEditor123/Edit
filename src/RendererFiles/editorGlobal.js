@@ -6,6 +6,10 @@ Wording related to "indexLine":
                    // And that this 'virtualIndexLine' says: "given my indexLine, is this being shown in the UI?"
                    // BUT there is more to this, you next have to consider the position of the belt.
     - TODO: Consider calling this 'partial' instead of 'virtual' because 'virtual' sounds too "usable". You often can't do anything with this because you have to map it to the "belt".
+    - TODO: I actually think the word 'virtual' fits well here. It is a non-physical index.
+            And then you take that non-physical index and map it to the "belt" which sounds like a more 'physical' concept.
+            To me I've been using the word 'virtual' for a while when mapping to the UI so it is confusing to me.
+            But I think in time this actually sounds sensible.
 - beltIndexLine    // I'm not well versed in this topic.
                    // But I think of a belt and a pully wheel.
                    // The belt wraps around the pulley wheel, and the belt has indices from 0 to (virtualCount - 1); both sides are inclusive.
