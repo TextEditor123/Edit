@@ -1,6 +1,7 @@
 //__#__
-// preprocessor.js
+// preprocessor.cjs
 // import "./javascriptFeatures";
+let xyz = 2;
 //__#__
 
 /*

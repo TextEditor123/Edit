@@ -74,24 +74,29 @@ function aaa(fileName) {
   appendToWriteBuilder(`\n\n// ========\n// ========\n// ${fileName}\n// ========\n// ========\n\n`);
 
   const filePath = path.join(inputFolder, fileName);
-  let text = fs.readFileSync(filePath, 'utf-8');
+  let text = readTextNoBOM(filePath);
 
-  /*
-  while (pos < text.length) {
-    switch (text[pos]) {*/
+  // 0 => None
+  // 1 => StartFound
+  let preprocessorMarkerContext = 0;
+
+  let pos = 0;
+
+  markerWhileLoop: while (pos < text.length) {
+    switch (text[pos]) {
       /*
       - [ ] The marker is specifically "//__#__" being the first non-whitespace found in a text file.
       - [ ] It doesn't have to start at character index 0, but it needs to appear prior to any other text.
       - [ ] A warning message is written to the console if "//__#__" is found at any location other than what was just described.
+      - [ ] Only 1 of them per file is supported.
       - [ ] The main idea is to permit javascript header files.
       - [ ] I'm not getting lsp results in vscode unless I add an import, but I don't need the import when I smush it all into 1 file.
 
       //__#__
-      // preprocessor.js
+      // preprocessor.cjs
       import "./javascriptFeatures";
       //__#__
       */
-     /*
       case '/':
         if (pos <= text.length - 7 &&
             text[pos + 1] === '/' &&
@@ -100,36 +105,57 @@ function aaa(fileName) {
             text[pos + 4] === '#' &&
             text[pos + 5] === '_' &&
             text[pos + 6] === '_') {
-              endChunk();
-              pos += 2;
-              singleLineCommentWhile: while (pos < text.length) {
-                switch (text[pos]) {
-                  case '\r':
-                    pos++;
-                    if (pos <= text.length - 2) {
-                      if (text[pos + 1] === '\n') {
-                        pos++;
-                      }
-                    }
-                    break singleLineCommentWhile;
-                  case '\n':
-                    pos++;
-                    break singleLineCommentWhile;
-                }
-                pos++;
+              if (preprocessorMarkerContext === 0) {
+                pos += 7;
+                preprocessorMarkerContext = 1; // StartFound
+                continue;
               }
-              startChunk();
-              continue;
+              else {
+                pos += 7;
+                preprocessorMarkerContext = 0;
+                break markerWhileLoop;
+              }
         }
-      break;
+        else {
+          if (preprocessorMarkerContext === 0) {
+            break markerWhileLoop;
+          }
+          else {
+            pos++;
+            break;
+          }
+        }
+        break;
+      case ' ':
+      case '\t':
+      case '\r':
+      case '\n':
+        pos++;
+        break;
+      default:
+        if (preprocessorMarkerContext === 0) {
+          break markerWhileLoop;
+        }
+        else {
+          pos++;
+          break;
+        }
     }
-    //__#__
   }
-    */
 
+  if (preprocessorMarkerContext === 1 /*StartFound*/) {
+    // Then the end was never found
+    //
+    // This is an Error because it is very specific, for some reason the file started with '//__#__'.
+    // And it was inside my 'RendererFiles' folder, so what's going on?
+    //
+    // When it comes to '//__#__' being lexed after the first non-whitespace character
+    // that feels far too vague to permit it being an error.
+    //
+    throw new Error('if (preprocessorMarkerContext === 1 /*StartFound*/)');
+  }
 
-  let chunkStart = 0;
-  let pos = 0;
+  let chunkStart = pos;
   while (pos < text.length) {
     switch (text[pos]) {
       case '/':
@@ -223,4 +249,44 @@ function flushAppendToFile() {
   // TODO: I hear 'array.length = 0' will clear the references to the entries but I don't feel confident that it is reality. Nevertheless, this isn't a major concern right now.
   writeBuilder.length = 0;
   writeBuilderTotalLength = 0;
+}
+
+/**
+ * started off with code snippet from Google AI Overview for "node fs determine if file has bom":
+ * 
+ * Copy, pasted, modified; from main.csj originally named 'hasBOM(...)'
+ */
+function readTextNoBOM(filePath) {
+  // Use a small buffer to read just the first 3-4 bytes
+  const buffer = Buffer.alloc(4);
+  const fd = fs.openSync(filePath, 'r');
+  fs.readSync(fd, buffer, 0, 4, 0);
+
+  let stat = fs.statSync(filePath);
+
+  // Check for common BOM signatures
+  // UTF-8: EF BB BF
+  if (buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF) {
+    const bufferaaa = Buffer.alloc(stat.size - 4);
+    fs.readSync(fd, bufferaaa, 0, bufferaaa.length, 3);
+    fs.closeSync(fd);
+    return bufferaaa.toString();
+  }
+  else {
+    const bufferaaa = Buffer.alloc(stat.size);
+    fs.readSync(fd, bufferaaa, 0, bufferaaa.length, 0);
+    fs.closeSync(fd);
+    return bufferaaa.toString();
+  }
+
+  /*
+  // UTF-16 Little Endian: FF FE
+  if (buffer[0] === 0xFF && buffer[1] === 0xFE) {
+    return 'UTF-16LE';
+  }
+  // UTF-16 Big Endian: FE FF
+  if (buffer[0] === 0xFE && buffer[1] === 0xFF) {
+    return 'UTF-16BE';
+  }
+  */
 }
