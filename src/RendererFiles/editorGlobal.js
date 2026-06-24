@@ -7448,3 +7448,11 @@ function PLAINTEXT_line_lex(div, substart, lineEnd, childIndex) {
 
     return childIndex;
 }
+
+
+/*
+I'm gonna do some active rest today.
+Just gonna open the code and no expectations or stress just see if I can read things or realize or get one thing working even slightly better.
+Then after 1 hour if I don't feel well I'm gonna be done for the day probably.
+It is 7:45 AM
+*/
