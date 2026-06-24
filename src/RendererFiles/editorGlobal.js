@@ -30,6 +30,7 @@ And the importance when reading the code lies with the words 'line' and 'column'
 - [ ] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
 - [ ] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltZerothIndex'?
 - [ ] Find any usage of 'lineIndex' pattern and change it 'indexLine' pattern.
+- [ ] Find any usage of 'columnIndex' pattern and change it 'indexColumn' pattern.
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
@@ -78,7 +79,7 @@ class EDITOR_Cursor {
         this.selectionEnd = 0;
         this.DRAWN_selectionAnchor = 0;
         this.DRAWN_selectionEnd = 0;
-        this.DRAWN_selection_virtualLineIndex = 0;
+        this.DRAWN_selection_virtualIndexLine = 0;
         this.DRAWN_selection_virtualCount = 0;
         this.editKind = get_EditKind_None();
         this.editLength = 0;
@@ -173,7 +174,7 @@ class EDITOR_Cursor {
         this.selectionEnd = 0;
         this.DRAWN_selectionAnchor = 0;
         this.DRAWN_selectionEnd = 0;
-        this.DRAWN_selection_virtualLineIndex = 0;
+        this.DRAWN_selection_virtualIndexLine = 0;
         this.DRAWN_selection_virtualCount = 0;
         this.editKind = get_EditKind_None();
         this.editLength = 0;
@@ -223,9 +224,9 @@ const get_EDITOR_presentation = () => EDITOR_baseElement.children[4].children[0]
 const get_EDITOR_cursorListElement = () => EDITOR_baseElement.children[4].children[1];
 const get_EDITOR_textElement = () => EDITOR_baseElement.children[4].children[2];
 
-//                                                                (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex()
+//                                                                (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualIndexLine()
 /** SEE 'EDITOR_indexLineTo_beltIndexLine'; code duplication: this is explicitly inlined in the uncompiled source of editorGlobal.js within 'EDITOR_indexLineTo_beltIndexLine' */
-const EDITOR_indexLineTo_virtualIndexLine = (indexLine) => (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex();
+const EDITOR_indexLineTo_virtualIndexLine = (indexLine) => (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualIndexLine();
 
 /**
  * TODO: It should be >= ?
@@ -234,7 +235,7 @@ const EDITOR_indexLineTo_virtualIndexLine = (indexLine) => (indexLine + get_EDIT
  * @returns you capture the variable then check it for < 0 (or the opposite '>=') i.e. => if (indexLine_VirtualRelative < 0) { return bad_state; } else { return good_state; }
  */
 function EDITOR_indexLineTo_beltIndexLine(indexLine) {
-    let virtualIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex();
+    let virtualIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualIndexLine();
     // TODO: The following line of code (when I at one point had it commented out in a specific way, I'm adding this clarification after originally having made this comment I don't remember the specifics of how it was commented out, but parts of it were and other parts weren't) either didn't "preprocess" correctly or... well I mean it probably is my fault i.e.: the "preprocess" but yeah this is coming out to be 'return;' and that's it nothing else in the compiled end result so somewhere along the pipeline it got borked.
     return virtualIndexLine >= get_EDITOR_textElement().children.length ||
            virtualIndexLine < 0
@@ -245,21 +246,21 @@ function EDITOR_indexLineTo_beltIndexLine(indexLine) {
 }
 
 /** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
-function EDITOR_beltIndexLine_NEXT(matchedIndexLine) {
-    matchedIndexLine++;
-    if (matchedIndexLine >= get_EDITOR_textElement().children.length) {
-        matchedIndexLine -= get_EDITOR_textElement().children.length;
+function EDITOR_beltIndexLine_NEXT(beltIndexLine) {
+    beltIndexLine++;
+    if (beltIndexLine >= get_EDITOR_textElement().children.length) {
+        beltIndexLine -= get_EDITOR_textElement().children.length;
     }
-    return matchedIndexLine;
+    return beltIndexLine;
 }
 
 /** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too small because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
-function EDITOR_beltIndexLine_PREVIOUS(matchedIndexLine) {
-    matchedIndexLine--;
-    if (matchedIndexLine < 0) {
-        matchedIndexLine += get_EDITOR_textElement().children.length;
+function EDITOR_beltIndexLine_PREVIOUS(beltIndexLine) {
+    beltIndexLine--;
+    if (beltIndexLine < 0) {
+        beltIndexLine += get_EDITOR_textElement().children.length;
     }
-    return matchedIndexLine;
+    return beltIndexLine;
 }
 
 const EDITOR_debug = document.getElementById('EDITOR_debug');
@@ -457,8 +458,8 @@ const set_EDITOR_gutterWidthTotal = (int) => EDITOR_int_fields[7] = int;
 set_EDITOR_gutterWidthTotal(32);
 
 /** The first line of text that you should see shown in the UI given the current scrollTop */
-const get_EDITOR_virtualLineIndex = () => EDITOR_int_fields[8];
-const set_EDITOR_virtualLineIndex = (int) => EDITOR_int_fields[8] = int;
+const get_EDITOR_virtualIndexLine = () => EDITOR_int_fields[8];
+const set_EDITOR_virtualIndexLine = (int) => EDITOR_int_fields[8] = int;
 
 const get_EDITOR_virtualCount = () => EDITOR_int_fields[9];
 const set_EDITOR_virtualCount = (int) => EDITOR_int_fields[9] = int;
@@ -500,13 +501,13 @@ const set_EDITOR_totalShift = (int) => EDITOR_int_fields[16] = int;
 const get_EDITOR_offsetWithinSpan = () => EDITOR_int_fields[17];
 const set_EDITOR_offsetWithinSpan = (int) => EDITOR_int_fields[17] = int;
 
-const get_EDITOR_ONSCROLLvirtualLineIndex = () => EDITOR_int_fields[18];
-const set_EDITOR_ONSCROLLvirtualLineIndex = (int) => EDITOR_int_fields[18] = int;
+const get_EDITOR_ONSCROLLvirtualIndexLine = () => EDITOR_int_fields[18];
+const set_EDITOR_ONSCROLLvirtualIndexLine = (int) => EDITOR_int_fields[18] = int;
 //throw new Error('-1');
 // This set used to be -1 to indicate a non existent value, 500 "seems to work" but a proof of it being an equivalent solution has not thoroughly been thought out, only a sort of "yeah that probably works" kinda vibe.
-set_EDITOR_ONSCROLLvirtualLineIndex(500);
+set_EDITOR_ONSCROLLvirtualIndexLine(500);
 
-let EDITOR_bbb_ONSCROLLvirtualLineIndex = 500;
+let EDITOR_bbb_ONSCROLLvirtualIndexLine = 500;
 let EDITOR_bbb_ONSCROLLvirtualCount = 0;
 let EDITOR_bbb_ONSCROLLscrollTop = 500;
 
@@ -807,7 +808,7 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
 
     EDITOR_lineEndPositionList.insert(EDITOR_lineEndPositionList.count, EDITOR_textByteList.count);
 
-    update_VirtualLineIndex();
+    update_VirtualIndexLine();
     update_virtualCount();
 
     update_verticalVirtualizationBoundary();
@@ -820,8 +821,8 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
 
     EDITOR_drawGutter_Width();
     // Force 'case 3' within 'EDITOR_onScroll_bbb();' downstream
-    set_EDITOR_ONSCROLLvirtualLineIndex(get_EDITOR_virtualCount());
-    EDITOR_bbb_ONSCROLLvirtualLineIndex = get_EDITOR_virtualCount();
+    set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualCount());
+    EDITOR_bbb_ONSCROLLvirtualIndexLine = get_EDITOR_virtualCount();
     EDITOR_onScroll_bbb();
 }
 
@@ -835,10 +836,10 @@ function update_verticalVirtualizationBoundary(lineCount) {
     get_EDITOR_virtualization_vertical().style.height = ((lineCount + get_EDITOR_virtualCount() - 1) * get_EDITOR_lineHeight()) + 'px';
 }
 
-function update_VirtualLineIndex() {
+function update_VirtualIndexLine() {
     // TODO: This floor logic seems very odd. Because given the previous and the current you can determine it without dividing maybe I think?
-    set_EDITOR_virtualLineIndex(Math.floor(EDITOR_baseElement.scrollTop / get_EDITOR_lineHeight()));
-    let transform = `translateY(${get_EDITOR_virtualLineIndex() * get_EDITOR_lineHeight()}px)`;
+    set_EDITOR_virtualIndexLine(Math.floor(EDITOR_baseElement.scrollTop / get_EDITOR_lineHeight()));
+    let transform = `translateY(${get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight()}px)`;
     //if (transform === EDITOR_gutterBackgroundColor.style.transform) {
     //    console.log('if (transform === EDITOR_gutterBackgroundColor.style.transform)');
     //}
@@ -987,7 +988,7 @@ function EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(indexLine) {
     let left = 0;
     let right = EDITOR_trackedSyntaxList.count_abstract - 1;
 
-    let lineIndex = -1;
+    let indexLine = -1;
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2);
@@ -995,7 +996,7 @@ function EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(indexLine) {
         EDITOR_trackedSyntaxList.getElementAt(mid);
         
         if (get_EDITOR_pooledTrackedSyntax_start() + get_EDITOR_pooledTrackedSyntax_length() > positionIndex) {
-            lineIndex = mid;
+            indexLine = mid;
 
             if (get_EDITOR_pooledTrackedSyntax_start() === positionIndex) {
                 break;
@@ -1011,7 +1012,7 @@ function EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(indexLine) {
         }
     }
 
-    return lineIndex;
+    return indexLine;
 }
 
 /**
@@ -1023,7 +1024,7 @@ function EDITOR_trackedSyntaxReposition_find(positionIndex) {
     let left = 0;
     let right = EDITOR_trackedSyntaxList.count_abstract - 1;
 
-    let lineIndex = -1;
+    let indexLine = -1;
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2);
@@ -1031,7 +1032,7 @@ function EDITOR_trackedSyntaxReposition_find(positionIndex) {
         let start = EDITOR_trackedSyntaxList.getStart(mid);
         
         if (positionIndex <= start) {
-            lineIndex = mid;
+            indexLine = mid;
 
             if (positionIndex === start) {
                 break;
@@ -1047,7 +1048,7 @@ function EDITOR_trackedSyntaxReposition_find(positionIndex) {
         }
     }
 
-    return lineIndex;
+    return indexLine;
 }
 
 /** modification of Google AI Overview "javascript count of digits" */
@@ -1126,14 +1127,14 @@ function EDITOR_getLineAndColumnIndices_raw(positionIndex) {
     let left = 0;
     let right = EDITOR_lineEndPositionList.count - 1;
 
-    let lineIndex = -1;
+    let indexLine = -1;
     let columnIndex = -1;
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2);
         
         if (EDITOR_lineEndPositionList.data[mid] >= positionIndex) {
-            lineIndex = mid;
+            indexLine = mid;
 
             if (EDITOR_lineEndPositionList.data[mid] === positionIndex) {
                 break;
@@ -1149,22 +1150,22 @@ function EDITOR_getLineAndColumnIndices_raw(positionIndex) {
         }
     }
 
-    if (lineIndex === -1) {
+    if (indexLine === -1) {
         return {
           indexLine: 0,
           indexColumn: 0,  
         };
     }
 
-    if (lineIndex === 0) {
+    if (indexLine === 0) {
         columnIndex = positionIndex;
     }
     else {
-        columnIndex = positionIndex - (EDITOR_lineEndPositionList.data[lineIndex - 1] + 1);
+        columnIndex = positionIndex - (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
     }
 
     return {
-        indexLine: lineIndex,
+        indexLine: indexLine,
         indexColumn: columnIndex,
     };
 }
@@ -1173,14 +1174,14 @@ function EDITOR_getLineAndColumnIndices(positionIndex) {
     let left = 0;
     let right = EDITOR_lineEndPositionList.count - 1;
 
-    let lineIndex = -1;
+    let indexLine = -1;
     let columnIndex = -1;
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2);
         
         if (EDITOR_readLineEndPositionList(mid) >= positionIndex) {
-            lineIndex = mid;
+            indexLine = mid;
 
             if (EDITOR_readLineEndPositionList(mid) === positionIndex) {
                 break;
@@ -1196,22 +1197,22 @@ function EDITOR_getLineAndColumnIndices(positionIndex) {
         }
     }
 
-    if (lineIndex === -1) {
+    if (indexLine === -1) {
         return {
           indexLine: 0,
           indexColumn: 0,  
         };
     }
 
-    if (lineIndex === 0) {
+    if (indexLine === 0) {
         columnIndex = positionIndex;
     }
     else {
-        columnIndex = positionIndex - (EDITOR_readLineEndPositionList(lineIndex - 1) + 1);
+        columnIndex = positionIndex - (EDITOR_readLineEndPositionList(indexLine - 1) + 1);
     }
 
     return {
-        indexLine: lineIndex,
+        indexLine: indexLine,
         indexColumn: columnIndex,
     };
 }
@@ -1244,12 +1245,12 @@ function EDITOR_createStyleForSelection(cursor) {
     if (cursor.DRAWN_selectionAnchor !== cursor.selectionAnchor ||
         cursor.DRAWN_selectionEnd !== cursor.selectionEnd ||
         cursor.DRAWN_selection_virtualCount !== get_EDITOR_virtualCount() ||
-        cursor.DRAWN_selection_virtualLineIndex !== get_EDITOR_virtualLineIndex()) {
+        cursor.DRAWN_selection_virtualIndexLine !== get_EDITOR_virtualIndexLine()) {
 
         cursor.DRAWN_selectionAnchor = cursor.selectionAnchor;
         cursor.DRAWN_selectionEnd = cursor.selectionEnd;
         cursor.DRAWN_selection_virtualCount = get_EDITOR_virtualCount();
-        cursor.DRAWN_selection_virtualLineIndex = get_EDITOR_virtualLineIndex();
+        cursor.DRAWN_selection_virtualIndexLine = get_EDITOR_virtualIndexLine();
 
         let shouldExistSelectionDiv;
         if (cursor.DRAWN_selectionAnchor === cursor.DRAWN_selectionEnd) {
@@ -1295,13 +1296,13 @@ function EDITOR_createStyleForSelection(cursor) {
         let INCLUSIVEendColumn = endLineAndColumnIndices.indexColumn;
 
         // # Virtualization
-        if (startLine < get_EDITOR_virtualLineIndex()) {
-            startLine = get_EDITOR_virtualLineIndex();
+        if (startLine < get_EDITOR_virtualIndexLine()) {
+            startLine = get_EDITOR_virtualIndexLine();
             startColumn = 0;
         }
-        let lastLineIndexBeingShown = get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1;
-        if (INCLUSIVEendLine > lastLineIndexBeingShown) {
-            INCLUSIVEendLine = lastLineIndexBeingShown;
+        let lastIndexLineBeingShown = get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1;
+        if (INCLUSIVEendLine > lastIndexLineBeingShown) {
+            INCLUSIVEendLine = lastIndexLineBeingShown;
             INCLUSIVEendColumn = EDITOR_getLastValidIndexColumn(INCLUSIVEendLine);
         }
 
@@ -1634,9 +1635,9 @@ function EDITOR_onMouseMove(event) {
     }
 }
 
-function EDITOR_onMouseMoveDetailRankOne(event, lineIndexClicked, columnIndexClicked) {
+function EDITOR_onMouseMoveDetailRankOne(event, indexLineClicked, columnIndexClicked) {
     let cursor = EDITOR_primaryCursor;
-    cursor.indexLine = lineIndexClicked;
+    cursor.indexLine = indexLineClicked;
     cursor.indexColumn = columnIndexClicked;
 
     cursor.selectionEnd = EDITOR_getPositionIndex(cursor);
@@ -1754,8 +1755,8 @@ function EDITOR_getCharacterCurrent_KIND(indexColumn, positionIndex, lineEnd) {
     }
 }
 
-function EDITOR_onMouseMoveDetailRankTwo(event, lineIndexClicked, columnIndexClicked) {
-    let nextPositionIndex = EDITOR_getPositionIndex_Overload(lineIndexClicked, columnIndexClicked);
+function EDITOR_onMouseMoveDetailRankTwo(event, indexLineClicked, columnIndexClicked) {
+    let nextPositionIndex = EDITOR_getPositionIndex_Overload(indexLineClicked, columnIndexClicked);
     let cursor = EDITOR_primaryCursor;
 
     if (nextPositionIndex <= get_EDITOR_detail_smallPosition()) {
@@ -1763,7 +1764,7 @@ function EDITOR_onMouseMoveDetailRankTwo(event, lineIndexClicked, columnIndexCli
             cursor.selectionAnchor = get_EDITOR_detail_largePosition();
         }
 
-        cursor.indexLine = lineIndexClicked;
+        cursor.indexLine = indexLineClicked;
         cursor.indexColumn = columnIndexClicked;
         let positionIndex = nextPositionIndex;
 
@@ -1800,7 +1801,7 @@ function EDITOR_onMouseMoveDetailRankTwo(event, lineIndexClicked, columnIndexCli
         }
 
         if (nextPositionIndex >= get_EDITOR_detail_largePosition()) {
-            cursor.indexLine = lineIndexClicked;
+            cursor.indexLine = indexLineClicked;
             cursor.indexColumn = columnIndexClicked;
             let positionIndex = nextPositionIndex;
 
@@ -1841,10 +1842,10 @@ function EDITOR_onMouseMoveDetailRankTwo(event, lineIndexClicked, columnIndexCli
     }
 }
 
-function EDITOR_onMouseMoveDetailRankThree(event, lineIndexClicked, columnIndexClicked) {
+function EDITOR_onMouseMoveDetailRankThree(event, indexLineClicked, columnIndexClicked) {
     let cursor = EDITOR_primaryCursor;
 
-    if (lineIndexClicked === get_EDITOR_detailRank3OriginLine()) {
+    if (indexLineClicked === get_EDITOR_detailRank3OriginLine()) {
         if (cursor.positionIndex !== get_EDITOR_detail_smallPosition()) {
             let smallLineAndColumnPositionIndices = EDITOR_getLineAndColumnIndices(get_EDITOR_detail_smallPosition());
             cursor.indexLine = smallLineAndColumnPositionIndices.indexLine;
@@ -1861,7 +1862,7 @@ function EDITOR_onMouseMoveDetailRankThree(event, lineIndexClicked, columnIndexC
 
         EDITOR_drawCursor(cursor);
     }
-    else if (lineIndexClicked < get_EDITOR_detailRank3OriginLine()) {
+    else if (indexLineClicked < get_EDITOR_detailRank3OriginLine()) {
         if (cursor.selectionAnchor < cursor.selectionEnd) {
             let smallLineAndColumnPositionIndices = EDITOR_getLineAndColumnIndices(get_EDITOR_detail_smallPosition());
 
@@ -1873,22 +1874,22 @@ function EDITOR_onMouseMoveDetailRankThree(event, lineIndexClicked, columnIndexC
             EDITOR_drawCursor(cursor);
         }
 
-        cursor.indexLine = lineIndexClicked;
+        cursor.indexLine = indexLineClicked;
         cursor.indexColumn = 0;
 
-        cursor.selectionEnd = EDITOR_getPositionIndex_Overload(lineIndexClicked, 0);
+        cursor.selectionEnd = EDITOR_getPositionIndex_Overload(indexLineClicked, 0);
 
         EDITOR_drawCursor(cursor);
     }
-    else if (lineIndexClicked > get_EDITOR_detailRank3OriginLine()) {
+    else if (indexLineClicked > get_EDITOR_detailRank3OriginLine()) {
 
         if (cursor.selectionAnchor !== get_EDITOR_detail_smallPosition()) {
             cursor.selectionAnchor = get_EDITOR_detail_smallPosition();
         }
 
-        cursor.indexLine = lineIndexClicked;
+        cursor.indexLine = indexLineClicked;
         cursor.indexColumn = columnIndexClicked;
-        let positionIndex = EDITOR_getPositionIndex_Overload(lineIndexClicked, columnIndexClicked);
+        let positionIndex = EDITOR_getPositionIndex_Overload(indexLineClicked, columnIndexClicked);
 
         // move to end of line...
         let line = EDITOR_getLineBoundaryPositions(cursor.indexLine);
@@ -1932,7 +1933,7 @@ function EDITOR_getPositionIndex_raw(cursor) {
     return EDITOR_getLineStart_pos_raw(cursor.indexLine) + cursor.indexColumn;
 }
 
-function EDITOR_onMouseDownDetailRankOne(event, lineIndexClicked, columnIndexClicked) {
+function EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, columnIndexClicked) {
     let cursor = EDITOR_primaryCursor;
 
     let selectionPlusContextMenuCase = event.button === 2 && cursor.hasSelection();
@@ -1944,7 +1945,7 @@ function EDITOR_onMouseDownDetailRankOne(event, lineIndexClicked, columnIndexCli
     }
 
     if (!selectionPlusContextMenuCase) {
-        cursor.indexLine = lineIndexClicked;
+        cursor.indexLine = indexLineClicked;
         cursor.indexColumn = columnIndexClicked;
         cursor.STORED_indexColumn = cursor.indexColumn;
     
@@ -1958,15 +1959,15 @@ function EDITOR_onMouseDownDetailRankOne(event, lineIndexClicked, columnIndexCli
     EDITOR_drawCursor(cursor);
 }
 
-function EDITOR_onMouseDownDetailRankTwo(event, lineIndexClicked, columnIndexClicked) {
+function EDITOR_onMouseDownDetailRankTwo(event, indexLineClicked, columnIndexClicked) {
     if (event.shiftKey) {
-        EDITOR_onMouseDownDetailRankOne(event, lineIndexClicked, columnIndexClicked);
+        EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, columnIndexClicked);
         return;
     }
 
     let cursor = EDITOR_primaryCursor;
 
-    cursor.indexLine = lineIndexClicked;
+    cursor.indexLine = indexLineClicked;
     cursor.indexColumn = columnIndexClicked;
     let positionIndex = EDITOR_getPositionIndex(cursor);
     
@@ -2073,15 +2074,15 @@ function EDITOR_onMouseDownDetailRankTwo(event, lineIndexClicked, columnIndexCli
     }
 }
 
-function EDITOR_onMouseDownDetailRankThree(event, lineIndexClicked, columnIndexClicked) {
+function EDITOR_onMouseDownDetailRankThree(event, indexLineClicked, columnIndexClicked) {
     if (event.shiftKey) {
-        EDITOR_onMouseDownDetailRankOne(event, lineIndexClicked, columnIndexClicked);
+        EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, columnIndexClicked);
         return;
     }
 
     let cursor = EDITOR_primaryCursor;
 
-    cursor.indexLine = lineIndexClicked;
+    cursor.indexLine = indexLineClicked;
     cursor.indexColumn = columnIndexClicked;
     
     cursor.selectionAnchor = EDITOR_getPositionIndex_Overload(cursor.indexLine, 0);
@@ -2225,7 +2226,7 @@ function EDITOR_finalizeEdit(cursor) {
      * If for whatever reason the first time around this loop fails, then you never decremented so you wouldn't increment to restore
      * the iteration variable to the previous loop's state.
      */
-    let lineIndex_editOccurredOn = -1;
+    let indexLine_editOccurredOn = -1;
 
     switch (cursor.editKind) {
         case get_EditKind_InsertLtr():
@@ -2236,10 +2237,10 @@ function EDITOR_finalizeEdit(cursor) {
                     }
                     else {
                         if (i === EDITOR_lineEndPositionList.count - 1) {
-                            lineIndex_editOccurredOn = i;
+                            indexLine_editOccurredOn = i;
                         }
                         else {
-                            lineIndex_editOccurredOn = i + 1;
+                            indexLine_editOccurredOn = i + 1;
                         }
                         break;
                     }
@@ -2294,7 +2295,7 @@ function EDITOR_finalizeEdit(cursor) {
                         ticket);
                 }
 
-                if (lineIndex_editOccurredOn === get_EDITOR_longestLine_indexLine()) {
+                if (indexLine_editOccurredOn === get_EDITOR_longestLine_indexLine()) {
                     set_EDITOR_longestLine_length(get_EDITOR_longestLine_length() + cursor.editLength);
                 }
 
@@ -2611,10 +2612,10 @@ function EDITOR_finalizeEdit(cursor) {
                     }
                     else {
                         if (i === EDITOR_lineEndPositionList.count - 1) {
-                            lineIndex_editOccurredOn = i;
+                            indexLine_editOccurredOn = i;
                         }
                         else {
-                            lineIndex_editOccurredOn = i + 1;
+                            indexLine_editOccurredOn = i + 1;
                         }
                         break;
                     }
@@ -2675,7 +2676,7 @@ function EDITOR_finalizeEdit(cursor) {
                         ticket);
                 }
 
-                if (lineIndex_editOccurredOn === get_EDITOR_longestLine_indexLine()) {
+                if (indexLine_editOccurredOn === get_EDITOR_longestLine_indexLine()) {
                     set_EDITOR_longestLine_length(get_EDITOR_longestLine_length() - cursor.editLength);
                 }
 
@@ -2699,23 +2700,23 @@ function EDITOR_finalizeEdit(cursor) {
             }
     }
 
-    // lineIndex_editOccurredOn is initialized to -1
+    // indexLine_editOccurredOn is initialized to -1
     //
     // When gap buffer is finalized editor tries to redraw the line in order to lex it again.
     // You need to NOT do this when you are working with multiple cursors however, because it bugs everything out.
     // 
     if (EDITOR_cursorList.length === 1) {
-        if (lineIndex_editOccurredOn >= 0 && lineIndex_editOccurredOn < EDITOR_lineEndPositionList.count) {
+        if (indexLine_editOccurredOn >= 0 && indexLine_editOccurredOn < EDITOR_lineEndPositionList.count) {
             if (get_EDITOR_gutter().children.length === get_EDITOR_virtualCount() &&
                 get_EDITOR_textElement().children.length === get_EDITOR_virtualCount()) {
-                    // TODO: Am I missing this 'lineIndex_editOccurredOn < get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount()' in the 'EDITOR_indexLineTo_beltIndexLine' function??
-                    let beltIndexLine = EDITOR_indexLineTo_beltIndexLine(lineIndex_editOccurredOn);
+                    // TODO: Am I missing this 'indexLine_editOccurredOn < get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount()' in the 'EDITOR_indexLineTo_beltIndexLine' function??
+                    let beltIndexLine = EDITOR_indexLineTo_beltIndexLine(indexLine_editOccurredOn);
                     if (beltIndexLine >= 0) {
                         let gutterLineElement = get_EDITOR_gutter().children[beltIndexLine];
                         gutterLineElement.innerHTML = '';
                         let textLineElement = get_EDITOR_textElement().children[beltIndexLine];
                         textLineElement.innerHTML = '';
-                        EDITOR_drawLine(lineIndex_editOccurredOn, gutterLineElement, textLineElement);
+                        EDITOR_drawLine(indexLine_editOccurredOn, gutterLineElement, textLineElement);
                     }
                     else {
                         // TODO: Consider what to do in this case.
@@ -3515,7 +3516,7 @@ function EDITOR_registerHandlers() {
                     // This doesn't seem to make a difference for me but I feel like I should have this line regardless...
                     // ...in case someone's computer for some reason would end up having default behavior even though mine seems to not.
                     event.preventDefault();
-                    EDITOR_primaryCursor.indexLine = get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount();
+                    EDITOR_primaryCursor.indexLine = get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount();
                     if (get_EDITOR_virtualCount() > 1) {
                         // this seems to more commonly have the cursor staying within the viewport rather than overlapping outside.
                         EDITOR_primaryCursor.indexLine--;
@@ -3537,7 +3538,7 @@ function EDITOR_registerHandlers() {
                     // This doesn't seem to make a difference for me but I feel like I should have this line regardless...
                     // ...in case someone's computer for some reason would end up having default behavior even though mine seems to not.
                     event.preventDefault();
-                    EDITOR_primaryCursor.indexLine = get_EDITOR_virtualLineIndex();
+                    EDITOR_primaryCursor.indexLine = get_EDITOR_virtualIndexLine();
                     if (get_EDITOR_virtualCount() > 1) {
                         // this seems to more commonly have the cursor staying within the viewport rather than overlapping outside.
                         EDITOR_primaryCursor.indexLine++;
@@ -4192,8 +4193,8 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
     // No need to consider '\r\n' and etc... only '\n'
     let linefeedLength = 0;
     let beltIndexLine_current = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + get_EDITOR_offsetLine());
-    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
-    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine());
+    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
     let last_valid_indexColumn_currentLine = EDITOR_getLastValidIndexColumn(cursor.indexLine);
 
     // TODO: An optimization to check whether you even need to redraw any lines perhaps is possible but it would add too much complexity at the moment and so it isn't being considered...
@@ -4417,7 +4418,7 @@ function EDITOR_indentMore(cursor) {
     // # Determine the starting indexLine (the start is the large position, this confused me for a moment)
     // # Determine the total count of text that will be inserted, prior to actually beginning the edit.
     // # Update the 'START POSITIONS specifically' of the tracked syntax list by the total count of text that will be inserted.
-    // # Descending lineIndex loop:
+    // # Descending indexLine loop:
     //     # Insert the text on the respective line.
     //     # Increment the entry in 'EDITOR_lineEndPositionList' for the respective line
     //     # There's a second modification to the start positions of the tracked syntax list
@@ -4491,7 +4492,7 @@ function EDITOR_indentMore(cursor) {
         EDITOR_on_tab_string += String.fromCharCode(EDITOR_on_tab_bytes[i]);
     }
 
-    // # Descending lineIndex loop:
+    // # Descending indexLine loop:
     //     # Insert the text on the respective line.
     //     # Increment the entry in 'EDITOR_lineEndPositionList' for the respective line
     //     # There's a second (relative to this entire function) modification to the start positions of the tracked syntax list
@@ -4913,8 +4914,8 @@ function EDITOR_paste(cursor, content) {
     let linefeedLength = 0;
 
     let beltIndexLine_current = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + get_EDITOR_offsetLine());
-    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
-    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine());
+    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
     let last_valid_indexColumn_currentLine = EDITOR_getLastValidIndexColumn(cursor.indexLine);
 
     // TODO: An optimization to check whether you even need to redraw any lines perhaps is possible but it would add too much complexity at the moment and so it isn't being considered...
@@ -5342,8 +5343,8 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
     if (get_EDITOR_virtualCount() <= 1 || get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount())
         shouldRenderEntireViewport = true;
 
-    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
-    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine());
+    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
 
     // TODO: reminder for when virtualization padding is improved, this function might need to be looked at.
     // TODO: Track the enter keystroke the same as any other insertion edit and have it pending until it needs to be finalized.
@@ -5558,7 +5559,7 @@ function EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLi
 
     let matchedIndexLine = breakingPoint;
     for (let i = 0; ; i++) {
-        EDITOR_drawLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - (distance - i), get_EDITOR_gutter().children[matchedIndexLine], get_EDITOR_textElement().children[matchedIndexLine]);
+        EDITOR_drawLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - (distance - i), get_EDITOR_gutter().children[matchedIndexLine], get_EDITOR_textElement().children[matchedIndexLine]);
         if (matchedIndexLine === matched_indexLine_last) break; // awkward positioning of this break, it seems somewhat necessary but need to take time to read the code further and try to have it moved somewhere more sensible.
         matchedIndexLine = EDITOR_beltIndexLine_NEXT(matchedIndexLine);
     }
@@ -5634,20 +5635,20 @@ function EDITOR_onScroll_WRAPIT() {
 	set_EDITOR_onScroll_bool(true);
 
     // TODO: These will run when scrolling horizontally at the moment, this is unfortunate, I am moving code around.
-    update_VirtualLineIndex();
+    update_VirtualIndexLine();
     //
-    // If I delay setting 'set_EDITOR_ONSCROLLvirtualLineIndex()' then I can just use that.
+    // If I delay setting 'set_EDITOR_ONSCROLLvirtualIndexLine()' then I can just use that.
     // I can't bear to do that right now though. I'm just gonna make this variable.
-    let prevVli = get_EDITOR_ONSCROLLvirtualLineIndex();
-    let currVli = get_EDITOR_virtualLineIndex();
+    let prevVli = get_EDITOR_ONSCROLLvirtualIndexLine();
+    let currVli = get_EDITOR_virtualIndexLine();
     //
-    set_EDITOR_ONSCROLLvirtualLineIndex(get_EDITOR_virtualLineIndex());
+    set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualIndexLine());
 
     if (!EDITOR_timer) {
         // options.leading
         EDITOR_finalizeAllCursors();
         if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
-            prevVli === get_EDITOR_virtualLineIndex() &&
+            prevVli === get_EDITOR_virtualIndexLine() &&
             get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount()) {
                 // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
                 // TODO: this code is duplicated inside EDITOR_drawHorizontalScrollbar, reduce duplication?
@@ -5716,10 +5717,10 @@ function EDITOR_onScroll_WRAPIT() {
     }
     else {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
-        lowerBound = get_EDITOR_virtualLineIndex();
+        lowerBound = get_EDITOR_virtualIndexLine();
         upperBound = lowerBound + get_EDITOR_virtualCount();
 
-        vertical = get_EDITOR_virtualLineIndex() * get_EDITOR_lineHeight();
+        vertical = get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight();
         origin = EDITOR_domLineNodesZerothIndex;
     }
 
@@ -5812,10 +5813,10 @@ function EDITOR_onScroll_timeoutFunc() {
 
 function EDITOR_onScroll_bbb() {
     EDITOR_finalizeAllCursors();
-    update_VirtualLineIndex();
+    update_VirtualIndexLine();
 
     if (EDITOR_bbb_ONSCROLLscrollTop === EDITOR_baseElement.scrollTop &&
-        EDITOR_bbb_ONSCROLLvirtualLineIndex === get_EDITOR_virtualLineIndex() &&
+        EDITOR_bbb_ONSCROLLvirtualIndexLine === get_EDITOR_virtualIndexLine() &&
         EDITOR_bbb_ONSCROLLvirtualCount === get_EDITOR_virtualCount()) {
             // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
             // TODO: this code is duplicated inside EDITOR_drawHorizontalScrollbar, reduce duplication?
@@ -5828,13 +5829,13 @@ function EDITOR_onScroll_bbb() {
     EDITOR_bbb_ONSCROLLscrollTop = EDITOR_baseElement.scrollTop;
     set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
 
-    // If I delay setting 'EDITOR_bbb_ONSCROLLvirtualLineIndex' then I can just use that.
+    // If I delay setting 'EDITOR_bbb_ONSCROLLvirtualIndexLine' then I can just use that.
     // I can't bear to do that right now though. I'm just gonna make this variable.
-    let prevVli = EDITOR_bbb_ONSCROLLvirtualLineIndex;
-    let currVli = get_EDITOR_virtualLineIndex();
+    let prevVli = EDITOR_bbb_ONSCROLLvirtualIndexLine;
+    let currVli = get_EDITOR_virtualIndexLine();
 
-    EDITOR_bbb_ONSCROLLvirtualLineIndex = get_EDITOR_virtualLineIndex();
-    set_EDITOR_ONSCROLLvirtualLineIndex(get_EDITOR_virtualLineIndex());
+    EDITOR_bbb_ONSCROLLvirtualIndexLine = get_EDITOR_virtualIndexLine();
+    set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualIndexLine());
 
     if (EDITOR_bbb_ONSCROLLvirtualCount !== get_EDITOR_virtualCount() ||
         get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
@@ -5891,11 +5892,11 @@ function EDITOR_onScroll_bbb() {
     }
     else {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
-        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(get_EDITOR_virtualLineIndex());
-        lowerBound = get_EDITOR_virtualLineIndex();
+        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(get_EDITOR_virtualIndexLine());
+        lowerBound = get_EDITOR_virtualIndexLine();
         upperBound = lowerBound + get_EDITOR_virtualCount();
 
-        vertical = get_EDITOR_virtualLineIndex() * get_EDITOR_lineHeight();
+        vertical = get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight();
         origin = EDITOR_domLineNodesZerothIndex;
     }
 
@@ -5954,7 +5955,7 @@ function EDITOR_createViewport() {
 
     get_EDITOR_gutter().innerHTML = '';
     get_EDITOR_textElement().innerHTML = '';
-    let trackedSyntax_StartingIndex = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(0 + get_EDITOR_virtualLineIndex());
+    let trackedSyntax_StartingIndex = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(0 + get_EDITOR_virtualIndexLine());
     if (trackedSyntax_StartingIndex === NaN || trackedSyntax_StartingIndex === -1) {
         trackedSyntax_StartingIndex = EDITOR_trackedSyntaxList.count_abstract;
     }
@@ -5965,12 +5966,12 @@ function EDITOR_createViewport() {
 
     // TODO: '... * get_EDITOR_lineHeight()'???
     // TODO: (^ with respect to the above TODO...) This creation of the viewport actually should NOT be setting any transform attribute values because it always(*double check this is true... I believe it is) is followed up by a case 3 drawing of text for the entire viewport?
-    let top = get_EDITOR_virtualLineIndex();
+    let top = get_EDITOR_virtualIndexLine();
 
     for (var i = 0; i < get_EDITOR_virtualCount(); i++) {
         let transform = `translateY(${top}px)`;
 
-        let indexLine = i + get_EDITOR_virtualLineIndex();
+        let indexLine = i + get_EDITOR_virtualIndexLine();
 
         // EDITOR_drawGutter_Content()
         let gutterLineElement = document.createElement('div');
@@ -6098,12 +6099,12 @@ function EDITOR_REMOVE_line_drawGutter(linesRemovedCount) {
 
     // It's actually something about current undershoot vs overshoot incoming to undershoot or sometrhing
     // !!!!!!!!
-    // it's let largestDrawnIndexLine = get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1;
+    // it's let largestDrawnIndexLine = get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1;
     // not what is below this line
     // todo remove this confusing and misleading commented dead code that has the or maybe I idk
     // largestDrawnIndexLine + linesRemovedCount ? EDITOR_lineEndPositionList.count
 
-    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
 
     if (get_EDITOR_gutter().children.length > 0 && get_EDITOR_gutter().children.length === get_EDITOR_virtualCount() && get_EDITOR_gutter().children.length === get_EDITOR_textElement().children.length) {
         if (get_EDITOR_gutter().children[beltIndexLine_last].textContent === '~') {
@@ -6128,7 +6129,7 @@ function EDITOR_REMOVE_line_drawGutter(linesRemovedCount) {
 
             // TODO: you need to check the non-selection-based-removes for bringing existing text into view via removal of a line
             
-            let largestDrawnIndexLine = get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount();
+            let largestDrawnIndexLine = get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount();
 
             if (largestDrawnIndexLine + linesRemovedCount >= EDITOR_lineEndPositionList.count) {
                 // but I'll bring one or more into view by doing the removal
@@ -6280,7 +6281,7 @@ function EDITOR_removeSelection(cursor) {
     }
 
     let finalLineEndPosition = EDITOR_readLineEndPositionList(cursor.indexLine + linesRemovedCount);
-    let largestDrawnIndexLine = get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1;
+    let largestDrawnIndexLine = get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1;
     let visibleLinesRemovedCount = 0;
 
     // 5 stages
@@ -6493,7 +6494,7 @@ function EDITOR_removeSelection(cursor) {
 
         let beltIndexLine_current = EDITOR_indexLineTo_beltIndexLine(smallLineAndColumnIndices.indexLine + 1);
 
-        let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+        let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
 
         // TODO: This will be wrong because you'd need to explicitly redraw the large selection line index.
         EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, beltIndexLine_current, linesRemovedCount);
@@ -6525,7 +6526,7 @@ function EDITOR_removeSelection(cursor) {
         // Each case might be the same solution I don't know I just need time to think I'm completely exhausted but ima figure it out by just typing everything out and overtime it will happen
         // 
 
-        let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+        let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
 
         if (get_EDITOR_textElement().children.length === get_EDITOR_gutter().children.length) {
             for (let i = 0; i < visibleLinesRemovedCount; i++) {
@@ -6597,7 +6598,7 @@ function EDITOR_deleteDo(cursor, event) {
                     keepingDiv.removeChild(keepingDiv.children[0]);
                 }
 
-                let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+                let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
                 EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, beltIndexLine_next, 1);
             }
 
@@ -6686,7 +6687,7 @@ function EDITOR_backspaceDo(cursor, event) {
     
     if (w.indexColumn_Goal == 0) {
         if (cursor.indexLine > 0) {
-            let rememberLineIndex = cursor.indexLine;
+            let rememberIndexLine = cursor.indexLine;
 
             // TODO: multicursor bugs are more likely to occur with this logic:
             // TODO: this logic is extremely suspect given editIndexLine and editIndexColumn...
@@ -6703,7 +6704,7 @@ function EDITOR_backspaceDo(cursor, event) {
             }
 
             // Visually, immediately merge the lines if both are visible.
-            let beltIndexLine_previous = EDITOR_indexLineTo_beltIndexLine(rememberLineIndex - 1);
+            let beltIndexLine_previous = EDITOR_indexLineTo_beltIndexLine(rememberIndexLine - 1);
             if (beltIndexLine_previous >= 0) {
                 let keepingDiv = get_EDITOR_textElement().children[beltIndexLine_previous];
                 let removingDiv = w.div;
@@ -6723,7 +6724,7 @@ function EDITOR_backspaceDo(cursor, event) {
                     keepingDiv.removeChild(keepingDiv.children[0]);
                 }
 
-                let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+                let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
                 EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, w.beltIndexLine, 1);
             }
 
@@ -7025,13 +7026,13 @@ async function EDITOR_MenuOnClick(indexClicked, elementClicked) {
  */
 function EDITOR_moveCursor_position(intValue) {
     let lineAndColumnIndices = EDITOR_getLineAndColumnIndices(intValue);
-    EDITOR_moveCursor_lineIndex_columnIndex(lineAndColumnIndices.indexLine, lineAndColumnIndices.indexColumn);
+    EDITOR_moveCursor_indexLine_columnIndex(lineAndColumnIndices.indexLine, lineAndColumnIndices.indexColumn);
 }
 
 /**
  * This clears the cursor's selection.
  */
-function EDITOR_moveCursor_lineIndex_columnIndex(indexLine, indexColumn) {
+function EDITOR_moveCursor_indexLine_columnIndex(indexLine, indexColumn) {
     let lastValidColumnIndex = EDITOR_getLastValidIndexColumn(indexLine);
 
     if (indexColumn > lastValidColumnIndex) {
