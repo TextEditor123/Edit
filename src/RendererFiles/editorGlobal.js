@@ -892,8 +892,8 @@ function EDITOR_drawGutter_Width() {
  * @returns
  */
 function walkLineUntilColumnIndex(cursor) {
-    let indexLine_VirtualRelative = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
-    if (indexLine_VirtualRelative < 0) {
+    let beltIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
+    if (beltIndexLine < 0) {
         return {
             indexColumn_Goal: -1,
             indexColumn_Sum: -1,
@@ -901,11 +901,11 @@ function walkLineUntilColumnIndex(cursor) {
             indexSpan: -1,
             span: null,
             div: null,
-            indexLine_VirtualRelative: indexLine_VirtualRelative,
+            beltIndexLine: beltIndexLine,
         };
     }
     
-    let div = get_EDITOR_textElement().children[indexLine_VirtualRelative];
+    let div = get_EDITOR_textElement().children[beltIndexLine];
     let indexColumn_Goal = cursor.indexColumn + get_EDITOR_offsetColumn();
     let indexColumn_Sum = 0;
 
@@ -921,7 +921,7 @@ function walkLineUntilColumnIndex(cursor) {
                 indexSpan: indexSpan,
                 span: span,
                 div: div,
-                indexLine_VirtualRelative: indexLine_VirtualRelative,
+                beltIndexLine: beltIndexLine,
             };
         }
         else {
@@ -937,7 +937,7 @@ function walkLineUntilColumnIndex(cursor) {
         indexSpan: -1,
         span: null,
         div: null,
-        indexLine_VirtualRelative: indexLine_VirtualRelative,
+        beltIndexLine: beltIndexLine,
     };
 }
 
@@ -4522,9 +4522,9 @@ function EDITOR_indentMore(cursor) {
         incrementBy -= 4;
 
         // Draw the line to reflect the edit, if it is being currently shown on screen.
-        let indexLine_VirtualRelative = EDITOR_indexLineTo_beltIndexLine(lineI);
-        if (indexLine_VirtualRelative >= 0) {
-                let div = get_EDITOR_textElement().children[indexLine_VirtualRelative];
+        let beltIndexLine = EDITOR_indexLineTo_beltIndexLine(lineI);
+        if (beltIndexLine >= 0) {
+                let div = get_EDITOR_textElement().children[beltIndexLine];
                 let span;
                 if (div.children[0].className === '') {
                     span = div.children[0];
@@ -4843,9 +4843,9 @@ function EDITOR_indentLess(cursor) {
         /////////////////////// P_2
 
         // Draw the line to reflect the edit, if it is being currently shown on screen.
-        let indexLine_VirtualRelative = EDITOR_indexLineTo_beltIndexLine(lineI);
-        if (indexLine_VirtualRelative >= 0) {
-                let div = get_EDITOR_textElement().children[indexLine_VirtualRelative];
+        let beltIndexLine = EDITOR_indexLineTo_beltIndexLine(lineI);
+        if (beltIndexLine >= 0) {
+                let div = get_EDITOR_textElement().children[beltIndexLine];
                 let span = div.children[0];
                 span.textContent = span.textContent.slice(innerRemoveCount);
         }
@@ -5457,9 +5457,9 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
                     }
                 }
 
-                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_getIndexLineToHtml_Correctly_NEXT(w.indexLine_VirtualRelative));
+                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_getIndexLineToHtml_Correctly_NEXT(w.beltIndexLine));
 
-                let aaa = get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(w.indexLine_VirtualRelative)];
+                let aaa = get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(w.beltIndexLine)];
                 let span = document.createElement('span');
                 span.className = spanClassName;
                 span.textContent = spanText;
@@ -6722,7 +6722,7 @@ function EDITOR_backspaceDo(cursor, event) {
                 }
 
                 let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
-                EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, w.indexLine_VirtualRelative, 1);
+                EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, w.beltIndexLine, 1);
             }
 
             cursor.editLineFeedCount++;
