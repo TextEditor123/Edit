@@ -8,6 +8,7 @@ const outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
 
 // 1. Define the exact loading priority order
 const filePriorityOrder = [
+  "fieldBuffer.js",
   "header_editorGlobal_header.js",
   "widgetGlobal.js",
   "menuGlobal.js",
