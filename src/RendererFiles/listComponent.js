@@ -177,12 +177,12 @@ class ListComponent {
                     for (var i = 0; i < diff; i++) {
                         let indexItem = prevVli + this._ONSCROLLvirtualCount + i;
 
-                        let divIndex = origin + i;
-                        if (divIndex >= this.itemListElement.children.length) {
-                            divIndex -= this.itemListElement.children.length;
+                        let beltIndexItem = origin + i;
+                        if (beltIndexItem >= this.itemListElement.children.length) {
+                            beltIndexItem -= this.itemListElement.children.length;
                         }
 
-                        let divItem = this.itemListElement.children[divIndex];
+                        let divItem = this.itemListElement.children[beltIndexItem];
                         
                         divItem.style.transform = `translateY(${vertical}px)`;
                         vertical += this.itemHeightNumber;
@@ -242,12 +242,12 @@ class ListComponent {
                     for (var i = 0; i < this.virtualCount; i++) {
                         let indexItem = i + this.virtualIndex_ofScrollTop;
 
-                        let divIndex = origin + i;
-                        if (divIndex >= this.itemListElement.children.length) {
-                            divIndex -= this.itemListElement.children.length;
+                        let beltIndexItem = origin + i;
+                        if (beltIndexItem >= this.itemListElement.children.length) {
+                            beltIndexItem -= this.itemListElement.children.length;
                         }
 
-                        let divItem = this.itemListElement.children[divIndex];
+                        let divItem = this.itemListElement.children[beltIndexItem];
 
                         divItem.style.transform = `translateY(${vertical}px)`;
                         vertical += this.itemHeightNumber;
@@ -258,27 +258,6 @@ class ListComponent {
                             this.drawItemAction(divItem, indexItem);
                     }
                 }
-
-                /*let smallestTopValue = 9999;
-                    let smallestTopSourceIndex = -1;
-                    let largestTopValue = -1;
-                    let largestTopSourceIndex = -1;
-
-                    for (let i = 0; i < this.itemListElement.children.length; i++) {
-                        let top = parseInt(this.itemListElement.children[i].style.top);
-                        if (top > largestTopValue) {
-                            largestTopValue = top;
-                            largestTopSourceIndex = i;
-                        }
-                        if (top < smallestTopValue) {
-                            smallestTopValue = top;
-                            smallestTopSourceIndex = i;
-                        }
-                    }
-
-                    if (smallestTopSourceIndex !== this.beltIndexZero) {
-                        console.log(`c2 => ${smallestTopSourceIndex} !== this.${this.beltIndexZero}`);
-                    }*/
             }
         }
     }
