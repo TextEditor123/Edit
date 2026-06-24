@@ -1,6 +1,7 @@
 //__#__
 // preprocessor.cjs
 // import "./javascriptFeatures";
+import "./header_editorGlobal_header"
 //__#__
 
 /*
@@ -49,9 +50,11 @@ And the importance when reading the code lies with the words 'line' and 'column'
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
 
 // What about if there is any overhead relating to const global numbers?
-const ASCII_LINE_FEED = 10;
+
 const ASCII_TAB = 9;
 const ASCII_SPACE = 32;
+
+//ASCII_LINE_FEED;
 
 /**
  * @type {UInt32List}

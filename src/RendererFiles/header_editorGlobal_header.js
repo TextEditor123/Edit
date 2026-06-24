@@ -1,0 +1,1 @@
+const ASCII_LINE_FEED = 10;
