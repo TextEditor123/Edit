@@ -1,8 +1,19 @@
 //__#__
 // preprocessor.cjs
-// import "./javascriptFeatures";
 import "./header_editorGlobal_header"
 //__#__
+
+/*
+Google AI Overview "javascript does the garbage collector still have to acknowledge a const number that is defined in the global scope?":
+
+Continued with
+"
+So, if I hypothetically had 1,000 const numbers in the global scope.
+There is some kind of loop that the garbage collector performs, and has to visit each one of the 1,000 const numbers
+even if just to check that it is a number and immediately skip over it with minimal overhead involved.
+"
+
+*/
 
 /*
 Wording related to "indexLine":
@@ -252,7 +263,7 @@ let EDITOR_cursorList = [EDITOR_primaryCursor];
 
 let EDITOR_textSourceIdentifier = '';
 let EDITOR_FORMATTED_textSourceIdentifier = '';
-let EDITOR_extensionKind = get_ExtensionKind_None();
+let EDITOR_extensionKind = get_ExtensionKind_None(); // 2026-06-24_count_other_int32_fields_1
 
 let EDITOR_lineEndString = null;
 
@@ -274,11 +285,11 @@ let EDITOR_offsetWithinSpan_withRespectToThisSpan = null;
 
 let EDITOR_timer = null;
 
-let EDITOR_bbb_ONSCROLLvirtualIndexLine = 500;
-let EDITOR_bbb_ONSCROLLvirtualCount = 0;
-let EDITOR_bbb_ONSCROLLscrollTop = 500;
+let EDITOR_bbb_ONSCROLLvirtualIndexLine = 500;  // 2026-06-24_count_other_int32_fields_2
+let EDITOR_bbb_ONSCROLLvirtualCount = 0;  // 2026-06-24_count_other_int32_fields_3
+let EDITOR_bbb_ONSCROLLscrollTop = 500;  // 2026-06-24_count_other_int32_fields_4
 
-let EDITOR_pooledTrackedSyntax_trackedSyntaxKind = get_TrackedSyntaxKind_None();
+let EDITOR_pooledTrackedSyntax_trackedSyntaxKind = get_TrackedSyntaxKind_None();  // 2026-06-24_count_other_int32_fields_5
 
 const EDITOR_gutterPaddingLeft = 3;
 const EDITOR_gutterPaddingRight = 6;
@@ -286,15 +297,15 @@ const EDITOR_gutterPaddingRight = 6;
 let EDITOR_characterWidth = 8;
 let EDITOR_horizontal_scrollbar_widthValue = 0;
 
-let EDITOR_beltIndexZero = 0;
+let EDITOR_beltIndexZero = 0;  // 2026-06-24_count_other_int32_fields_6
 
-let w_indexColumn_Goal = -1;
-let w_indexColumn_Sum = -1;
-let w_indexColumn_SpanTextContentRelative = -1;
-let w_indexSpan = -1;
+let w_indexColumn_Goal = -1;  // 2026-06-24_count_other_int32_fields_7
+let w_indexColumn_Sum = -1;  // 2026-06-24_count_other_int32_fields_8
+let w_indexColumn_SpanTextContentRelative = -1;  // 2026-06-24_count_other_int32_fields_9
+let w_indexSpan = -1;  // 2026-06-24_count_other_int32_fields_10
 let w_span = null;
 let w_div = null;
-let w_beltIndexLine = -1;
+let w_beltIndexLine = -1;  // 2026-06-24_count_other_int32_fields_11
 
 /**
  * TODO: It should be >= ?
