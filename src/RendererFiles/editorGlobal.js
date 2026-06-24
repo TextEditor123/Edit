@@ -26,6 +26,8 @@ so the inclusion of that word is rather unimportant when reading over the code.
 I actually think 'lineIndex' "rolls off the tongue" a little easier.
 But if you apply the pattern it hides the word 'line'.
 And the importance when reading the code lies with the words 'line' and 'column'.
+
+- [ ] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
