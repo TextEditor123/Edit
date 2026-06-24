@@ -1687,3 +1687,8 @@ stress was getting too high, I need at least another 24 hours of rest before I c
 *//*
 //========
 sec0*/
+
+// I can't think straight after getting the authentication error
+// I thought someone was targeting me
+// I'm trying to get my thoughts
+// if it doesn't I'll just take a break
