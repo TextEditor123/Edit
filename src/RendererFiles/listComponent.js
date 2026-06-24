@@ -422,24 +422,3 @@ class ListComponent {
         return indexItem;
     }
 }
-
-// I think there's a lot of people who don't like me personally.
-// 
-// As well people who don't like that I'm trying to learn about these things.
-//
-// In my mind there's one thing to something being open source
-// and another thing to someone who can explain every detail to the public.
-//
-// It's like a book written in another language and passed around to everyone.
-// Who cares, they can't read it.
-//
-// I worry someone will see my increasing understanding
-// and come after me because I might make things too accessable.
-//
-// I'm afraid all of the time. And I'm not joking.
-//
-// Wanna know where Luthetus came from?
-// "Martin Luther" + impetus
-//
-// my anxiety, paranoia, delusion, everyday I think I need to walk away from it all, that it won't end well for me.
-
