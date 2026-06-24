@@ -27,9 +27,9 @@ I actually think 'lineIndex' "rolls off the tongue" a little easier.
 But if you apply the pattern it hides the word 'line'.
 And the importance when reading the code lies with the words 'line' and 'column'.
 
-- [ ] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
-- [ ] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltIndexZero'?
-- [ ] Find any usage of 'lineIndex' pattern and change it 'indexLine' pattern.
+- [/] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
+- [x] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltIndexZero'?
+- [x] Find any usage of 'lineIndex' pattern and change it 'indexLine' pattern.
 - [x] Find any usage of 'columnIndex' pattern and change it 'indexColumn' pattern.
 */
 
