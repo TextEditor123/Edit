@@ -3,7 +3,16 @@ Wording related to "indexLine":
 - indexLine        // The line number of '1' corresponds to the '0' indexLine; The end position of this line is located at index '0' within 'EDITOR_lineEndPositionList'.
 - virtualIndexLine // 
     - TODO: Consider calling this 'partial' instead of 'virtual' because 'virtual' sounds too "usable". You often can't do anything with this because you have to map it to the "belt".
-- beltIndexLine    //
+- beltIndexLine    // 
+
+Why is it not a 'lineIndex' wording pattern?
+
+It tends to be the case that you are working with an 'index'
+so the inclusion of that word is rather unimportant when reading over the code.
+
+I actually think 'lineIndex' "rolls off the tongue" a little easier.
+But if you apply the pattern it hides the word 'line'.
+And the importance when reading the code lies with the words 'line' and 'column'.
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
