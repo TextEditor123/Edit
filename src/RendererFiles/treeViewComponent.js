@@ -244,20 +244,20 @@ class TreeViewComponent {
         this.ensure_boundingClientRect();
 
         let rY = event.clientY - this.boundingClientRect.top + this.rootElement.scrollTop;
-        let index = Math.floor(rY / this.itemHeightNumber);
-        index = this.state_cursor_validateIndex(index);
+        let indexItem = Math.floor(rY / this.itemHeightNumber);
+        indexItem = this.state_cursor_validateIndex(indexItem);
 
-        let matchedIndex = this.indexItemTo_beltIndexItem(index);
-        if (matchedIndex < 0) {
+        let beltIndexItem = this.indexItemTo_beltIndexItem(indexItem);
+        if (beltIndexItem < 0) {
             return;
         }
-        let divItem = this.itemListElement.children[matchedIndex];
+        let divItem = this.itemListElement.children[beltIndexItem];
 
         if (event.target === divItem.children[0]) {
-            return this.director.tvd_expandCollapseIconWasClicked_async(divItem, index);
+            return this.director.tvd_expandCollapseIconWasClicked_async(divItem, indexItem);
         }
         else {
-            this.state_cursor_setIndex(index);
+            this.state_cursor_setIndex(indexItem);
         }
     }
 
@@ -265,24 +265,24 @@ class TreeViewComponent {
         this.ensure_boundingClientRect();
 
         let rY = event.clientY - this.boundingClientRect.top + this.rootElement.scrollTop;
-        let index = Math.floor(rY / this.itemHeightNumber);
-        index = this.state_cursor_validateIndex(index);
+        let indexItem = Math.floor(rY / this.itemHeightNumber);
+        indexItem = this.state_cursor_validateIndex(indexItem);
 
-        let matchedIndex = this.indexItemTo_beltIndexItem(index);
-        if (matchedIndex < 0) {
+        let beltIndexItem = this.indexItemTo_beltIndexItem(indexItem);
+        if (beltIndexItem < 0) {
             return;
         }
 
-        let divItem = this.itemListElement.children[matchedIndex];
+        let divItem = this.itemListElement.children[beltIndexItem];
 
         if (event.target === divItem.children[0]) {
             // ignore because:
             // await this.director.tvd_expandCollapseIconWasClicked_async(divItem, index);
         }
         else {
-            let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
-            if (matchedIndex >= 0 && matchedIndex < this.itemListElement.children.length) {
-                return this.director.tvd_ondblclick_async(this.itemListElement.children[matchedIndex], this.cursorIndex);
+            let beltIndexItem = this.indexItemTo_beltIndexItem(this.cursorIndex);
+            if (beltIndexItem >= 0 && beltIndexItem < this.itemListElement.children.length) {
+                return this.director.tvd_ondblclick_async(this.itemListElement.children[beltIndexItem], this.cursorIndex);
             }
         }
     }
@@ -297,13 +297,13 @@ class TreeViewComponent {
                 Math.floor(rY / this.itemHeightNumber)));
 
             // TODO: you need to move this above the divItem assignment and do checks earlier... double check all other uses
-            let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
-            if (matchedIndex < 0) {
+            let beltIndexItem = this.indexItemTo_beltIndexItem(this.cursorIndex);
+            if (beltIndexItem < 0) {
                 return;
             }
 
-            if (matchedIndex >= 0 && matchedIndex < this.itemListElement.children.length) {
-                return this.director.tvd_oncontextmenu_async(this.itemListElement.children[matchedIndex], this.cursorIndex, event, matchedIndex);
+            if (beltIndexItem >= 0 && beltIndexItem < this.itemListElement.children.length) {
+                return this.director.tvd_oncontextmenu_async(this.itemListElement.children[beltIndexItem], this.cursorIndex, event, beltIndexItem);
             }
         } else {
             if (this.cursorIndex >= this.director.tvd_getTotalCount()) {
@@ -313,14 +313,14 @@ class TreeViewComponent {
             this.state_cursor_setIndex(this.state_cursor_validateIndex(
                 this.cursorIndex));
             
-            let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
-            if (matchedIndex < 0) {
+            let beltIndexItem = this.indexItemTo_beltIndexItem(this.cursorIndex);
+            if (beltIndexItem < 0) {
                 return;
             }
 
             // TODO: Handle context menu with keyboard when active node is out of view
-            if (matchedIndex >= 0 && matchedIndex < this.itemListElement.children.length) {
-                return this.director.tvd_oncontextmenu_async(this.itemListElement.children[matchedIndex], this.cursorIndex, event, matchedIndex);
+            if (beltIndexItem >= 0 && beltIndexItem < this.itemListElement.children.length) {
+                return this.director.tvd_oncontextmenu_async(this.itemListElement.children[beltIndexItem], this.cursorIndex, event, beltIndexItem);
             }
         }
     }
@@ -353,12 +353,12 @@ class TreeViewComponent {
                     this.state_cursor_setIndex(this.state_cursor_validateIndex(
                         this.cursorIndex));
                     // TODO: 'ArrowRight' when the cursor is on a valid item but isn't part of the virtualization result.
-                    let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
-                    if (matchedIndex < 0) {
+                    let beltIndexItem = this.indexItemTo_beltIndexItem(this.cursorIndex);
+                    if (beltIndexItem < 0) {
                         return;
                     }
-                    if (matchedIndex >= 0 && matchedIndex < this.itemListElement.children.length) {
-                        return this.director.tvd_arrowRight_async(this.itemListElement.children[matchedIndex], this.cursorIndex);
+                    if (beltIndexItem >= 0 && beltIndexItem < this.itemListElement.children.length) {
+                        return this.director.tvd_arrowRight_async(this.itemListElement.children[beltIndexItem], this.cursorIndex);
                     }
                 }
                 return;
@@ -367,12 +367,12 @@ class TreeViewComponent {
                     event.preventDefault();
                     this.state_cursor_setIndex(this.state_cursor_validateIndex(
                         this.cursorIndex));
-                    let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
-                    if (matchedIndex < 0) {
+                    let beltIndexItem = this.indexItemTo_beltIndexItem(this.cursorIndex);
+                    if (beltIndexItem < 0) {
                         return;
                     }
-                    if (matchedIndex >= 0 && matchedIndex < this.itemListElement.children.length) {
-                        return this.director.tvd_arrowLeft_async(this.itemListElement.children[matchedIndex], this.cursorIndex);
+                    if (beltIndexItem >= 0 && beltIndexItem < this.itemListElement.children.length) {
+                        return this.director.tvd_arrowLeft_async(this.itemListElement.children[beltIndexItem], this.cursorIndex);
                     }
                 }
             	return;
@@ -381,12 +381,12 @@ class TreeViewComponent {
                 event.preventDefault();
                 this.state_cursor_setIndex(this.state_cursor_validateIndex(
                     this.cursorIndex));
-                let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
-                if (matchedIndex < 0) {
+                let beltIndexItem = this.indexItemTo_beltIndexItem(this.cursorIndex);
+                if (beltIndexItem < 0) {
                     return;
                 }
-                if (matchedIndex >= 0 && matchedIndex < this.itemListElement.children.length) {
-                    return this.director.tvd_onkeydown_async(this.itemListElement.children[matchedIndex], this.cursorIndex, event.key);
+                if (beltIndexItem >= 0 && beltIndexItem < this.itemListElement.children.length) {
+                    return this.director.tvd_onkeydown_async(this.itemListElement.children[beltIndexItem], this.cursorIndex, event.key);
                 }
                 return;
         }
@@ -461,16 +461,16 @@ class TreeViewComponent {
     /**
      * if (this.cursorIndex === index) return;
      * 
-     * @param {*} index 
+     * @param {*} indexItem 
      */
-    state_cursor_validateIndex(index) {
-        if (index >= this.director.tvd_getTotalCount()) {
-            index = this.director.tvd_getTotalCount() - 1;
+    state_cursor_validateIndex(indexItem) {
+        if (indexItem >= this.director.tvd_getTotalCount()) {
+            indexItem = this.director.tvd_getTotalCount() - 1;
         }
-        if (index < 0) {
-            index = 0;
+        if (indexItem < 0) {
+            indexItem = 0;
         }
-        return index;
+        return indexItem;
     }
 
     /**
@@ -479,15 +479,15 @@ class TreeViewComponent {
      * @returns you capture the variable then check it for < 0 (or the opposite '>=') i.e. => if (indexLine_VirtualRelative < 0) { return bad_state; } else { return good_state; }
      */
     indexItemTo_beltIndexItem(indexItem) {
-        let unmatchedIndexItem = indexItem - this.virtualIndex_ofScrollTop;
+        let virtualIndexItem = indexItem - this.virtualIndex_ofScrollTop;
         // TODO: You don't check the data, you just check whether an HTML element exists that could receive UI to render. Probably need to remove 'unmatchedIndexItem >= this.director.tvd_getTotalCount() ||'
-        return unmatchedIndexItem >= this.director.tvd_getTotalCount() ||
-               unmatchedIndexItem >= this.itemListElement.children.length ||
-               unmatchedIndexItem < 0
+        return virtualIndexItem >= this.director.tvd_getTotalCount() ||
+               virtualIndexItem >= this.itemListElement.children.length ||
+               virtualIndexItem < 0
                    ? -1
-                   : ((unmatchedIndexItem = (unmatchedIndexItem + this.beltIndexZero)) > this.virtualCount
-                       ? unmatchedIndexItem - this.virtualCount
-                       : unmatchedIndexItem);
+                   : ((virtualIndexItem = (virtualIndexItem + this.beltIndexZero)) > this.virtualCount
+                       ? virtualIndexItem - this.virtualCount
+                       : virtualIndexItem);
     }
 }
 
