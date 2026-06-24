@@ -75,10 +75,14 @@ const EDITOR_decoder = new TextDecoder();
 // then if you wanna multicursor you create an 'EDITOR_Cursor' just the same as
 // the primary cursor but now you aren't pooling the state it instead is a field of its own on the instance.
 //
-// Cause then baseline all instances approach "free" and as you need more you
+// Cause then baseline all instances approach "a single reference for GC to loop over" and as you need more you
 // have to incur the numbers being touched by GC and such but they're all
 // features that are separate and likely not all to exist simultaneously or something
 // so then in total you have an extremely small memory footprint.
+//
+// More about "a single reference for GC to loop over":
+// yes it is extremely minor because it sees they're a primitive and then moves on.
+// But you still need the GC to check that it is a primitive.
 
 class EDITOR_Cursor {
 
