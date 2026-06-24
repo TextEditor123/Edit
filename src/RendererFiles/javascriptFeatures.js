@@ -1,36 +1,7 @@
-
-/*
-    ASCII:
-    ------
-    " => 34,
-    ' => 39,
-    / => 47,
-    \ => 92,
-    * => 42,
-    \n => 10,
-*/
-const js_DOUBLEQUOTE = 34;
-const js_SINGLEQUOTE = 39;
-const js_BACKTICK = 96;
-const js_FORWARDSLASH = 47;
-const js_BACKSLASH = 92;
-const js_ASTERISK = 42;
-const js_LINEFEED = 10;
-const js_OPENPARENTHESIS = 40;
-const js_CLOSEPARENTHESIS = 41;
-const js_PERIOD = 46;
-const js_EQUALS = 61;
-const js_OPENBRACKET = 60;
-const js_CLOSEBRACKET = 62;
-const js_BANG = 33;
-const js_PLUS = 43;
-const js_MINUS = 45;
-const js_STAR = 42;
-const js_PERCENT = 37;
-const js_AMPERSAND = 38;
-const js_PIPE = 124;
-const js_QUESTIONMARK = 63;
-const js_CARET = 94;
+//__#__
+// preprocessor.cjs
+import "./header_editorGlobal_header"
+//__#__
 
 /**
  * @param {Uint8Array} bytes 
@@ -42,29 +13,29 @@ function JS_full_lex(bytes, count) {
 
     while (pos < count) {
         switch (bytes[pos]) {
-            case js_DOUBLEQUOTE:
-                pos = lex_string(bytes, count, pos, trackedSyntaxList, js_DOUBLEQUOTE);
+            case get_js_DOUBLEQUOTE():
+                pos = lex_string(bytes, count, pos, trackedSyntaxList, get_js_DOUBLEQUOTE());
                 continue;
-            case js_SINGLEQUOTE:
-                pos = lex_string(bytes, count, pos, trackedSyntaxList, js_SINGLEQUOTE);
+            case get_js_SINGLEQUOTE():
+                pos = lex_string(bytes, count, pos, trackedSyntaxList, get_js_SINGLEQUOTE());
                 continue;
-            case js_BACKTICK:
-                pos = lex_string(bytes, count, pos, trackedSyntaxList, js_BACKTICK);
+            case get_js_BACKTICK():
+                pos = lex_string(bytes, count, pos, trackedSyntaxList, get_js_BACKTICK());
                 continue;
-            case js_FORWARDSLASH:
-                if (bytes[pos + 1] === js_FORWARDSLASH) {
+            case get_js_FORWARDSLASH():
+                if (bytes[pos + 1] === get_js_FORWARDSLASH()) {
                     pos = lex_comment_singleLine(bytes, count, pos, trackedSyntaxList);
                     continue;
                 }
-                else if (bytes[pos + 1] === js_ASTERISK) {
+                else if (bytes[pos + 1] === get_js_ASTERISK()) {
                     pos = lex_comment_multiLine(bytes, count, pos, trackedSyntaxList);
                     continue;
                 }
 
                 break;
-            case js_ASTERISK:
+            case get_js_ASTERISK():
                 break;
-            case js_LINEFEED:
+            case get_js_LINEFEED():
                 break;
         }
 
@@ -87,7 +58,7 @@ function lex_comment_singleLine(bytes, count, pos, trackedSyntaxList) {
     length++;
     pos++;
     while (pos < count) {
-        if (bytes[pos] === js_LINEFEED) {
+        if (bytes[pos] === get_js_LINEFEED()) {
             break;
         }
         length++;
@@ -120,13 +91,13 @@ function lex_comment_multiLine(bytes, count, pos, trackedSyntaxList) {
     let ticketForwardSlash = -1;
     while (pos < count) {
         switch (bytes[pos]) {
-            case js_ASTERISK:
+            case get_js_ASTERISK():
                 ticketAsterisk = ticketSource++;
                 break;
-            case js_FORWARDSLASH:
+            case get_js_FORWARDSLASH():
                 ticketForwardSlash = ticketSource++;
                 break;
-            case js_LINEFEED:
+            case get_js_LINEFEED():
                 seenLineFeed = true;
                 ticketSource++;
                 break;
@@ -164,9 +135,9 @@ function lex_string(bytes, count, pos, trackedSyntaxList, terminator) {
 
     while (pos < count) {
 
-        if (bytes[pos] === js_LINEFEED) { // the editor only stores line feed ASCII codes and "swaps them out" when saving/copying text.
+        if (bytes[pos] === get_js_LINEFEED()) { // the editor only stores line feed ASCII codes and "swaps them out" when saving/copying text.
             seenLineFeed = true;
-            if (terminator !== js_BACKTICK) break;
+            if (terminator !== get_js_BACKTICK()) break;
         }
 
         if (bytes[pos] === terminator) {
@@ -174,7 +145,7 @@ function lex_string(bytes, count, pos, trackedSyntaxList, terminator) {
             pos++;
             break;
         }
-        else if (bytes[pos] === js_BACKSLASH) {
+        else if (bytes[pos] === get_js_BACKSLASH()) {
             length++;
             pos++;
             if (pos < count) {
@@ -187,7 +158,7 @@ function lex_string(bytes, count, pos, trackedSyntaxList, terminator) {
         pos++;
     }
 
-    if (seenLineFeed && terminator === js_BACKTICK) {
+    if (seenLineFeed && terminator === get_js_BACKTICK()) {
         trackedSyntaxList.insert(trackedSyntaxList.count_abstract, get_TrackedSyntaxKind_String(), start, length);
     }
 
@@ -771,8 +742,8 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     substart += wordlength;
                 }
                 continue;
-            case js_FORWARDSLASH:
-                if (bytes[pos + 1] === js_FORWARDSLASH) {
+            case get_js_FORWARDSLASH():
+                if (bytes[pos + 1] === get_js_FORWARDSLASH()) {
 
                     if (substart < pos) {
                         flushTextContent = EDITOR_decoder.decode(bytes.subarray(substart, substart = pos));
@@ -797,7 +768,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     // This change is moreso a matter of anxiety and me not wanting to deal with this at the moment so I need to see the explicit read here so I can sleep at night for the time being until my stress levels are lower.
                     pos++;
                     while (pos < lineEnd) {
-                        if (bytes[pos] === js_LINEFEED) {
+                        if (bytes[pos] === get_js_LINEFEED()) {
                             break;
                         }
                         pos++;
@@ -822,7 +793,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
 
                     continue;
                 }
-                else if (bytes[pos + 1] === js_ASTERISK) {
+                else if (bytes[pos + 1] === get_js_ASTERISK()) {
                     if (substart < pos) { // write any text that came prior, and on the same line.
                         flushTextContent = EDITOR_decoder.decode(bytes.subarray(substart, substart = pos));
                         if (childIndex < div.children.length) {
@@ -850,13 +821,13 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     let ticketForwardSlash = -1;
                     while (pos < lineEnd) {
                         switch (bytes[pos]) {
-                            case js_ASTERISK:
+                            case get_js_ASTERISK():
                                 ticketAsterisk = ticketSource++;
                                 break;
-                            case js_FORWARDSLASH:
+                            case get_js_FORWARDSLASH():
                                 ticketForwardSlash = ticketSource++;
                                 break;
-                            case js_LINEFEED:
+                            case get_js_LINEFEED():
                                 ticketSource++;
                                 break;
                             default:
@@ -887,7 +858,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                 }
 
                 break;
-            case js_DOUBLEQUOTE:
+            case get_js_DOUBLEQUOTE():
                 if (substart < pos) {
                     flushTextContent = EDITOR_decoder.decode(bytes.subarray(substart, substart = pos));
                     if (childIndex < div.children.length) {
@@ -908,10 +879,10 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                 pos++;
                 outer: while (pos < lineEnd) {
                     switch (bytes[pos]) {
-                        case js_DOUBLEQUOTE:
+                        case get_js_DOUBLEQUOTE():
                             pos++;
                             break outer;
-                        case js_BACKSLASH:
+                        case get_js_BACKSLASH():
                             pos++;
                             if (pos < lineEnd) {
                                 pos++; // skip the escaped character provided that the file didn't end after the original backslash
@@ -936,7 +907,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     childIndex++;
                 }
                 continue;
-            case js_SINGLEQUOTE:
+            case get_js_SINGLEQUOTE():
                 if (substart < pos) {
                     flushTextContent = EDITOR_decoder.decode(bytes.subarray(substart, substart = pos));
                     if (childIndex < div.children.length) {
@@ -957,10 +928,10 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                 pos++;
                 outer: while (pos < lineEnd) {
                     switch (bytes[pos]) {
-                        case js_SINGLEQUOTE:
+                        case get_js_SINGLEQUOTE():
                             pos++;
                             break outer;
-                        case js_BACKSLASH:
+                        case get_js_BACKSLASH():
                             pos++;
                             if (pos < lineEnd) {
                                 pos++; // skip the escaped character provided that the file didn't end after the original backslash
@@ -985,7 +956,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     childIndex++;
                 }
                 continue;
-            case js_BACKTICK:
+            case get_js_BACKTICK():
                 if (substart < pos) {
                     flushTextContent = EDITOR_decoder.decode(bytes.subarray(substart, substart = pos));
                     if (childIndex < div.children.length) {
@@ -1006,10 +977,10 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                 pos++;
                 outer: while (pos < lineEnd) {
                     switch (bytes[pos]) {
-                        case js_BACKTICK:
+                        case get_js_BACKTICK():
                             pos++;
                             break outer;
-                        case js_BACKSLASH:
+                        case get_js_BACKSLASH():
                             pos++;
                             if (pos < lineEnd) {
                                 pos++; // skip the escaped character provided that the file didn't end after the original backslash
@@ -1034,7 +1005,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     childIndex++;
                 }
                 continue;
-            case js_EQUALS:
+            case get_js_EQUALS():
                 // I think I actually want to handle the '==', '===', and '===...=' cases just so I can skip over the text quickly.
                 // Otherwise every time I see '=' I have to check the left and right side and it is quite redundant?
                 //
@@ -1053,16 +1024,16 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                 // let shouldSkipContiguous;... sneaky uninitialized variable conversion to a falsey or something was going on?
                 shouldSkipContiguous = false;
                 if (pos > substart) {
-                    if (bytes[pos - 1] === js_EQUALS) {
+                    if (bytes[pos - 1] === get_js_EQUALS()) {
                         shouldSkipContiguous = true;
                     }
-                    else if (bytes[pos - 1] === js_BANG) {
+                    else if (bytes[pos - 1] === get_js_BANG()) {
                         shouldSkipContiguous = true;
                     }
-                    else if (bytes[pos - 1] === js_OPENBRACKET) {
+                    else if (bytes[pos - 1] === get_js_OPENBRACKET()) {
                         shouldSkipContiguous = true;
                     }
-                    else if (bytes[pos - 1] === js_CLOSEBRACKET) {
+                    else if (bytes[pos - 1] === get_js_CLOSEBRACKET()) {
                         shouldSkipContiguous = true;
                     }
                 }
@@ -1070,7 +1041,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     shouldSkipContiguous = false;
                 }
                 if (!shouldSkipContiguous) {
-                    if (pos < lineEnd && bytes[pos + 1] === js_EQUALS) {
+                    if (pos < lineEnd && bytes[pos + 1] === get_js_EQUALS()) {
                         shouldSkipContiguous = true;
                     }
                 }
@@ -1079,7 +1050,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     // skip current
                     pos++;
                     // skip contiguous
-                    while (pos < lineEnd && bytes[pos] === js_EQUALS) {
+                    while (pos < lineEnd && bytes[pos] === get_js_EQUALS()) {
                         pos++;
                     }
                     continue;
@@ -1102,7 +1073,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     // I don't know if I would count '=>' as an "assignment operator"... maybe I would but I'm too focused on whether I'd count it as such that I can't figure out the way to make it work. So I need to just make it work first.
                     pos++;
                     substart++;
-                    if (pos < lineEnd && bytes[pos] === js_CLOSEBRACKET) {
+                    if (pos < lineEnd && bytes[pos] === get_js_CLOSEBRACKET()) {
                         textContent = '=>';
                         pos++;
                         substart++;
@@ -1127,7 +1098,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                 
                 // TODO: you don't understand how code caching or like instruction caching etc works with respect to whether inlining interupts things
                 break;
-            case js_PLUS:
+            case get_js_PLUS():
                 // ++
                 // +=
                 
@@ -1147,13 +1118,13 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                 // ...this presumption permits checking only the text that is in bounds of substart and lineEnd.
                 
                 // TODO: This contiguous skipping logic isn't working for every switch case?
-                shouldSkipContiguous = pos > substart && bytes[pos - 1] === js_PLUS;
+                shouldSkipContiguous = pos > substart && bytes[pos - 1] === get_js_PLUS();
                 if (!shouldSkipContiguous) {
                     if (pos < lineEnd) {
-                        if (bytes[pos + 1] === js_PLUS) {
+                        if (bytes[pos + 1] === get_js_PLUS()) {
                             textContent = '++';
                         }
-                        else if (bytes[pos + 1] === js_EQUALS) {
+                        else if (bytes[pos + 1] === get_js_EQUALS()) {
                             textContent = '+=';
                         }
                         else {
@@ -1169,7 +1140,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     // skip current
                     pos++;
                     // skip contiguous
-                    while (pos < lineEnd && bytes[pos] === js_PLUS) {
+                    while (pos < lineEnd && bytes[pos] === get_js_PLUS()) {
                         pos++;
                     }
                     continue;
@@ -1205,7 +1176,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     }
                     continue;
                 }
-            case js_MINUS:
+            case get_js_MINUS():
                 // --
                 // -=
                 
@@ -1216,13 +1187,13 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                 // you just "know" the text that goes there based on your conditional branching?
                     
                 // TODO: This contiguous skipping logic isn't working for every switch case?
-                shouldSkipContiguous = pos > substart && bytes[pos - 1] === js_MINUS;
+                shouldSkipContiguous = pos > substart && bytes[pos - 1] === get_js_MINUS();
                 if (!shouldSkipContiguous) {
                     if (pos < lineEnd) {
-                        if (bytes[pos + 1] === js_MINUS) {
+                        if (bytes[pos + 1] === get_js_MINUS()) {
                             textContent = '--';
                         }
-                        else if (bytes[pos + 1] === js_EQUALS) {
+                        else if (bytes[pos + 1] === get_js_EQUALS()) {
                             textContent = '-=';
                         }
                         else {
@@ -1238,7 +1209,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
                     // skip current
                     pos++;
                     // skip contiguous
-                    while (pos < lineEnd && bytes[pos] === js_MINUS) {
+                    while (pos < lineEnd && bytes[pos] === get_js_MINUS()) {
                         pos++;
                     }
                     continue;

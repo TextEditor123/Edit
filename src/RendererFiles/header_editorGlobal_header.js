@@ -17,7 +17,7 @@ const get_EDITOR_textElement = () => EDITOR_baseElement.children[4].children[2];
  * because the boolean variable could store anything so the gc still has to check that it still stores a primitive
  * and that takes time albeit a small amount of time.
  * */
-const EDITOR_byte_fields = new Uint8Array(16);
+const EDITOR_byte_fields = new Uint8Array(64);
 
 /** returns a number, beware '===' */
 const get_EDITOR_detailRank = () => EDITOR_byte_fields[0];
@@ -64,6 +64,82 @@ EDITOR_byte_fields[10] = 9;
 
 const get_EDITOR_ASCII_SPACE = () => EDITOR_byte_fields[11];
 EDITOR_byte_fields[11] = 32;
+
+/////////////////////
+/////////////////////
+
+const get_js_DOUBLEQUOTE = () => EDITOR_byte_fields[12];
+EDITOR_byte_fields[12] = 34;
+
+const get_js_SINGLEQUOTE = () => EDITOR_byte_fields[13];
+EDITOR_byte_fields[13] = 39;
+
+const get_js_BACKTICK = () => EDITOR_byte_fields[14];
+EDITOR_byte_fields[14] = 96;
+
+const get_js_FORWARDSLASH = () => EDITOR_byte_fields[15];
+EDITOR_byte_fields[15] = 47;
+
+const get_js_BACKSLASH = () => EDITOR_byte_fields[16];
+EDITOR_byte_fields[16] = 92;
+
+const get_js_ASTERISK = () => EDITOR_byte_fields[17];
+EDITOR_byte_fields[17] = 42;
+
+const get_js_LINEFEED = () => EDITOR_byte_fields[18];
+EDITOR_byte_fields[18] = 10;
+
+const get_js_OPENPARENTHESIS = () => EDITOR_byte_fields[19];
+EDITOR_byte_fields[19] = 40;
+
+const get_js_CLOSEPARENTHESIS = () => EDITOR_byte_fields[20];
+EDITOR_byte_fields[20] = 41;
+
+const get_js_PERIOD = () => EDITOR_byte_fields[21];
+EDITOR_byte_fields[21] = 46;
+
+const get_js_EQUALS = () => EDITOR_byte_fields[22];
+EDITOR_byte_fields[22] = 61;
+
+const get_js_OPENBRACKET = () => EDITOR_byte_fields[23];
+EDITOR_byte_fields[23] = 60;
+
+const get_js_CLOSEBRACKET = () => EDITOR_byte_fields[24];
+EDITOR_byte_fields[24] = 62;
+
+const get_js_BANG = () => EDITOR_byte_fields[25];
+EDITOR_byte_fields[25] = 33;
+
+const get_js_PLUS = () => EDITOR_byte_fields[26];
+EDITOR_byte_fields[26] = 43;
+
+const get_js_MINUS = () => EDITOR_byte_fields[27];
+EDITOR_byte_fields[27] = 45;
+
+const get_js_STAR = () => EDITOR_byte_fields[28];
+EDITOR_byte_fields[28] = 42;
+
+const get_js_PERCENT = () => EDITOR_byte_fields[29];
+EDITOR_byte_fields[29] = 37;
+
+const get_js_AMPERSAND = () => EDITOR_byte_fields[30];
+EDITOR_byte_fields[30] = 38;
+
+const get_js_PIPE = () => EDITOR_byte_fields[31];
+EDITOR_byte_fields[31] = 24;
+
+const get_js_QUESTIONMARK = () => EDITOR_byte_fields[32];
+EDITOR_byte_fields[32] = 63;
+
+const get_js_CARET = () => EDITOR_byte_fields[33];
+EDITOR_byte_fields[33] = 94;
+
+
+
+
+
+
+
 
 const EDITOR_tab_tabsbytes = new Uint8Array(4);
 EDITOR_tab_tabsbytes[0] = get_EDITOR_ASCII_TAB();
