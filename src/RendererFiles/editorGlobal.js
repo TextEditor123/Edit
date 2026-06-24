@@ -35,7 +35,8 @@ And the importance when reading the code lies with the words 'line' and 'column'
 - [ ] When getting the beltIndex of anything that follows this pattern you don't check whether the underlying data has a large enough count, it is solely related to whether the itemHeight and height of the element can fit "that many divs".
     - [ ] TreeView
     - [ ] List
-
+- [ ] When creating divs for the viewport you follow up by drawing the viewport afterwards.
+    - [ ] Thus the creation of divs ought to be fully ignoring any excessive calculations because its style is just overriden immediately afterwards.
 
 
 */
@@ -5974,12 +5975,8 @@ function EDITOR_createViewport() {
 
     EDITOR_beltIndexZero = 0;
 
-    // TODO: '... * get_EDITOR_lineHeight()'???
-    // TODO: (^ with respect to the above TODO...) This creation of the viewport actually should NOT be setting any transform attribute values because it always(*double check this is true... I believe it is) is followed up by a case 3 drawing of text for the entire viewport?
-    let top = get_EDITOR_virtualIndexLine();
-
     for (var i = 0; i < get_EDITOR_virtualCount(); i++) {
-        let transform = `translateY(${top}px)`;
+        let transform = `translateY(0px)`;
 
         let indexLine = i + get_EDITOR_virtualIndexLine();
 
@@ -6001,8 +5998,6 @@ function EDITOR_createViewport() {
         div.className = 'eT';
         get_EDITOR_textElement().appendChild(div);
         div.style.transform = transform;
-
-        top += get_EDITOR_lineHeight();
     }
     EDITOR_drawHorizontalScrollbar();
 }
