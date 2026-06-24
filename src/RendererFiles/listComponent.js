@@ -441,4 +441,5 @@ class ListComponent {
 // Wanna know where Luthetus came from?
 // "Martin Luther" + impetus
 //
-//
+// my anxiety, paranoia, delusion, everyday I think I need to walk away from it all, that it won't end well for me.
+
