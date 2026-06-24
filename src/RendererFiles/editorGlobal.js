@@ -3,7 +3,7 @@ Wording related to "indexLine":
 - indexLine        // The line number of '1' corresponds to the '0' indexLine; The end position of this line is located at index '0' within 'EDITOR_lineEndPositionList'.
 - virtualIndexLine // 
     - TODO: Consider calling this 'partial' instead of 'virtual' because 'virtual' sounds too "usable". You often can't do anything with this because you have to map it to the "belt".
-- beltIndexLine    // 
+- beltIndexLine    // I'm not well versed in this topic. But I think of a belt and a pully wheel. The belt wraps around the pulley wheel, and the belt has indices from 0 to (virtualCount - 1); both sides are inclusive. As you scroll this belt is constantly rotating around the pulley wheel and your zeroth index is constantly changing.
 
 Why is it not a 'lineIndex' wording pattern?
 
