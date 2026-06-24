@@ -207,6 +207,11 @@ module.exports = function (babel) {
 
     "get_EDITOR_gutterPaddingLeft",
     "get_EDITOR_gutterPaddingRight",
+
+    "get_DIALOG_minTop",
+    "get_DIALOG_minLeft",
+    "get_DIALOG_minHeight",
+    "get_DIALOG_minWidth",
   ];
 
   return {

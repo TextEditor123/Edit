@@ -140,9 +140,17 @@ EDITOR_byte_fields[34] = 3;
 const get_EDITOR_gutterPaddingRight = () => EDITOR_byte_fields[35];
 EDITOR_byte_fields[35] = 6;
 
+const get_DIALOG_minTop = () => EDITOR_byte_fields[36];
+EDITOR_byte_fields[36] = 8;
 
+const get_DIALOG_minLeft = () => EDITOR_byte_fields[37];
+EDITOR_byte_fields[37] = 8;
 
+const get_DIALOG_minHeight = () => EDITOR_byte_fields[38];
+EDITOR_byte_fields[38] = 100;
 
+const get_DIALOG_minWidth = () => EDITOR_byte_fields[39];
+EDITOR_byte_fields[39] = 100;
 
 const EDITOR_tab_tabsbytes = new Uint8Array(4);
 EDITOR_tab_tabsbytes[0] = get_EDITOR_ASCII_TAB();
