@@ -222,16 +222,16 @@ const get_EDITOR_cursorListElement = () => EDITOR_baseElement.children[4].childr
 const get_EDITOR_textElement = () => EDITOR_baseElement.children[4].children[2];
 
 //                                                                (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex()
-/** SEE 'EDITOR_getIndexLineToHtml_Correctly'; code duplication: this is explicitly inlined in the uncompiled source of editorGlobal.js within 'EDITOR_getIndexLineToHtml_Correctly' */
+/** SEE 'EDITOR_indexLineTo_beltIndexLine'; code duplication: this is explicitly inlined in the uncompiled source of editorGlobal.js within 'EDITOR_indexLineTo_beltIndexLine' */
 const EDITOR_indexLine_VirtualRelative_Unmatched = (indexLine) => (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex();
 
 /**
  * TODO: It should be >= ?
  * 
- * @example EDITOR_getIndexLineToHtml_Correctly(EDITOR_indexLine_VirtualRelative_Unmatched(cursor.indexLine));
+ * @example EDITOR_indexLineTo_beltIndexLine(EDITOR_indexLine_VirtualRelative_Unmatched(cursor.indexLine));
  * @returns you capture the variable then check it for < 0 (or the opposite '>=') i.e. => if (indexLine_VirtualRelative < 0) { return bad_state; } else { return good_state; }
  */
-function EDITOR_getIndexLineToHtml_Correctly(indexLine) {
+function EDITOR_indexLineTo_beltIndexLine(indexLine) {
     let unmatchedIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex();
     // TODO: The following line of code (when I at one point had it commented out in a specific way, I'm adding this clarification after originally having made this comment I don't remember the specifics of how it was commented out, but parts of it were and other parts weren't) either didn't "preprocess" correctly or... well I mean it probably is my fault i.e.: the "preprocess" but yeah this is coming out to be 'return;' and that's it nothing else in the compiled end result so somewhere along the pipeline it got borked.
     return unmatchedIndexLine >= get_EDITOR_textElement().children.length ||
@@ -242,7 +242,7 @@ function EDITOR_getIndexLineToHtml_Correctly(indexLine) {
                    : unmatchedIndexLine);
 }
 
-/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_getIndexLineToHtml_Correctly' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
+/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
 function EDITOR_getIndexLineToHtml_Correctly_NEXT(matchedIndexLine) {
     matchedIndexLine++;
     if (matchedIndexLine >= get_EDITOR_textElement().children.length) {
@@ -251,7 +251,7 @@ function EDITOR_getIndexLineToHtml_Correctly_NEXT(matchedIndexLine) {
     return matchedIndexLine;
 }
 
-/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_getIndexLineToHtml_Correctly' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too small because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
+/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too small because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
 function EDITOR_getIndexLineToHtml_Correctly_PREVIOUS(matchedIndexLine) {
     matchedIndexLine--;
     if (matchedIndexLine < 0) {
@@ -892,7 +892,7 @@ function EDITOR_drawGutter_Width() {
  * @returns
  */
 function walkLineUntilColumnIndex(cursor) {
-    let indexLine_VirtualRelative = EDITOR_getIndexLineToHtml_Correctly(cursor.indexLine);
+    let indexLine_VirtualRelative = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
     if (indexLine_VirtualRelative < 0) {
         return {
             indexColumn_Goal: -1,
@@ -2706,8 +2706,8 @@ function EDITOR_finalizeEdit(cursor) {
         if (lineIndex_editOccurredOn >= 0 && lineIndex_editOccurredOn < EDITOR_lineEndPositionList.count) {
             if (get_EDITOR_gutter().children.length === get_EDITOR_virtualCount() &&
                 get_EDITOR_textElement().children.length === get_EDITOR_virtualCount()) {
-                    // TODO: Am I missing this 'lineIndex_editOccurredOn < get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount()' in the 'EDITOR_getIndexLineToHtml_Correctly' function??
-                    let relativeIndex = EDITOR_getIndexLineToHtml_Correctly(lineIndex_editOccurredOn);
+                    // TODO: Am I missing this 'lineIndex_editOccurredOn < get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount()' in the 'EDITOR_indexLineTo_beltIndexLine' function??
+                    let relativeIndex = EDITOR_indexLineTo_beltIndexLine(lineIndex_editOccurredOn);
                     if (relativeIndex >= 0) {
                         let gutterLineElement = get_EDITOR_gutter().children[relativeIndex];
                         gutterLineElement.innerHTML = '';
@@ -4189,9 +4189,9 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
 
     // No need to consider '\r\n' and etc... only '\n'
     let linefeedLength = 0;
-    let relativeIndexLine = EDITOR_getIndexLineToHtml_Correctly(cursor.indexLine + get_EDITOR_offsetLine());
-    let matched_indexLine_first = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex());
-    let matched_indexLine_last = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let relativeIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + get_EDITOR_offsetLine());
+    let matched_indexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
+    let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
     let last_valid_indexColumn_currentLine = EDITOR_getLastValidIndexColumn(cursor.indexLine);
 
     // TODO: An optimization to check whether you even need to redraw any lines perhaps is possible but it would add too much complexity at the moment and so it isn't being considered...
@@ -4522,7 +4522,7 @@ function EDITOR_indentMore(cursor) {
         incrementBy -= 4;
 
         // Draw the line to reflect the edit, if it is being currently shown on screen.
-        let indexLine_VirtualRelative = EDITOR_getIndexLineToHtml_Correctly(lineI);
+        let indexLine_VirtualRelative = EDITOR_indexLineTo_beltIndexLine(lineI);
         if (indexLine_VirtualRelative >= 0) {
                 let div = get_EDITOR_textElement().children[indexLine_VirtualRelative];
                 let span;
@@ -4843,7 +4843,7 @@ function EDITOR_indentLess(cursor) {
         /////////////////////// P_2
 
         // Draw the line to reflect the edit, if it is being currently shown on screen.
-        let indexLine_VirtualRelative = EDITOR_getIndexLineToHtml_Correctly(lineI);
+        let indexLine_VirtualRelative = EDITOR_indexLineTo_beltIndexLine(lineI);
         if (indexLine_VirtualRelative >= 0) {
                 let div = get_EDITOR_textElement().children[indexLine_VirtualRelative];
                 let span = div.children[0];
@@ -4910,9 +4910,9 @@ function EDITOR_paste(cursor, content) {
     // Consider '\r\n' and etc...
     let linefeedLength = 0;
 
-    let relativeIndexLine = EDITOR_getIndexLineToHtml_Correctly(cursor.indexLine + get_EDITOR_offsetLine());
-    let matched_indexLine_first = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex());
-    let matched_indexLine_last = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let relativeIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + get_EDITOR_offsetLine());
+    let matched_indexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
+    let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
     let last_valid_indexColumn_currentLine = EDITOR_getLastValidIndexColumn(cursor.indexLine);
 
     // TODO: An optimization to check whether you even need to redraw any lines perhaps is possible but it would add too much complexity at the moment and so it isn't being considered...
@@ -5332,7 +5332,7 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
     let insertionCount = 1;
     let shouldRenderEntireViewport = false;
     
-    let relativeIndexLine = EDITOR_getIndexLineToHtml_Correctly(cursor.indexLine);
+    let relativeIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
     if (relativeIndexLine < 0)
         shouldRenderEntireViewport = true;
 
@@ -5340,8 +5340,8 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
     if (get_EDITOR_virtualCount() <= 1 || get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount())
         shouldRenderEntireViewport = true;
 
-    let matched_indexLine_first = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex());
-    let matched_indexLine_last = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let matched_indexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
+    let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
 
     // TODO: reminder for when virtualization padding is improved, this function might need to be looked at.
     // TODO: Track the enter keystroke the same as any other insertion edit and have it pending until it needs to be finalized.
@@ -6101,7 +6101,7 @@ function EDITOR_REMOVE_line_drawGutter(linesRemovedCount) {
     // todo remove this confusing and misleading commented dead code that has the or maybe I idk
     // largestDrawnIndexLine + linesRemovedCount ? EDITOR_lineEndPositionList.count
 
-    let matched_indexLine_last = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
 
     if (get_EDITOR_gutter().children.length > 0 && get_EDITOR_gutter().children.length === get_EDITOR_virtualCount() && get_EDITOR_gutter().children.length === get_EDITOR_textElement().children.length) {
         if (get_EDITOR_gutter().children[matched_indexLine_last].textContent === '~') {
@@ -6489,9 +6489,9 @@ function EDITOR_removeSelection(cursor) {
 
         cursor.indexLine = smallLineAndColumnIndices.indexLine;
 
-        let relativeMatchedLineIndex = EDITOR_getIndexLineToHtml_Correctly(smallLineAndColumnIndices.indexLine + 1);
+        let relativeMatchedLineIndex = EDITOR_indexLineTo_beltIndexLine(smallLineAndColumnIndices.indexLine + 1);
 
-        let matched_indexLine_last = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+        let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
 
         // TODO: This will be wrong because you'd need to explicitly redraw the large selection line index.
         EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, relativeMatchedLineIndex, linesRemovedCount);
@@ -6523,7 +6523,7 @@ function EDITOR_removeSelection(cursor) {
         // Each case might be the same solution I don't know I just need time to think I'm completely exhausted but ima figure it out by just typing everything out and overtime it will happen
         // 
 
-        let matched_indexLine_last = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+        let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
 
         if (get_EDITOR_textElement().children.length === get_EDITOR_gutter().children.length) {
             for (let i = 0; i < visibleLinesRemovedCount; i++) {
@@ -6575,7 +6575,7 @@ function EDITOR_deleteDo(cursor, event) {
             // NOT start of file, remove the line ending and join the lines
 
             // Visually, immediately merge the lines if both are visible.
-            let matched_NEXT_indexLine = EDITOR_getIndexLineToHtml_Correctly(cursor.indexLine + 1);
+            let matched_NEXT_indexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + 1);
             if (matched_NEXT_indexLine >= 0) {
                 let keepingDiv = w.div;
                 let removingDiv = get_EDITOR_textElement().children[matched_NEXT_indexLine];
@@ -6595,7 +6595,7 @@ function EDITOR_deleteDo(cursor, event) {
                     keepingDiv.removeChild(keepingDiv.children[0]);
                 }
 
-                let matched_indexLine_last = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+                let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
                 EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, matched_NEXT_indexLine, 1);
             }
 
@@ -6701,7 +6701,7 @@ function EDITOR_backspaceDo(cursor, event) {
             }
 
             // Visually, immediately merge the lines if both are visible.
-            let matched_PREVIOUS_indexLine = EDITOR_getIndexLineToHtml_Correctly(rememberLineIndex - 1);
+            let matched_PREVIOUS_indexLine = EDITOR_indexLineTo_beltIndexLine(rememberLineIndex - 1);
             if (matched_PREVIOUS_indexLine >= 0) {
                 let keepingDiv = get_EDITOR_textElement().children[matched_PREVIOUS_indexLine];
                 let removingDiv = w.div;
@@ -6721,7 +6721,7 @@ function EDITOR_backspaceDo(cursor, event) {
                     keepingDiv.removeChild(keepingDiv.children[0]);
                 }
 
-                let matched_indexLine_last = EDITOR_getIndexLineToHtml_Correctly(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+                let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
                 EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, w.indexLine_VirtualRelative, 1);
             }
 
