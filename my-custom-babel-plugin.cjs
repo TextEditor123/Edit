@@ -177,6 +177,10 @@ module.exports = function (babel) {
     "get_WidgetKind_None",
     "get_WidgetKind_InputText",
     "get_WidgetKind_YesCancel",
+
+    "get_EDITOR_ASCII_LINE_FEED",
+    "get_EDITOR_ASCII_TAB",
+    "get_EDITOR_ASCII_SPACE",
   ];
 
   return {

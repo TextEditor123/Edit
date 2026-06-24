@@ -1,8 +1,3 @@
-// What about if there is any overhead relating to const global numbers?
-const ASCII_LINE_FEED = 10;
-const ASCII_TAB = 9;
-const ASCII_SPACE = 32;
-
 const EDITOR_baseElement = document.getElementById('EDITOR');
 
 const get_EDITOR_virtualization_horizontal = () => EDITOR_baseElement.children[0];
@@ -14,17 +9,6 @@ const get_EDITOR_body = () => EDITOR_baseElement.children[4];
 const get_EDITOR_presentation = () => EDITOR_baseElement.children[4].children[0];
 const get_EDITOR_cursorListElement = () => EDITOR_baseElement.children[4].children[1];
 const get_EDITOR_textElement = () => EDITOR_baseElement.children[4].children[2];
-
-const EDITOR_tab_tabsbytes = new Uint8Array(4);
-EDITOR_tab_tabsbytes[0] = ASCII_TAB;
-EDITOR_tab_tabsbytes[1] = 0;
-EDITOR_tab_tabsbytes[2] = 0;
-EDITOR_tab_tabsbytes[3] = 0;
-const EDITOR_tab_spacesbytes = new Uint8Array(4);
-EDITOR_tab_spacesbytes[0] = ASCII_SPACE;
-EDITOR_tab_spacesbytes[1] = ASCII_SPACE;
-EDITOR_tab_spacesbytes[2] = ASCII_SPACE;
-EDITOR_tab_spacesbytes[3] = ASCII_SPACE;
 
 /**
  * having a boolean be a byte isn't ideal, but most engines store them as either 4bytes or 8bytes
@@ -71,6 +55,26 @@ const set_EDITOR_findOverlay_options_matchWord = (byte) => EDITOR_byte_fields[7]
 /** returns a number, beware '===' */
 const get_EDITOR_onScroll_bool = () => EDITOR_byte_fields[8];
 const set_EDITOR_onScroll_bool = (byte) => EDITOR_byte_fields[8] = byte;
+
+const get_EDITOR_ASCII_LINE_FEED = () => EDITOR_byte_fields[9];
+EDITOR_byte_fields[9] = 10;
+
+const get_EDITOR_ASCII_TAB = () => EDITOR_byte_fields[10];
+EDITOR_byte_fields[10] = 9;
+
+const get_EDITOR_ASCII_SPACE = () => EDITOR_byte_fields[11];
+EDITOR_byte_fields[11] = 32;
+
+const EDITOR_tab_tabsbytes = new Uint8Array(4);
+EDITOR_tab_tabsbytes[0] = get_EDITOR_ASCII_TAB();
+EDITOR_tab_tabsbytes[1] = 0;
+EDITOR_tab_tabsbytes[2] = 0;
+EDITOR_tab_tabsbytes[3] = 0;
+const EDITOR_tab_spacesbytes = new Uint8Array(4);
+EDITOR_tab_spacesbytes[0] = get_EDITOR_ASCII_SPACE();
+EDITOR_tab_spacesbytes[1] = get_EDITOR_ASCII_SPACE();
+EDITOR_tab_spacesbytes[2] = get_EDITOR_ASCII_SPACE();
+EDITOR_tab_spacesbytes[3] = get_EDITOR_ASCII_SPACE();
 
 /**
  * If you have an extension listed here, it is expected that the "function to invoke" exists.

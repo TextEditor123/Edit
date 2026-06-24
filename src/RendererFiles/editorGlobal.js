@@ -291,9 +291,6 @@ let EDITOR_bbb_ONSCROLLscrollTop = 500;  // 2026-06-24_count_other_int32_fields_
 
 let EDITOR_pooledTrackedSyntax_trackedSyntaxKind = get_TrackedSyntaxKind_None();  // 2026-06-24_count_other_int32_fields_5
 
-const EDITOR_gutterPaddingLeft = 3;
-const EDITOR_gutterPaddingRight = 6;
-
 let EDITOR_characterWidth = 8;
 let EDITOR_horizontal_scrollbar_widthValue = 0;
 
@@ -306,6 +303,9 @@ let w_indexSpan = -1;  // 2026-06-24_count_other_int32_fields_10
 let w_span = null;
 let w_div = null;
 let w_beltIndexLine = -1;  // 2026-06-24_count_other_int32_fields_11
+
+const EDITOR_gutterPaddingLeft = 3; // 2026-06-24_count_other_int32_fields_12
+const EDITOR_gutterPaddingRight = 6; // 2026-06-24_count_other_int32_fields_13
 
 /**
  * TODO: It should be >= ?
@@ -551,7 +551,7 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
                 }
                 lineLength = 0;
                 EDITOR_lineEndPositionList.insert(EDITOR_lineEndPositionList.count, EDITOR_textByteList.count);
-                EDITOR_textByteList.insert(EDITOR_textByteList.count, ASCII_LINE_FEED);
+                EDITOR_textByteList.insert(EDITOR_textByteList.count, get_EDITOR_ASCII_LINE_FEED());
                 break;
             case '\n':
                 if (!EDITOR_lineEndString) {
@@ -563,7 +563,7 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
                 }
                 lineLength = 0;
                 EDITOR_lineEndPositionList.insert(EDITOR_lineEndPositionList.count, EDITOR_textByteList.count);
-                EDITOR_textByteList.insert(EDITOR_textByteList.count, ASCII_LINE_FEED);
+                EDITOR_textByteList.insert(EDITOR_textByteList.count, get_EDITOR_ASCII_LINE_FEED());
                 break;
             case '\t':
                 lineLength += 4;
@@ -2090,7 +2090,7 @@ function EDITOR_finalizeEdit(cursor) {
                             // ...you can insert the span that has the indentation into the same array again.
                             EDITOR_textByteList.insertBytes(cursor.editPosition, cursor.cached_indentation_byteList.bytes, /*offset*/ 0, cursor.cached_indentation_byteList.count);
                         }
-                        EDITOR_textByteList.insert(cursor.editPosition + cursor.cached_indentation_byteList.count, ASCII_LINE_FEED);
+                        EDITOR_textByteList.insert(cursor.editPosition + cursor.cached_indentation_byteList.count, get_EDITOR_ASCII_LINE_FEED());
                         for (var i = cursor.editIndexLine; i < EDITOR_lineEndPositionList.count; i++) {
                             EDITOR_lineEndPositionList.data[i] += cursor.editLength;
                         }
@@ -2101,7 +2101,7 @@ function EDITOR_finalizeEdit(cursor) {
                         EDITOR_lineEndPositionList.insert(cursor.editIndexLine, cursor.editPosition + cursor.cached_indentation_byteList.count);
                         break;
                     case get_EnterKeyEventKind_EndOfLine():
-                        EDITOR_textByteList.insert(cursor.editPosition, ASCII_LINE_FEED);
+                        EDITOR_textByteList.insert(cursor.editPosition, get_EDITOR_ASCII_LINE_FEED());
 
                         if (cursor.cached_indentation_byteList) {
                             EDITOR_textByteList.insertBytes(cursor.editPosition + 1, cursor.cached_indentation_byteList.bytes, /*offset*/ 0, cursor.cached_indentation_byteList.count);
@@ -2116,7 +2116,7 @@ function EDITOR_finalizeEdit(cursor) {
                         EDITOR_lineEndPositionList.insert(cursor.editIndexLine, cursor.editPosition);
                         break;
                     case get_EnterKeyEventKind_AmongALine():
-                        EDITOR_textByteList.insert(cursor.editPosition, ASCII_LINE_FEED);
+                        EDITOR_textByteList.insert(cursor.editPosition, get_EDITOR_ASCII_LINE_FEED());
 
                         if (cursor.cached_indentation_byteList) {
                             EDITOR_textByteList.insertBytes(cursor.editPosition + 1, cursor.cached_indentation_byteList.bytes, /*offset*/ 0, cursor.cached_indentation_byteList.count);
@@ -2131,7 +2131,7 @@ function EDITOR_finalizeEdit(cursor) {
                         EDITOR_lineEndPositionList.insert(cursor.editIndexLine, cursor.editPosition);
                         break;
                     case get_EnterKeyEventKind_FallbackCase():
-                        EDITOR_textByteList.insert(cursor.editPosition, ASCII_LINE_FEED);
+                        EDITOR_textByteList.insert(cursor.editPosition, get_EDITOR_ASCII_LINE_FEED());
                         
                         if (cursor.cached_indentation_byteList) {
                             EDITOR_textByteList.insertBytes(cursor.editPosition + 1, cursor.cached_indentation_byteList.bytes, /*offset*/ 0, cursor.cached_indentation_byteList.count);
@@ -2268,7 +2268,7 @@ function EDITOR_finalizeEdit(cursor) {
                             insertionLength += 4;
                             break;
                         case '\n':
-                            EDITOR_textByteList.insert(cursor.editPosition + insertionLength, ASCII_LINE_FEED);
+                            EDITOR_textByteList.insert(cursor.editPosition + insertionLength, get_EDITOR_ASCII_LINE_FEED());
                             EDITOR_lineEndPositionList.insert(cursor.editIndexLine + linesInsertedCount, cursor.editPosition + insertionLength);
                             insertionLength++;
                             linesInsertedCount++;
@@ -2277,7 +2277,7 @@ function EDITOR_finalizeEdit(cursor) {
                             if (sourceI < content.length - 1 && content[sourceI + 1] === '\n') {
                                 sourceI++;
                             }
-                            EDITOR_textByteList.insert(cursor.editPosition + insertionLength, ASCII_LINE_FEED);
+                            EDITOR_textByteList.insert(cursor.editPosition + insertionLength, get_EDITOR_ASCII_LINE_FEED());
                             EDITOR_lineEndPositionList.insert(cursor.editIndexLine + linesInsertedCount, cursor.editPosition + insertionLength);
                             insertionLength++;
                             linesInsertedCount++;
@@ -2316,10 +2316,10 @@ function EDITOR_finalizeEdit(cursor) {
 
                 for (let offset = 0; offset < length; offset++) {
                     switch (EDITOR_textByteList.bytes[small + offset]) {
-                        case ASCII_TAB:
+                        case get_EDITOR_ASCII_TAB():
                             insertionLength += 4; // ??? I think this is copy pasted from 'paste' logic where the tab would change to 4 characters total, in the case of duplication you get what you select.
                             break;
-                        case ASCII_LINE_FEED:
+                        case get_EDITOR_ASCII_LINE_FEED():
                             EDITOR_lineEndPositionList.insert(cursor.editIndexLine + linesInsertedCount, cursor.editPosition + insertionLength);
                             insertionLength++;
                             linesInsertedCount++;
@@ -5028,11 +5028,11 @@ function EDITOR_cacheIndentation(cursor) {
         let c = getCharacter(line.start + i);
         switch (c) {
             case ' ':
-                cursor.cached_indentation_byteList.insert(cursor.cached_indentation_byteList.count, ASCII_SPACE);
+                cursor.cached_indentation_byteList.insert(cursor.cached_indentation_byteList.count, get_EDITOR_ASCII_SPACE());
                 indentationBuilder.push(c);
                 break;
             case '\t':
-                cursor.cached_indentation_byteList.insert(cursor.cached_indentation_byteList.count, ASCII_TAB);
+                cursor.cached_indentation_byteList.insert(cursor.cached_indentation_byteList.count, get_EDITOR_ASCII_TAB());
                 indentationBuilder.push(c);
                 break;
             case '\0': // tabs are stored as: '\t\0\0\0'
