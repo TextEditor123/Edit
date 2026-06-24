@@ -244,7 +244,7 @@ function EDITOR_indexLineTo_beltIndexLine(indexLine) {
 }
 
 /** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
-function EDITOR_getIndexLineToHtml_Correctly_NEXT(matchedIndexLine) {
+function EDITOR_beltIndexLine_NEXT(matchedIndexLine) {
     matchedIndexLine++;
     if (matchedIndexLine >= get_EDITOR_textElement().children.length) {
         matchedIndexLine -= get_EDITOR_textElement().children.length;
@@ -253,7 +253,7 @@ function EDITOR_getIndexLineToHtml_Correctly_NEXT(matchedIndexLine) {
 }
 
 /** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too small because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
-function EDITOR_getIndexLineToHtml_Correctly_PREVIOUS(matchedIndexLine) {
+function EDITOR_beltIndexLine_PREVIOUS(matchedIndexLine) {
     matchedIndexLine--;
     if (matchedIndexLine < 0) {
         matchedIndexLine += get_EDITOR_textElement().children.length;
@@ -4288,7 +4288,7 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                 w.indexColumn_SpanTextContentRelative = 0;
                 cursor.indexLine++;
                 cursor.indexColumn = 0;
-                EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine);
+                EDITOR_beltIndexLine_NEXT(relativeIndexLine);
 
                 continue;
             }
@@ -4296,9 +4296,9 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                 // ensure this conditional branch continues if handled, otherwise it will execute the fallback case erroneously
                 if (last_valid_indexColumn_currentLine === cursor.indexColumn) { // end of line
 
-                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine));
+                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
                     let span = document.createElement('span');
-                    get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine)].appendChild(span);
+                    get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)].appendChild(span);
 
                     w.div = lineDiv;
                     w.indexSpan = 0;
@@ -4309,7 +4309,7 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     last_valid_indexColumn_currentLine = 0;
-                    EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine);
+                    EDITOR_beltIndexLine_NEXT(relativeIndexLine);
 
                     continue;
                 }
@@ -4332,9 +4332,9 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                         }
                     }
 
-                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine));
+                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
 
-                    let aaa = get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine)];
+                    let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)];
                     let span = document.createElement('span');
                     span.className = spanClassName;
                     span.textContent = spanText;
@@ -4355,7 +4355,7 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     // last_valid_indexColumn_currentLine is being set when splitting the text.
-                    EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine);
+                    EDITOR_beltIndexLine_NEXT(relativeIndexLine);
 
                     continue;
                 }
@@ -5060,17 +5060,17 @@ function EDITOR_paste(cursor, content) {
                 w.indexColumn_SpanTextContentRelative = 0;
                 cursor.indexLine++;
                 cursor.indexColumn = 0;
-                EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine);
+                EDITOR_beltIndexLine_NEXT(relativeIndexLine);
                 continue;
             }
             else {
                 // ensure this conditional branch continues if handled, otherwise it will execute the fallback case erroneously
                 if (last_valid_indexColumn_currentLine === cursor.indexColumn) { // end of line
                     
-                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine));
+                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
                     let span = document.createElement('span');
-                    let lineDiv = get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine)];
-                    get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine)].appendChild(span);
+                    let lineDiv = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)];
+                    get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)].appendChild(span);
 
                     w.div = lineDiv;
                     w.indexSpan = 0;
@@ -5081,7 +5081,7 @@ function EDITOR_paste(cursor, content) {
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     last_valid_indexColumn_currentLine = 0;
-                    EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine);
+                    EDITOR_beltIndexLine_NEXT(relativeIndexLine);
 
                     continue;
                 }
@@ -5103,9 +5103,9 @@ function EDITOR_paste(cursor, content) {
                         }
                     }
 
-                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine));
+                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
 
-                    let aaa = get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine)];
+                    let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)];
                     let span = document.createElement('span');
                     span.className = spanClassName;
                     span.textContent = spanText;
@@ -5126,7 +5126,7 @@ function EDITOR_paste(cursor, content) {
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     // last_valid_indexColumn_currentLine is being set when splitting the text.
-                    EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine);
+                    EDITOR_beltIndexLine_NEXT(relativeIndexLine);
 
                     continue;
                 }
@@ -5390,10 +5390,10 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
             if (lastValidIndexColumn === cursor.indexColumn) { // end of line
                 cursor.enterKeyEventKind = get_EnterKeyEventKind_EndOfLine();
                 
-                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine));
+                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
                 let span = document.createElement('span');
                 span.textContent = cursor.cached_indentation_string;
-                get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(relativeIndexLine)].appendChild(span);
+                get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)].appendChild(span);
                 
                 if (cursor.cached_indentation_byteList) {
                     insertionCount += cursor.cached_indentation_byteList.count;
@@ -5458,9 +5458,9 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
                     }
                 }
 
-                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_getIndexLineToHtml_Correctly_NEXT(w.beltIndexLine));
+                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(w.beltIndexLine));
 
-                let aaa = get_EDITOR_textElement().children[EDITOR_getIndexLineToHtml_Correctly_NEXT(w.beltIndexLine)];
+                let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(w.beltIndexLine)];
                 let span = document.createElement('span');
                 span.className = spanClassName;
                 span.textContent = spanText;
@@ -5521,7 +5521,7 @@ function EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, inclusiveSmall
 
     for (let i = matched_indexLine_last; i !== inclusiveSmallestIndexMatchedLineToShift;) {
         let takeDiv = get_EDITOR_textElement().children[i];
-        i = EDITOR_getIndexLineToHtml_Correctly_PREVIOUS(i);
+        i = EDITOR_beltIndexLine_PREVIOUS(i);
         let moveFromDiv = get_EDITOR_textElement().children[i];
         for (let i = moveFromDiv.children.length - 1; i >= 0; i--) {
             takeDiv.appendChild(moveFromDiv.children[i]);
@@ -5539,27 +5539,27 @@ function EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLi
 
     let breakingPoint = matched_indexLine_last;
     for (let i = 1 /*starts at one*/; i < distance; i++) {
-        breakingPoint = EDITOR_getIndexLineToHtml_Correctly_PREVIOUS(breakingPoint);
+        breakingPoint = EDITOR_beltIndexLine_PREVIOUS(breakingPoint);
     }
 
     for (let destinationIndex = smallestIndexMatchedLineToReceive; destinationIndex !== breakingPoint;) {
         let destinationDiv = get_EDITOR_textElement().children[destinationIndex];
         let sourceIndex = destinationIndex;
         for (let i = 0; i < distance; i++) {
-            sourceIndex = EDITOR_getIndexLineToHtml_Correctly_NEXT(sourceIndex);
+            sourceIndex = EDITOR_beltIndexLine_NEXT(sourceIndex);
         }
         destinationDiv.replaceChildren(...get_EDITOR_textElement().children[sourceIndex].childNodes);
         if (get_EDITOR_gutter().children[sourceIndex].textContent === '~') {
             get_EDITOR_gutter().children[destinationIndex].textContent = '~';
         }
-        destinationIndex = EDITOR_getIndexLineToHtml_Correctly_NEXT(destinationIndex);
+        destinationIndex = EDITOR_beltIndexLine_NEXT(destinationIndex);
     }
 
     let matchedIndexLine = breakingPoint;
     for (let i = 0; ; i++) {
         EDITOR_drawLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - (distance - i), get_EDITOR_gutter().children[matchedIndexLine], get_EDITOR_textElement().children[matchedIndexLine]);
         if (matchedIndexLine === matched_indexLine_last) break; // awkward positioning of this break, it seems somewhat necessary but need to take time to read the code further and try to have it moved somewhere more sensible.
-        matchedIndexLine = EDITOR_getIndexLineToHtml_Correctly_NEXT(matchedIndexLine);
+        matchedIndexLine = EDITOR_beltIndexLine_NEXT(matchedIndexLine);
     }
 }
 
