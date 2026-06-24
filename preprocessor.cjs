@@ -75,6 +75,57 @@ function aaa(fileName) {
 
   const filePath = path.join(inputFolder, fileName);
   let text = fs.readFileSync(filePath, 'utf-8');
+
+  /*
+  while (pos < text.length) {
+    switch (text[pos]) {*/
+      /*
+      - [ ] The marker is specifically "//__#__" being the first non-whitespace found in a text file.
+      - [ ] It doesn't have to start at character index 0, but it needs to appear prior to any other text.
+      - [ ] A warning message is written to the console if "//__#__" is found at any location other than what was just described.
+
+      //__#__
+      // preprocessor.js
+      import "./javascriptFeatures";
+      //__#__
+      */
+     /*
+      case '/':
+        if (pos <= text.length - 7 &&
+            text[pos + 1] === '/' &&
+            text[pos + 2] === '_' &&
+            text[pos + 3] === '_' &&
+            text[pos + 4] === '#' &&
+            text[pos + 5] === '_' &&
+            text[pos + 6] === '_') {
+              endChunk();
+              pos += 2;
+              singleLineCommentWhile: while (pos < text.length) {
+                switch (text[pos]) {
+                  case '\r':
+                    pos++;
+                    if (pos <= text.length - 2) {
+                      if (text[pos + 1] === '\n') {
+                        pos++;
+                      }
+                    }
+                    break singleLineCommentWhile;
+                  case '\n':
+                    pos++;
+                    break singleLineCommentWhile;
+                }
+                pos++;
+              }
+              startChunk();
+              continue;
+        }
+      break;
+    }
+    //__#__
+  }
+    */
+
+
   let chunkStart = 0;
   let pos = 0;
   while (pos < text.length) {
