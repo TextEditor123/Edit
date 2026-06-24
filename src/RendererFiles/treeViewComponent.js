@@ -480,7 +480,7 @@ class TreeViewComponent {
      */
     indexItemTo_beltIndexItem(indexItem) {
         let virtualIndexItem = indexItem - this.virtualIndex_ofScrollTop;
-        // TODO: You don't check the data, you just check whether an HTML element exists that could receive UI to render. Probably need to remove 'unmatchedIndexItem >= this.director.tvd_getTotalCount() ||'
+        // TODO: You don't check the data, you just check whether an HTML element exists that could receive UI to render. Probably need to remove 'virtualIndexItem >= this.director.tvd_getTotalCount() ||'
         return virtualIndexItem >= this.director.tvd_getTotalCount() ||
                virtualIndexItem >= this.itemListElement.children.length ||
                virtualIndexItem < 0

@@ -31,6 +31,13 @@ And the importance when reading the code lies with the words 'line' and 'column'
 - [x] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltIndexZero'?
 - [x] Find any usage of 'lineIndex' pattern and change it 'indexLine' pattern.
 - [x] Find any usage of 'columnIndex' pattern and change it 'indexColumn' pattern.
+
+- [ ] When getting the beltIndex of anything that follows this pattern you don't check whether the underlying data has a large enough count, it is solely related to whether the itemHeight and height of the element can fit "that many divs".
+    - [ ] TreeView
+    - [ ] List
+
+
+
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
@@ -245,7 +252,7 @@ function EDITOR_indexLineTo_beltIndexLine(indexLine) {
                    : virtualIndexLine);
 }
 
-/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_beltIndexZero' isn't 0. */
+/** The argument is a beltIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_beltIndexZero' isn't 0. */
 function EDITOR_beltIndexLine_NEXT(beltIndexLine) {
     beltIndexLine++;
     if (beltIndexLine >= get_EDITOR_textElement().children.length) {
@@ -254,7 +261,7 @@ function EDITOR_beltIndexLine_NEXT(beltIndexLine) {
     return beltIndexLine;
 }
 
-/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too small because 'EDITOR_beltIndexZero' isn't 0. */
+/** The argument is a beltIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too small because 'EDITOR_beltIndexZero' isn't 0. */
 function EDITOR_beltIndexLine_PREVIOUS(beltIndexLine) {
     beltIndexLine--;
     if (beltIndexLine < 0) {
@@ -5517,14 +5524,14 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
     }
 }
 
-/** The invoker needs to ensure there is at least one empty span on the 'inclusiveSmallestIndexMatchedLineToShift' after everything is said and done. */
-function EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, inclusiveSmallestIndexMatchedLineToShift) {
-    let lastDiv = get_EDITOR_textElement().children[matched_indexLine_last];
+/** The invoker needs to ensure there is at least one empty span on the 'inclusiveSmallestBeltIndexLineToShift' after everything is said and done. */
+function EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, inclusiveSmallestBeltIndexLineToShift) {
+    let lastDiv = get_EDITOR_textElement().children[beltIndexLine_last];
     for (let i = lastDiv.children.length - 1; i >= 0; i--) {
         lastDiv.removeChild(lastDiv.children[i]);
     }
 
-    for (let i = matched_indexLine_last; i !== inclusiveSmallestIndexMatchedLineToShift;) {
+    for (let i = beltIndexLine_last; i !== inclusiveSmallestBeltIndexLineToShift;) {
         let takeDiv = get_EDITOR_textElement().children[i];
         i = EDITOR_beltIndexLine_PREVIOUS(i);
         let moveFromDiv = get_EDITOR_textElement().children[i];
@@ -5535,19 +5542,19 @@ function EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, inclusiveSmall
 }
 
 /**
- * 'smallestIndexMatchedLineToReceive' somewhat 'exclusive' in that it doesn't get shifted. It is the smallest line that receives the shift of the next line, and thus all content on this line is lost in the process.
+ * 'smallestBeltIndexLineToReceive' somewhat 'exclusive' in that it doesn't get shifted. It is the smallest line that receives the shift of the next line, and thus all content on this line is lost in the process.
  * 
  * TODO: an idea that you might be able to short circuit if you start shifting 'out of bounds lines of text' into 'out of bounds lines of text'?
  * */
-function EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, smallestIndexMatchedLineToReceive, distance) {
-    // TODO: if smallestIndexMatchedLineToReceive < 0 throw an error?
+function EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, smallestBeltIndexLineToReceive, distance) {
+    // TODO: if smallestBeltIndexLineToReceive < 0 throw an error?
 
-    let breakingPoint = matched_indexLine_last;
+    let breakingPoint = beltIndexLine_last;
     for (let i = 1 /*starts at one*/; i < distance; i++) {
         breakingPoint = EDITOR_beltIndexLine_PREVIOUS(breakingPoint);
     }
 
-    for (let destinationIndex = smallestIndexMatchedLineToReceive; destinationIndex !== breakingPoint;) {
+    for (let destinationIndex = smallestBeltIndexLineToReceive; destinationIndex !== breakingPoint;) {
         let destinationDiv = get_EDITOR_textElement().children[destinationIndex];
         let sourceIndex = destinationIndex;
         for (let i = 0; i < distance; i++) {
@@ -5560,11 +5567,11 @@ function EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLi
         destinationIndex = EDITOR_beltIndexLine_NEXT(destinationIndex);
     }
 
-    let matchedIndexLine = breakingPoint;
+    let beltIndexLine = breakingPoint;
     for (let i = 0; ; i++) {
-        EDITOR_drawLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - (distance - i), get_EDITOR_gutter().children[matchedIndexLine], get_EDITOR_textElement().children[matchedIndexLine]);
-        if (matchedIndexLine === matched_indexLine_last) break; // awkward positioning of this break, it seems somewhat necessary but need to take time to read the code further and try to have it moved somewhere more sensible.
-        matchedIndexLine = EDITOR_beltIndexLine_NEXT(matchedIndexLine);
+        EDITOR_drawLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - (distance - i), get_EDITOR_gutter().children[beltIndexLine], get_EDITOR_textElement().children[beltIndexLine]);
+        if (beltIndexLine === beltIndexLine_last) break; // awkward positioning of this break, it seems somewhat necessary but need to take time to read the code further and try to have it moved somewhere more sensible.
+        beltIndexLine = EDITOR_beltIndexLine_NEXT(beltIndexLine);
     }
 }
 
@@ -5732,12 +5739,12 @@ function EDITOR_onScroll_WRAPIT() {
 
         vertical += get_EDITOR_lineHeight();
 
-        let matchedIndexLine = origin + loopCounter;
-        if (matchedIndexLine >= get_EDITOR_textElement().children.length)
-            matchedIndexLine -= get_EDITOR_textElement().children.length;
+        let beltIndexLine = origin + loopCounter;
+        if (beltIndexLine >= get_EDITOR_textElement().children.length)
+            beltIndexLine -= get_EDITOR_textElement().children.length;
 
-        let gutter = get_EDITOR_gutter().children[matchedIndexLine];
-        let div = get_EDITOR_textElement().children[matchedIndexLine];
+        let gutter = get_EDITOR_gutter().children[beltIndexLine];
+        let div = get_EDITOR_textElement().children[beltIndexLine];
         loopCounter++;
 
         gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
@@ -5914,12 +5921,12 @@ function EDITOR_onScroll_bbb() {
 
         vertical += get_EDITOR_lineHeight();
 
-        let matchedIndexLine = origin + loopCounter;
-        if (matchedIndexLine >= get_EDITOR_textElement().children.length)
-            matchedIndexLine -= get_EDITOR_textElement().children.length;
+        let beltIndexLine = origin + loopCounter;
+        if (beltIndexLine >= get_EDITOR_textElement().children.length)
+            beltIndexLine -= get_EDITOR_textElement().children.length;
 
-        gutter = get_EDITOR_gutter().children[matchedIndexLine];
-        div = get_EDITOR_textElement().children[matchedIndexLine];
+        gutter = get_EDITOR_gutter().children[beltIndexLine];
+        div = get_EDITOR_textElement().children[beltIndexLine];
         loopCounter++;
 
         gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
@@ -6529,15 +6536,15 @@ function EDITOR_removeSelection(cursor) {
         // Each case might be the same solution I don't know I just need time to think I'm completely exhausted but ima figure it out by just typing everything out and overtime it will happen
         // 
 
-        let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
+        let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
 
         if (get_EDITOR_textElement().children.length === get_EDITOR_gutter().children.length) {
             for (let i = 0; i < visibleLinesRemovedCount; i++) {
                 // TODO: wrap around suspect?
-                let gutterLineElement = get_EDITOR_gutter().children[matched_indexLine_last - i];
+                let gutterLineElement = get_EDITOR_gutter().children[beltIndexLine_last - i];
                 gutterLineElement.innerHTML = ''; // I don't believe this will have already been cleared.
                 // TODO: wrap around suspect?
-                let textLineElement = get_EDITOR_textElement().children[matched_indexLine_last - i];
+                let textLineElement = get_EDITOR_textElement().children[beltIndexLine_last - i];
                 textLineElement.innerHTML = ''; // Might already be cleared, furthermore might ALWAYS be cleared.
                 EDITOR_drawLine(largestDrawnIndexLine - i, gutterLineElement, textLineElement);
             }
