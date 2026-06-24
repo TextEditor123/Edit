@@ -30,7 +30,7 @@ And the importance when reading the code lies with the words 'line' and 'column'
 - [ ] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
 - [ ] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltIndexZero'?
 - [ ] Find any usage of 'lineIndex' pattern and change it 'indexLine' pattern.
-- [ ] Find any usage of 'columnIndex' pattern and change it 'indexColumn' pattern.
+- [x] Find any usage of 'columnIndex' pattern and change it 'indexColumn' pattern.
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
@@ -894,7 +894,7 @@ function EDITOR_drawGutter_Width() {
  * @param {EDITOR_Cursor} cursor
  * @returns
  */
-function walkLineUntilColumnIndex(cursor) {
+function walkLineUntilIndexColumn(cursor) {
     let beltIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
     if (beltIndexLine < 0) {
         return {
@@ -1131,7 +1131,7 @@ function EDITOR_getLineAndColumnIndices_raw(positionIndex) {
     let right = EDITOR_lineEndPositionList.count - 1;
 
     let indexLine = -1;
-    let columnIndex = -1;
+    let indexColumn = -1;
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2);
@@ -1161,15 +1161,15 @@ function EDITOR_getLineAndColumnIndices_raw(positionIndex) {
     }
 
     if (indexLine === 0) {
-        columnIndex = positionIndex;
+        indexColumn = positionIndex;
     }
     else {
-        columnIndex = positionIndex - (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
+        indexColumn = positionIndex - (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
     }
 
     return {
         indexLine: indexLine,
-        indexColumn: columnIndex,
+        indexColumn: indexColumn,
     };
 }
 
@@ -1178,7 +1178,7 @@ function EDITOR_getLineAndColumnIndices(positionIndex) {
     let right = EDITOR_lineEndPositionList.count - 1;
 
     let indexLine = -1;
-    let columnIndex = -1;
+    let indexColumn = -1;
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2);
@@ -1208,15 +1208,15 @@ function EDITOR_getLineAndColumnIndices(positionIndex) {
     }
 
     if (indexLine === 0) {
-        columnIndex = positionIndex;
+        indexColumn = positionIndex;
     }
     else {
-        columnIndex = positionIndex - (EDITOR_readLineEndPositionList(indexLine - 1) + 1);
+        indexColumn = positionIndex - (EDITOR_readLineEndPositionList(indexLine - 1) + 1);
     }
 
     return {
         indexLine: indexLine,
-        indexColumn: columnIndex,
+        indexColumn: indexColumn,
     };
 }
 
@@ -1638,10 +1638,10 @@ function EDITOR_onMouseMove(event) {
     }
 }
 
-function EDITOR_onMouseMoveDetailRankOne(event, indexLineClicked, columnIndexClicked) {
+function EDITOR_onMouseMoveDetailRankOne(event, indexLineClicked, indexColumnClicked) {
     let cursor = EDITOR_primaryCursor;
     cursor.indexLine = indexLineClicked;
-    cursor.indexColumn = columnIndexClicked;
+    cursor.indexColumn = indexColumnClicked;
 
     cursor.selectionEnd = EDITOR_getPositionIndex(cursor);
 
@@ -1758,8 +1758,8 @@ function EDITOR_getCharacterCurrent_KIND(indexColumn, positionIndex, lineEnd) {
     }
 }
 
-function EDITOR_onMouseMoveDetailRankTwo(event, indexLineClicked, columnIndexClicked) {
-    let nextPositionIndex = EDITOR_getPositionIndex_Overload(indexLineClicked, columnIndexClicked);
+function EDITOR_onMouseMoveDetailRankTwo(event, indexLineClicked, indexColumnClicked) {
+    let nextPositionIndex = EDITOR_getPositionIndex_Overload(indexLineClicked, indexColumnClicked);
     let cursor = EDITOR_primaryCursor;
 
     if (nextPositionIndex <= get_EDITOR_detail_smallPosition()) {
@@ -1768,7 +1768,7 @@ function EDITOR_onMouseMoveDetailRankTwo(event, indexLineClicked, columnIndexCli
         }
 
         cursor.indexLine = indexLineClicked;
-        cursor.indexColumn = columnIndexClicked;
+        cursor.indexColumn = indexColumnClicked;
         let positionIndex = nextPositionIndex;
 
         cursor.selectionEnd = positionIndex;
@@ -1805,7 +1805,7 @@ function EDITOR_onMouseMoveDetailRankTwo(event, indexLineClicked, columnIndexCli
 
         if (nextPositionIndex >= get_EDITOR_detail_largePosition()) {
             cursor.indexLine = indexLineClicked;
-            cursor.indexColumn = columnIndexClicked;
+            cursor.indexColumn = indexColumnClicked;
             let positionIndex = nextPositionIndex;
 
             cursor.selectionEnd = positionIndex;
@@ -1845,7 +1845,7 @@ function EDITOR_onMouseMoveDetailRankTwo(event, indexLineClicked, columnIndexCli
     }
 }
 
-function EDITOR_onMouseMoveDetailRankThree(event, indexLineClicked, columnIndexClicked) {
+function EDITOR_onMouseMoveDetailRankThree(event, indexLineClicked, indexColumnClicked) {
     let cursor = EDITOR_primaryCursor;
 
     if (indexLineClicked === get_EDITOR_detailRank3OriginLine()) {
@@ -1891,8 +1891,8 @@ function EDITOR_onMouseMoveDetailRankThree(event, indexLineClicked, columnIndexC
         }
 
         cursor.indexLine = indexLineClicked;
-        cursor.indexColumn = columnIndexClicked;
-        let positionIndex = EDITOR_getPositionIndex_Overload(indexLineClicked, columnIndexClicked);
+        cursor.indexColumn = indexColumnClicked;
+        let positionIndex = EDITOR_getPositionIndex_Overload(indexLineClicked, indexColumnClicked);
 
         // move to end of line...
         let line = EDITOR_getLineBoundaryPositions(cursor.indexLine);
@@ -1936,7 +1936,7 @@ function EDITOR_getPositionIndex_raw(cursor) {
     return EDITOR_getLineStart_pos_raw(cursor.indexLine) + cursor.indexColumn;
 }
 
-function EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, columnIndexClicked) {
+function EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, indexColumnClicked) {
     let cursor = EDITOR_primaryCursor;
 
     let selectionPlusContextMenuCase = event.button === 2 && cursor.hasSelection();
@@ -1949,7 +1949,7 @@ function EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, columnIndexCli
 
     if (!selectionPlusContextMenuCase) {
         cursor.indexLine = indexLineClicked;
-        cursor.indexColumn = columnIndexClicked;
+        cursor.indexColumn = indexColumnClicked;
         cursor.STORED_indexColumn = cursor.indexColumn;
     
         cursor.selectionEnd = EDITOR_getPositionIndex(cursor);
@@ -1962,16 +1962,16 @@ function EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, columnIndexCli
     EDITOR_drawCursor(cursor);
 }
 
-function EDITOR_onMouseDownDetailRankTwo(event, indexLineClicked, columnIndexClicked) {
+function EDITOR_onMouseDownDetailRankTwo(event, indexLineClicked, indexColumnClicked) {
     if (event.shiftKey) {
-        EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, columnIndexClicked);
+        EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, indexColumnClicked);
         return;
     }
 
     let cursor = EDITOR_primaryCursor;
 
     cursor.indexLine = indexLineClicked;
-    cursor.indexColumn = columnIndexClicked;
+    cursor.indexColumn = indexColumnClicked;
     let positionIndex = EDITOR_getPositionIndex(cursor);
     
     let line = EDITOR_getLineBoundaryPositions(cursor.indexLine);
@@ -2077,16 +2077,16 @@ function EDITOR_onMouseDownDetailRankTwo(event, indexLineClicked, columnIndexCli
     }
 }
 
-function EDITOR_onMouseDownDetailRankThree(event, indexLineClicked, columnIndexClicked) {
+function EDITOR_onMouseDownDetailRankThree(event, indexLineClicked, indexColumnClicked) {
     if (event.shiftKey) {
-        EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, columnIndexClicked);
+        EDITOR_onMouseDownDetailRankOne(event, indexLineClicked, indexColumnClicked);
         return;
     }
 
     let cursor = EDITOR_primaryCursor;
 
     cursor.indexLine = indexLineClicked;
-    cursor.indexColumn = columnIndexClicked;
+    cursor.indexColumn = indexColumnClicked;
     
     cursor.selectionAnchor = EDITOR_getPositionIndex_Overload(cursor.indexLine, 0);
     
@@ -2120,7 +2120,7 @@ function EDITOR_onMouseDownDetailRankThree(event, indexLineClicked, columnIndexC
  * @returns 
  */
 function EDITOR_insertGapBufferSpan(cursor) {
-    let w = walkLineUntilColumnIndex(cursor);
+    let w = walkLineUntilIndexColumn(cursor);
     if (w.indexColumn_Goal === -1 || !w.div || w.div.children.length === 0) {
         cursor.gapBufferWriteToSpanElement = null;
         cursor.gapBufferWriteToSpanElement_SpanTextContentRelativeIndex = 0;
@@ -4179,7 +4179,7 @@ async function EDITOR_duplicateSelection(cursor) {
 async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
     let positionIndex = large;
 
-    let w = walkLineUntilColumnIndex(cursor);
+    let w = walkLineUntilIndexColumn(cursor);
     if (w.indexColumn_Goal === -1 || !w.div || w.div.children.length === 0) {
         // TODO: silent error bad
         alert('// EDITOR_paste TODO: silent error bad');
@@ -4885,7 +4885,7 @@ function EDITOR_paste(cursor, content) {
 
     cursor.EDITOR_paste_clipboardContent = content;
 
-    let w = walkLineUntilColumnIndex(cursor);
+    let w = walkLineUntilIndexColumn(cursor);
     if (w.indexColumn_Goal === -1 || !w.div || w.div.children.length === 0) {
         // TODO: silent error bad
         alert('// EDITOR_paste TODO: silent error bad');
@@ -5185,7 +5185,7 @@ function EDITOR_tabKey(cursor) {
     
     EDITOR_trackedSyntaxList_inefficientUpdateStartAndLength(indexPosition, 4);
 
-    let w = walkLineUntilColumnIndex(cursor);
+    let w = walkLineUntilIndexColumn(cursor);
 
     cursor.indexColumn += 4; // this has to come after the 'let w = ...'
 
@@ -5420,7 +5420,7 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
                 let spanClassName = '';
                 let spanText = cursor.cached_indentation_string;
 
-                let w = walkLineUntilColumnIndex(cursor);
+                let w = walkLineUntilIndexColumn(cursor);
 
                 let shouldPreserveCssClassWhenSplittingAmongLine = false;
                 
@@ -6301,7 +6301,7 @@ function EDITOR_removeSelection(cursor) {
         cursor.indexLine = smallLineAndColumnIndices.indexLine;
         cursor.indexColumn = smallLineAndColumnIndices.indexColumn;
 
-        let w = walkLineUntilColumnIndex(cursor);
+        let w = walkLineUntilIndexColumn(cursor);
         
         let lineBoundaryPositions = EDITOR_getLineBoundaryPositions(cursor.indexLine);
         let remaining;
@@ -6348,7 +6348,7 @@ function EDITOR_removeSelection(cursor) {
         let lineBoundaryPositions = EDITOR_getLineBoundaryPositions(cursor.indexLine);
         let remaining = largePosition - lineBoundaryPositions.start;
 
-        let w = walkLineUntilColumnIndex(cursor);
+        let w = walkLineUntilIndexColumn(cursor);
 
         if (w.span && w.indexColumn_SpanTextContentRelative >= 0) {
             largeLineDiv = w.div;
@@ -6568,7 +6568,7 @@ function EDITOR_deleteDo(cursor, event) {
     let lineEnd = EDITOR_getLineEnd_pos(cursor.indexLine);
     let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
 
-    let w = walkLineUntilColumnIndex(cursor);
+    let w = walkLineUntilIndexColumn(cursor);
     if (w.indexColumn_Goal == lastValidIndexColumn) {
 
         if (cursor.indexLine < EDITOR_lineEndPositionList.count - 1) {
@@ -6621,19 +6621,19 @@ function EDITOR_deleteDo(cursor, event) {
 
         if (event.ctrlKey) {
             // cursor.editPosition is intended to be equal due to the batch requirements / a new edit would also be equal.
-            let tempColumnIndex = cursor.indexColumn;
+            let tempIndexColumn = cursor.indexColumn;
             let tempPosition = cursor.editPosition;
 
-            let originalCharacterKind = EDITOR_getCharacterCurrent_KIND(tempColumnIndex, tempPosition, lineEnd);
+            let originalCharacterKind = EDITOR_getCharacterCurrent_KIND(tempIndexColumn, tempPosition, lineEnd);
             
-            tempColumnIndex++;
+            tempIndexColumn++;
             tempPosition++;
             
             while (cursor.indexColumn < lastValidIndexColumn) {
-                if (EDITOR_getCharacterCurrent_KIND(tempColumnIndex, tempPosition, lineEnd) !== originalCharacterKind) {
+                if (EDITOR_getCharacterCurrent_KIND(tempIndexColumn, tempPosition, lineEnd) !== originalCharacterKind) {
                     break;
                 }
-                tempColumnIndex++;
+                tempIndexColumn++;
                 tempPosition++;
                 remaining++;
             }
@@ -6686,7 +6686,7 @@ function EDITOR_backspaceDo(cursor, event) {
         return;
     }
 
-    let w = walkLineUntilColumnIndex(cursor);
+    let w = walkLineUntilIndexColumn(cursor);
     
     if (w.indexColumn_Goal == 0) {
         if (cursor.indexLine > 0) {
@@ -7029,17 +7029,17 @@ async function EDITOR_MenuOnClick(indexClicked, elementClicked) {
  */
 function EDITOR_moveCursor_position(intValue) {
     let lineAndColumnIndices = EDITOR_getLineAndColumnIndices(intValue);
-    EDITOR_moveCursor_indexLine_columnIndex(lineAndColumnIndices.indexLine, lineAndColumnIndices.indexColumn);
+    EDITOR_moveCursor_indexLine_indexColumn(lineAndColumnIndices.indexLine, lineAndColumnIndices.indexColumn);
 }
 
 /**
  * This clears the cursor's selection.
  */
-function EDITOR_moveCursor_indexLine_columnIndex(indexLine, indexColumn) {
-    let lastValidColumnIndex = EDITOR_getLastValidIndexColumn(indexLine);
+function EDITOR_moveCursor_indexLine_indexColumn(indexLine, indexColumn) {
+    let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(indexLine);
 
-    if (indexColumn > lastValidColumnIndex) {
-        EDITOR_primaryCursor.indexColumn = lastValidColumnIndex;
+    if (indexColumn > lastValidIndexColumn) {
+        EDITOR_primaryCursor.indexColumn = lastValidIndexColumn;
     }
     else {
         EDITOR_primaryCursor.indexColumn = indexColumn;

@@ -182,7 +182,7 @@ class DIALOG_FindAll_TreeViewDirector {
                 return;
             }
 
-            EDITOR_moveCursor_indexLine_columnIndex(intValue, 0);
+            EDITOR_moveCursor_indexLine_indexColumn(intValue, 0);
         }
     }
     
@@ -528,7 +528,7 @@ async function DIALOG_Debug_Create_async() {
 //            //else {
 //            //    // TODO: Ensure that json parsing the title like this is a safe way of doing things
 //            //    const startPosition = JSON.parse(div.title);
-//            //    EDITOR_moveCursor_indexLine_columnIndex(startPosition.line, startPosition.character);
+//            //    EDITOR_moveCursor_indexLine_indexColumn(startPosition.line, startPosition.character);
 //            //}
 //        },
 //        /*getItemsCountFunc*/ () => {
