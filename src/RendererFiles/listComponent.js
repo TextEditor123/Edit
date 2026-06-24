@@ -137,10 +137,10 @@ class ListComponent {
             this.draw_render_fullReset();
         }
         else {
-            this.virtualIndex = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
+            this.virtualIndex_ofScrollTop = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
 
             if (this._ONSCROLLscrollTop === this.rootElement.scrollTop &&
-                this._ONSCROLLvirtualIndex === this.virtualIndex &&
+                this._ONSCROLLvirtualIndex === this.virtualIndex_ofScrollTop &&
                 this._ONSCROLLvirtualCount === this.virtualCount) {
                     return;
             }
@@ -150,9 +150,9 @@ class ListComponent {
             // If I delay setting 'this._ONSCROLLvirtualIndex' then I can just use that.
             // I can't bear to do that right now though. I'm just gonna make this variable.
             let prevVli = this._ONSCROLLvirtualIndex;
-            let currVli = this.virtualIndex;
+            let currVli = this.virtualIndex_ofScrollTop;
 
-            this._ONSCROLLvirtualIndex = this.virtualIndex;
+            this._ONSCROLLvirtualIndex = this.virtualIndex_ofScrollTop;
 
             if (this._ONSCROLLvirtualCount === this.virtualCount &&
                 this.itemListElement.children.length === this.virtualCount) {
@@ -236,11 +236,11 @@ class ListComponent {
                     // re-use the divs, but keep them in place and redraw over them all
 
                     let itemsCount = this.getItemsCountFunc();
-                    let vertical = this.virtualIndex * this.itemHeightNumber;
+                    let vertical = this.virtualIndex_ofScrollTop * this.itemHeightNumber;
                     let origin = this.beltIndexZero;
                     
                     for (var i = 0; i < this.virtualCount; i++) {
-                        let indexItem = i + this.virtualIndex;
+                        let indexItem = i + this.virtualIndex_ofScrollTop;
 
                         let divIndex = origin + i;
                         if (divIndex >= this.itemListElement.children.length) {
@@ -286,15 +286,15 @@ class ListComponent {
     draw_render_fullReset() {
         this._ONSCROLLvirtualCount = this.virtualCount;
         this.itemListElement.innerHTML = '';
-        this.virtualIndex = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
+        this.virtualIndex_ofScrollTop = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
         this.beltIndexZero = 0;
 
         let itemsCount = this.getItemsCountFunc();
-        let vertical = this.virtualIndex * this.itemHeightNumber;
+        let vertical = this.virtualIndex_ofScrollTop * this.itemHeightNumber;
 
         for (let i = 0; i < this.virtualCount; i++) {
             // TODO: you don't break you still populate and then drawItemAction handles a null case?
-            if (this.virtualIndex + i >= itemsCount) {
+            if (this.virtualIndex_ofScrollTop + i >= itemsCount) {
                 break;
             }
             let divItem = document.createElement('div');
@@ -304,7 +304,7 @@ class ListComponent {
             vertical += this.itemHeightNumber;
             divItem.textContent = i;
             this.itemListElement.appendChild(divItem);
-            this.drawItemAction(divItem, this.virtualIndex + i);
+            this.drawItemAction(divItem, this.virtualIndex_ofScrollTop + i);
         }
     }
 
@@ -333,7 +333,7 @@ class ListComponent {
                 event.preventDefault();
                 this.state_cursor_setIndex(
                     this.state_cursor_validateIndex(this.cursorIndex));
-                let relativeIndex = this.cursorIndex - this.virtualIndex;
+                let relativeIndex = this.cursorIndex - this.virtualIndex_ofScrollTop;
                 if (relativeIndex >= 0 && relativeIndex < this.itemListElement.children.length) { // check if is in virtualization space
                     relativeIndex += this.beltIndexZero; // then map the "relativeIndex" by the origin aka:'this.beltIndexZero'... i.e.: which line in the dom is the first line from the top of the screen down.
                     if (relativeIndex >= this.itemListElement.children.length) {
