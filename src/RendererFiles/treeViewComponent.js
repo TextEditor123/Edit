@@ -152,10 +152,10 @@ class TreeViewComponent {
             return this.draw_render_fullReset_async();
         }
         else {
-            this.virtualIndex = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
+            this.virtualIndex_ofScrollTop = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
 
             if (this._ONSCROLLscrollTop === this.rootElement.scrollTop &&
-                this._ONSCROLLvirtualIndex === this.virtualIndex &&
+                this._ONSCROLLvirtualIndex === this.virtualIndex_ofScrollTop &&
                 this._ONSCROLLvirtualCount === this.virtualCount) {
                     return;
             }
@@ -165,9 +165,9 @@ class TreeViewComponent {
             // If I delay setting 'this._ONSCROLLvirtualIndex' then I can just use that.
             // I can't bear to do that right now though. I'm just gonna make this variable.
             let prevVli = this._ONSCROLLvirtualIndex;
-            let currVli = this.virtualIndex;
+            let currVli = this.virtualIndex_ofScrollTop;
 
-            this._ONSCROLLvirtualIndex = this.virtualIndex;
+            this._ONSCROLLvirtualIndex = this.virtualIndex_ofScrollTop;
 
             if (this._ONSCROLLvirtualCount === this.virtualCount &&
                 this.itemListElement.children.length === this.virtualCount) {
@@ -186,7 +186,7 @@ class TreeViewComponent {
                     return this.director.tvd_drawItem_BATCH_async(currVli, diff, 2);
                 }
                 else {
-                    return this.director.tvd_drawItem_BATCH_async(this.virtualIndex, this.virtualCount, 3);
+                    return this.director.tvd_drawItem_BATCH_async(this.virtualIndex_ofScrollTop, this.virtualCount, 3);
                 }
             }
         }
@@ -201,9 +201,9 @@ class TreeViewComponent {
 
         this._ONSCROLLvirtualCount = this.virtualCount;
 
-        this.virtualIndex = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
+        this.virtualIndex_ofScrollTop = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
         this.beltIndexZero = 0;
-        let verticalStyleNumber = this.virtualIndex * this.itemHeightNumber;
+        let verticalStyleNumber = this.virtualIndex_ofScrollTop * this.itemHeightNumber;
 
         let totalCount = this.director.tvd_getTotalCount();
 
@@ -230,7 +230,7 @@ class TreeViewComponent {
 
         // TODO: This if statement check is awkward because the previous if statement ought to have guaranteed this one to be true.
         if (this.itemListElement.children.length === this.virtualCount) {
-            return this.director.tvd_drawItem_BATCH_async(this.virtualIndex, this.virtualCount, 3);
+            return this.director.tvd_drawItem_BATCH_async(this.virtualIndex_ofScrollTop, this.virtualCount, 3);
         }
     }
 
@@ -479,7 +479,7 @@ class TreeViewComponent {
      * @returns you capture the variable then check it for < 0 (or the opposite '>=') i.e. => if (indexLine_VirtualRelative < 0) { return bad_state; } else { return good_state; }
      */
     getIndexItemToHtml_Correctly(indexItem) {
-        let unmatchedIndexItem = indexItem - this.virtualIndex;
+        let unmatchedIndexItem = indexItem - this.virtualIndex_ofScrollTop;
         return unmatchedIndexItem >= this.director.tvd_getTotalCount() ||
                unmatchedIndexItem >= this.itemListElement.children.length ||
                unmatchedIndexItem < 0
