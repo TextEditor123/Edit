@@ -1,3 +1,11 @@
+/*
+Wording related to "indexLine":
+- indexLine        // The line number of '1' corresponds to the '0' indexLine; The end position of this line is located at index '0' within 'EDITOR_lineEndPositionList'.
+- virtualIndexLine // 
+    - TODO: Consider calling this 'partial' instead of 'virtual' because 'virtual' sounds too "usable". You often can't do anything with this because you have to map it to the "belt".
+- beltIndexLine    //
+*/
+
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
 
 // What about if there is any overhead relating to const global numbers?
