@@ -87,10 +87,17 @@ function aaa(fileName) {
       /*
       - [ ] The marker is specifically "//__#__" being the first non-whitespace found in a text file.
       - [ ] It doesn't have to start at character index 0, but it needs to appear prior to any other text.
-      - [ ] A warning message is written to the console if "//__#__" is found at any location other than what was just described.
+      - [ ] An error if "//__#__" was the first non-whitespace in a file, but an ending marker of the same text was never encountered.
+      - [x] A warning message is written to the console if "//__#__" is found at any location other than what was just described.
+          - [x] as a token itself
+          - [x] as part of a single line comment
+          - [x] as part of a multi line comment
+          - [x] as part of a string
       - [ ] Only 1 of them per file is supported.
       - [ ] The main idea is to permit javascript header files.
       - [ ] I'm not getting lsp results in vscode unless I add an import, but I don't need the import when I smush it all into 1 file.
+      - [ ] TODO: If this throws an error, bable shouldn't be ran; it currently is not working this way.
+      - [ ] It needs to start the line
 
       //__#__
       // preprocessor.cjs
@@ -152,19 +159,31 @@ function aaa(fileName) {
     // When it comes to '//__#__' being lexed after the first non-whitespace character
     // that feels far too vague to permit it being an error.
     //
-    throw new Error('if (preprocessorMarkerContext === 1 /*StartFound*/)');
+    throw new Error(`${filePath} => if (preprocessorMarkerContext === 1 /*StartFound*/)`);
   }
 
   let chunkStart = pos;
   while (pos < text.length) {
     switch (text[pos]) {
       case '/':
+        if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+              console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character as a token itself.`);
+        }
+
         if (pos <= text.length - 2) {
           if (text[pos + 1] === '/') {
             endChunk();
             pos += 2;
+            if (fileName === "editorGlobal.js") {
+              let a = 2;
+            }
             singleLineCommentWhile: while (pos < text.length) {
               switch (text[pos]) {
+                case '/':
+                  if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+                        console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a single line comment.`);
+                  }
+                  break;
                 case '\r':
                   pos++;
                   if (pos <= text.length - 2) {
@@ -187,6 +206,11 @@ function aaa(fileName) {
             pos += 2;
             multiLineCommentWhile: while (pos < text.length) {
               switch (text[pos]) {
+                case '/':
+                  if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+                        console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a multi line comment.`);
+                  }
+                  break;
                 case '*':
                   if (pos <= text.length - 2) {
                     if (text[pos + 1] === '/') {
@@ -209,7 +233,10 @@ function aaa(fileName) {
         let terminator = text[pos];
         pos++;
         stringWhile: while (pos < text.length) {
-          if (text[pos] === terminator) {
+          if (text[pos] === '/' && pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+                console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
+          }
+          else if (text[pos] === terminator) {
             pos++;
             break stringWhile;
           }

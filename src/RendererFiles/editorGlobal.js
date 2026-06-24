@@ -3,6 +3,11 @@
 // import "./javascriptFeatures";
 let xyz = 2;
 //__#__
+//__#__
+// //__#__
+let zyx = "//__#__";
+let zyxaaa = '//__#__';
+let zyxbbb = `//__#__`;
 
 /*
 Wording related to "indexLine":
