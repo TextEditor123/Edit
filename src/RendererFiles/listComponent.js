@@ -358,10 +358,7 @@ class ListComponent {
 	    	this.event_scroll();
 	        this.event_scroll_timer = setTimeout(this.event_scroll_timeoutFunc, 100, this);
 	    }
-    }// I just had my github desktop session get invalidated and had to
-    // reauthenticate
-    // anxiety is going wild
-    // I don't know if it's all in my head and this was just odd timing or what?
+    }
     
     event_scroll_timeoutFunc(context) {
         if (/*trailing && lastArgs*/ context.event_scroll_bool) {
