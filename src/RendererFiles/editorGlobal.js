@@ -29,6 +29,7 @@ And the importance when reading the code lies with the words 'line' and 'column'
 
 - [ ] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
 - [ ] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltZerothIndex'?
+- [ ] Find any usage of 'lineIndex' pattern and change it 'indexLine' pattern.
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
@@ -2708,11 +2709,11 @@ function EDITOR_finalizeEdit(cursor) {
             if (get_EDITOR_gutter().children.length === get_EDITOR_virtualCount() &&
                 get_EDITOR_textElement().children.length === get_EDITOR_virtualCount()) {
                     // TODO: Am I missing this 'lineIndex_editOccurredOn < get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount()' in the 'EDITOR_indexLineTo_beltIndexLine' function??
-                    let relativeIndex = EDITOR_indexLineTo_beltIndexLine(lineIndex_editOccurredOn);
-                    if (relativeIndex >= 0) {
-                        let gutterLineElement = get_EDITOR_gutter().children[relativeIndex];
+                    let beltIndexLine = EDITOR_indexLineTo_beltIndexLine(lineIndex_editOccurredOn);
+                    if (beltIndexLine >= 0) {
+                        let gutterLineElement = get_EDITOR_gutter().children[beltIndexLine];
                         gutterLineElement.innerHTML = '';
-                        let textLineElement = get_EDITOR_textElement().children[relativeIndex];
+                        let textLineElement = get_EDITOR_textElement().children[beltIndexLine];
                         textLineElement.innerHTML = '';
                         EDITOR_drawLine(lineIndex_editOccurredOn, gutterLineElement, textLineElement);
                     }
@@ -4190,9 +4191,9 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
 
     // No need to consider '\r\n' and etc... only '\n'
     let linefeedLength = 0;
-    let relativeIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + get_EDITOR_offsetLine());
-    let matched_indexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
-    let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let beltIndexLine_current = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + get_EDITOR_offsetLine());
+    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
+    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
     let last_valid_indexColumn_currentLine = EDITOR_getLastValidIndexColumn(cursor.indexLine);
 
     // TODO: An optimization to check whether you even need to redraw any lines perhaps is possible but it would add too much complexity at the moment and so it isn't being considered...
@@ -4220,7 +4221,7 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                 //
                 if (linefeedLength > 0) writeLinefeed();
                 // TODO: Extremely important next line but it doesn't fully pattern with every case so it is somewhat out of nowhere
-                if (relativeIndexLine > matched_indexLine_last) return;
+                if (beltIndexLine_current > beltIndexLine_last) return;
                 //
                 insertionLength++;
                 //
@@ -4267,7 +4268,7 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
         // TODO: this is a very lazy solution to the problem, likely a more optimal way is available. Also name the variable?
         // I don't think everything fully works but I'm trying to decide if I should go eat something.
         for (let handleLineCounter = 0; handleLineCounter < linefeedLength; handleLineCounter++) {
-            if (relativeIndexLine > matched_indexLine_last) {
+            if (beltIndexLine_current > beltIndexLine_last) {
                 // A scroll should take place and handle the rest
                 // Note: any lines indices that don't change between the current scrollTop and what is shown with the new scrollTop...
                 // ...won't redraw so you still need to run this code for some of the lines.
@@ -4277,8 +4278,8 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
 
             if (cursor.indexColumn === 0 && last_valid_indexColumn_currentLine !== 0) { // start of line
                 
-                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, relativeIndexLine);
-                get_EDITOR_textElement().children[relativeIndexLine].appendChild(document.createElement('span'));
+                EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, beltIndexLine_current);
+                get_EDITOR_textElement().children[beltIndexLine_current].appendChild(document.createElement('span'));
 
                 w.div = lineDiv;
                 w.indexSpan = 0;
@@ -4288,7 +4289,7 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                 w.indexColumn_SpanTextContentRelative = 0;
                 cursor.indexLine++;
                 cursor.indexColumn = 0;
-                EDITOR_beltIndexLine_NEXT(relativeIndexLine);
+                EDITOR_beltIndexLine_NEXT(beltIndexLine_current);
 
                 continue;
             }
@@ -4296,9 +4297,9 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                 // ensure this conditional branch continues if handled, otherwise it will execute the fallback case erroneously
                 if (last_valid_indexColumn_currentLine === cursor.indexColumn) { // end of line
 
-                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
+                    EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, EDITOR_beltIndexLine_NEXT(beltIndexLine_current));
                     let span = document.createElement('span');
-                    get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)].appendChild(span);
+                    get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)].appendChild(span);
 
                     w.div = lineDiv;
                     w.indexSpan = 0;
@@ -4309,7 +4310,7 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     last_valid_indexColumn_currentLine = 0;
-                    EDITOR_beltIndexLine_NEXT(relativeIndexLine);
+                    EDITOR_beltIndexLine_NEXT(beltIndexLine_current);
 
                     continue;
                 }
@@ -4332,9 +4333,9 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                         }
                     }
 
-                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
+                    EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, EDITOR_beltIndexLine_NEXT(beltIndexLine_current));
 
-                    let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)];
+                    let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)];
                     let span = document.createElement('span');
                     span.className = spanClassName;
                     span.textContent = spanText;
@@ -4355,7 +4356,7 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     // last_valid_indexColumn_currentLine is being set when splitting the text.
-                    EDITOR_beltIndexLine_NEXT(relativeIndexLine);
+                    EDITOR_beltIndexLine_NEXT(beltIndexLine_current);
 
                     continue;
                 }
@@ -4911,9 +4912,9 @@ function EDITOR_paste(cursor, content) {
     // Consider '\r\n' and etc...
     let linefeedLength = 0;
 
-    let relativeIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + get_EDITOR_offsetLine());
-    let matched_indexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
-    let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let beltIndexLine_current = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + get_EDITOR_offsetLine());
+    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
+    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
     let last_valid_indexColumn_currentLine = EDITOR_getLastValidIndexColumn(cursor.indexLine);
 
     // TODO: An optimization to check whether you even need to redraw any lines perhaps is possible but it would add too much complexity at the moment and so it isn't being considered...
@@ -4956,7 +4957,7 @@ function EDITOR_paste(cursor, content) {
                 if (wordLength > 0) writeWord();
                 else if (linefeedLength > 0) writeLinefeed();
                 // TODO: Extremely important next line but it doesn't fully pattern with every case so it is somewhat out of nowhere
-                if (relativeIndexLine > matched_indexLine_last) return;
+                if (beltIndexLine_current > beltIndexLine_last) return;
                 //
                 insertionLength += 4;
                 //
@@ -4967,7 +4968,7 @@ function EDITOR_paste(cursor, content) {
                 if (tabLength > 0) writeTab();
                 else if (linefeedLength > 0) writeLinefeed();
                 // TODO: Extremely important next line but it doesn't fully pattern with every case so it is somewhat out of nowhere
-                if (relativeIndexLine > matched_indexLine_last) return;
+                if (beltIndexLine_current > beltIndexLine_last) return;
                 //
                 insertionLength++;
                 //
@@ -5038,7 +5039,7 @@ function EDITOR_paste(cursor, content) {
         // TODO: this is a very lazy solution to the problem, likely a more optimal way is available. Also name the variable?
         // I don't think everything fully works but I'm trying to decide if I should go eat something.
         for (let handleLineCounter = 0; handleLineCounter < linefeedLength; handleLineCounter++) {
-            if (relativeIndexLine > matched_indexLine_last) {
+            if (beltIndexLine_current > beltIndexLine_last) {
                 // A scroll should take place and handle the rest
                 // Note: any lines indices that don't change between the current scrollTop and what is shown with the new scrollTop...
                 // ...won't redraw so you still need to run this code for some of the lines.
@@ -5048,9 +5049,9 @@ function EDITOR_paste(cursor, content) {
 
             if (cursor.indexColumn === 0 && last_valid_indexColumn_currentLine !== 0) { // start of line
 
-                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, relativeIndexLine);
-                let lineDiv = get_EDITOR_textElement().children[relativeIndexLine];
-                get_EDITOR_textElement().children[relativeIndexLine].appendChild(document.createElement('span'));
+                EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, beltIndexLine_current);
+                let lineDiv = get_EDITOR_textElement().children[beltIndexLine_current];
+                get_EDITOR_textElement().children[beltIndexLine_current].appendChild(document.createElement('span'));
 
                 w.div = lineDiv;
                 w.indexSpan = 0;
@@ -5060,17 +5061,17 @@ function EDITOR_paste(cursor, content) {
                 w.indexColumn_SpanTextContentRelative = 0;
                 cursor.indexLine++;
                 cursor.indexColumn = 0;
-                EDITOR_beltIndexLine_NEXT(relativeIndexLine);
+                EDITOR_beltIndexLine_NEXT(beltIndexLine_current);
                 continue;
             }
             else {
                 // ensure this conditional branch continues if handled, otherwise it will execute the fallback case erroneously
                 if (last_valid_indexColumn_currentLine === cursor.indexColumn) { // end of line
                     
-                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
+                    EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, EDITOR_beltIndexLine_NEXT(beltIndexLine_current));
                     let span = document.createElement('span');
-                    let lineDiv = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)];
-                    get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)].appendChild(span);
+                    let lineDiv = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)];
+                    get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)].appendChild(span);
 
                     w.div = lineDiv;
                     w.indexSpan = 0;
@@ -5081,7 +5082,7 @@ function EDITOR_paste(cursor, content) {
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     last_valid_indexColumn_currentLine = 0;
-                    EDITOR_beltIndexLine_NEXT(relativeIndexLine);
+                    EDITOR_beltIndexLine_NEXT(beltIndexLine_current);
 
                     continue;
                 }
@@ -5103,9 +5104,9 @@ function EDITOR_paste(cursor, content) {
                         }
                     }
 
-                    EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
+                    EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, EDITOR_beltIndexLine_NEXT(beltIndexLine_current));
 
-                    let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)];
+                    let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)];
                     let span = document.createElement('span');
                     span.className = spanClassName;
                     span.textContent = spanText;
@@ -5126,7 +5127,7 @@ function EDITOR_paste(cursor, content) {
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     // last_valid_indexColumn_currentLine is being set when splitting the text.
-                    EDITOR_beltIndexLine_NEXT(relativeIndexLine);
+                    EDITOR_beltIndexLine_NEXT(beltIndexLine_current);
 
                     continue;
                 }
@@ -5333,16 +5334,16 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
     let insertionCount = 1;
     let shouldRenderEntireViewport = false;
     
-    let relativeIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
-    if (relativeIndexLine < 0)
+    let beltIndexLine_current = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
+    if (beltIndexLine_current < 0)
         shouldRenderEntireViewport = true;
 
     // There are some cases that I don't feel like thinking about at the moment, this if statement singles them out.
     if (get_EDITOR_virtualCount() <= 1 || get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount())
         shouldRenderEntireViewport = true;
 
-    let matched_indexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
-    let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let beltIndexLine_first = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex());
+    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
 
     // TODO: reminder for when virtualization padding is improved, this function might need to be looked at.
     // TODO: Track the enter keystroke the same as any other insertion edit and have it pending until it needs to be finalized.
@@ -5360,8 +5361,8 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
     if (!shouldRenderEntireViewport && cursor.indexColumn === 0) { // start of line
         cursor.enterKeyEventKind = get_EnterKeyEventKind_StartOfLine();
 
-        EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, relativeIndexLine);
-        get_EDITOR_textElement().children[relativeIndexLine].appendChild(document.createElement('span'));
+        EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, beltIndexLine_current);
+        get_EDITOR_textElement().children[beltIndexLine_current].appendChild(document.createElement('span'));
 
         if (cursor.cached_indentation_byteList) {
             insertionCount += cursor.cached_indentation_byteList.count;
@@ -5390,10 +5391,10 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
             if (lastValidIndexColumn === cursor.indexColumn) { // end of line
                 cursor.enterKeyEventKind = get_EnterKeyEventKind_EndOfLine();
                 
-                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(relativeIndexLine));
+                EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, EDITOR_beltIndexLine_NEXT(beltIndexLine_current));
                 let span = document.createElement('span');
                 span.textContent = cursor.cached_indentation_string;
-                get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(relativeIndexLine)].appendChild(span);
+                get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)].appendChild(span);
                 
                 if (cursor.cached_indentation_byteList) {
                     insertionCount += cursor.cached_indentation_byteList.count;
@@ -5458,7 +5459,7 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
                     }
                 }
 
-                EDITOR_shiftLinesOfTextDownByOne(matched_indexLine_last, EDITOR_beltIndexLine_NEXT(w.beltIndexLine));
+                EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, EDITOR_beltIndexLine_NEXT(w.beltIndexLine));
 
                 let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(w.beltIndexLine)];
                 let span = document.createElement('span');
@@ -6102,13 +6103,13 @@ function EDITOR_REMOVE_line_drawGutter(linesRemovedCount) {
     // todo remove this confusing and misleading commented dead code that has the or maybe I idk
     // largestDrawnIndexLine + linesRemovedCount ? EDITOR_lineEndPositionList.count
 
-    let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+    let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
 
     if (get_EDITOR_gutter().children.length > 0 && get_EDITOR_gutter().children.length === get_EDITOR_virtualCount() && get_EDITOR_gutter().children.length === get_EDITOR_textElement().children.length) {
-        if (get_EDITOR_gutter().children[matched_indexLine_last].textContent === '~') {
-            let successFoundTildeAtIndex = matched_indexLine_last;
+        if (get_EDITOR_gutter().children[beltIndexLine_last].textContent === '~') {
+            let successFoundTildeAtIndex = beltIndexLine_last;
             // TODO: wrap around suspect?
-            for (let i = matched_indexLine_last - 1; i >= 0; i--) {
+            for (let i = beltIndexLine_last - 1; i >= 0; i--) {
                 if (get_EDITOR_gutter().children[i].textContent === '~') {
                     successFoundTildeAtIndex = i;
                 }
@@ -6490,12 +6491,12 @@ function EDITOR_removeSelection(cursor) {
 
         cursor.indexLine = smallLineAndColumnIndices.indexLine;
 
-        let relativeMatchedLineIndex = EDITOR_indexLineTo_beltIndexLine(smallLineAndColumnIndices.indexLine + 1);
+        let beltIndexLine_current = EDITOR_indexLineTo_beltIndexLine(smallLineAndColumnIndices.indexLine + 1);
 
-        let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+        let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
 
         // TODO: This will be wrong because you'd need to explicitly redraw the large selection line index.
-        EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, relativeMatchedLineIndex, linesRemovedCount);
+        EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, beltIndexLine_current, linesRemovedCount);
 
         EDITOR_drawGutter_Width();
     }
@@ -6576,10 +6577,10 @@ function EDITOR_deleteDo(cursor, event) {
             // NOT start of file, remove the line ending and join the lines
 
             // Visually, immediately merge the lines if both are visible.
-            let matched_NEXT_indexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + 1);
-            if (matched_NEXT_indexLine >= 0) {
+            let beltIndexLine_next = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + 1);
+            if (beltIndexLine_next >= 0) {
                 let keepingDiv = w.div;
-                let removingDiv = get_EDITOR_textElement().children[matched_NEXT_indexLine];
+                let removingDiv = get_EDITOR_textElement().children[beltIndexLine_next];
 
                 let rememberRemovingDivLength = removingDiv.children.length;
                 for (var i = 0; i < rememberRemovingDivLength; i++) {
@@ -6596,8 +6597,8 @@ function EDITOR_deleteDo(cursor, event) {
                     keepingDiv.removeChild(keepingDiv.children[0]);
                 }
 
-                let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
-                EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, matched_NEXT_indexLine, 1);
+                let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+                EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, beltIndexLine_next, 1);
             }
 
             cursor.editLineFeedCount++;
@@ -6702,9 +6703,9 @@ function EDITOR_backspaceDo(cursor, event) {
             }
 
             // Visually, immediately merge the lines if both are visible.
-            let matched_PREVIOUS_indexLine = EDITOR_indexLineTo_beltIndexLine(rememberLineIndex - 1);
-            if (matched_PREVIOUS_indexLine >= 0) {
-                let keepingDiv = get_EDITOR_textElement().children[matched_PREVIOUS_indexLine];
+            let beltIndexLine_previous = EDITOR_indexLineTo_beltIndexLine(rememberLineIndex - 1);
+            if (beltIndexLine_previous >= 0) {
+                let keepingDiv = get_EDITOR_textElement().children[beltIndexLine_previous];
                 let removingDiv = w.div;
 
                 let rememberRemovingDivLength = removingDiv.children.length;
@@ -6722,8 +6723,8 @@ function EDITOR_backspaceDo(cursor, event) {
                     keepingDiv.removeChild(keepingDiv.children[0]);
                 }
 
-                let matched_indexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
-                EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(matched_indexLine_last, w.beltIndexLine, 1);
+                let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualLineIndex() + get_EDITOR_virtualCount() - 1);
+                EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, w.beltIndexLine, 1);
             }
 
             cursor.editLineFeedCount++;
