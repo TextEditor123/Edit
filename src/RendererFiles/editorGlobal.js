@@ -575,6 +575,14 @@ let EDITOR_horizontal_scrollbar_widthValue = 0;
 
 let EDITOR_beltIndexZero = 0;
 
+let w_indexColumn_Goal = -1;
+let w_indexColumn_Sum = -1;
+let w_indexColumn_SpanTextContentRelative = -1;
+let w_indexSpan = -1;
+let w_span = null;
+let w_div = null;
+let w_beltIndexLine = -1;
+
 function EDITOR_init() {
     EDITOR_measureLineHeightAndCharacterWidth();
 
@@ -905,15 +913,14 @@ function EDITOR_drawGutter_Width() {
 function walkLineUntilIndexColumn(cursor) {
     let beltIndexLine = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
     if (beltIndexLine < 0) {
-        return {
-            indexColumn_Goal: -1,
-            indexColumn_Sum: -1,
-            indexColumn_SpanTextContentRelative: -1,
-            indexSpan: -1,
-            span: null,
-            div: null,
-            beltIndexLine: beltIndexLine,
-        };
+        w_indexColumn_Goal = -1;
+        w_indexColumn_Sum = -1;
+        w_indexColumn_SpanTextContentRelative = -1;
+        w_indexSpan = -1;
+        w_span = null;
+        w_div = null;
+        w_beltIndexLine = beltIndexLine;
+        return;
     }
     
     let div = get_EDITOR_textElement().children[beltIndexLine];
@@ -925,15 +932,14 @@ function walkLineUntilIndexColumn(cursor) {
         if (indexColumn_Goal <= indexColumn_Sum + span.textContent.length) {
             // '<=' because end-of-line text insertion (end of line but prior to the line ending itself).
             // The line ending isn't written to the span, it is represented by the encompassing div itself.
-            return {
-                indexColumn_Goal: indexColumn_Goal,
-                indexColumn_Sum: indexColumn_Sum,
-                indexColumn_SpanTextContentRelative: indexColumn_Goal - indexColumn_Sum,
-                indexSpan: indexSpan,
-                span: span,
-                div: div,
-                beltIndexLine: beltIndexLine,
-            };
+            w_indexColumn_Goal = indexColumn_Goal;
+            w_indexColumn_Sum = indexColumn_Sum;
+            w_indexColumn_SpanTextContentRelative = indexColumn_Goal - indexColumn_Sum;
+            w_indexSpan = indexSpan;
+            w_span = span;
+            w_div = div;
+            w_beltIndexLine = beltIndexLine;
+            return;
         }
         else {
             indexColumn_Sum += span.textContent.length;
@@ -941,15 +947,14 @@ function walkLineUntilIndexColumn(cursor) {
     }
 
     // TODO: When the column index is too large, how should this be handled?
-    return {
-        indexColumn_Goal: -1,
-        indexColumn_Sum: -1,
-        indexColumn_SpanTextContentRelative: -1,
-        indexSpan: -1,
-        span: null,
-        div: null,
-        beltIndexLine: beltIndexLine,
-    };
+    w_indexColumn_Goal = -1;
+    w_indexColumn_Sum = -1;
+    w_indexColumn_SpanTextContentRelative = -1;
+    w_indexSpan = -1;
+    w_span = null;
+    w_div = null;
+    w_beltIndexLine = beltIndexLine;
+    return;
 }
 
 /**
@@ -2128,26 +2133,26 @@ function EDITOR_onMouseDownDetailRankThree(event, indexLineClicked, indexColumnC
  * @returns 
  */
 function EDITOR_insertGapBufferSpan(cursor) {
-    let w = walkLineUntilIndexColumn(cursor);
-    if (w.indexColumn_Goal === -1 || !w.div || w.div.children.length === 0) {
+    walkLineUntilIndexColumn(cursor);
+    if (w_indexColumn_Goal === -1 || !w_div || w_div.children.length === 0) {
         cursor.gapBufferWriteToSpanElement = null;
         cursor.gapBufferWriteToSpanElement_SpanTextContentRelativeIndex = 0;
         return;
     }
 
-    if (w.indexColumn_Goal == 0) {
-        // TODO: Ensure 'w.div.children[0]' is equal to the 'w.span' and then change this line to use 'w.span'
-        cursor.gapBufferWriteToSpanElement = w.span;
+    if (w_indexColumn_Goal == 0) {
+        // TODO: Ensure 'w_div.children[0]' is equal to the 'w_span' and then change this line to use 'w_span'
+        cursor.gapBufferWriteToSpanElement = w_span;
         cursor.gapBufferWriteToSpanElement_SpanTextContentRelativeIndex = 0;
     }
     else {
-        cursor.gapBufferWriteToSpanElement = w.div.children[w.indexSpan];
+        cursor.gapBufferWriteToSpanElement = w_div.children[w_indexSpan];
 
-        if (w.indexColumn_Goal === w.indexColumn_Sum + cursor.gapBufferWriteToSpanElement.textContent.length) {
+        if (w_indexColumn_Goal === w_indexColumn_Sum + cursor.gapBufferWriteToSpanElement.textContent.length) {
             cursor.gapBufferWriteToSpanElement_SpanTextContentRelativeIndex = cursor.gapBufferWriteToSpanElement.textContent.length;
         }
         else {
-            cursor.gapBufferWriteToSpanElement_SpanTextContentRelativeIndex = w.indexColumn_SpanTextContentRelative;
+            cursor.gapBufferWriteToSpanElement_SpanTextContentRelativeIndex = w_indexColumn_SpanTextContentRelative;
         }
     }
 }
@@ -4184,11 +4189,11 @@ async function EDITOR_duplicateSelection(cursor) {
     cursor.selectionEnd = large + length;
 }
 
-async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
+function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
     let positionIndex = large;
 
-    let w = walkLineUntilIndexColumn(cursor);
-    if (w.indexColumn_Goal === -1 || !w.div || w.div.children.length === 0) {
+    walkLineUntilIndexColumn(cursor);
+    if (w_indexColumn_Goal === -1 || !w_div || w_div.children.length === 0) {
         // TODO: silent error bad
         alert('// EDITOR_paste TODO: silent error bad');
         return;
@@ -4214,9 +4219,9 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
     let shouldPreserveCssClassWhenSplittingAmongLine = false;
     let hasSeenLinefeed = false;
 
-    let original_indexColumn_SpanTextContentRelative = w.indexColumn_SpanTextContentRelative;
-    let original_span_textContent_length = w.span.textContent.length;
-    let original_tracked_syntax_start = positionIndex - cursor.indexColumn + w.indexColumn_Sum;
+    let original_indexColumn_SpanTextContentRelative = w_indexColumn_SpanTextContentRelative;
+    let original_span_textContent_length = w_span.textContent.length;
+    let original_tracked_syntax_start = positionIndex - cursor.indexColumn + w_indexColumn_Sum;
 
     for (var offset = 0; offset < length; offset++) {
         switch (EDITOR_textByteList.bytes[small + offset]) {
@@ -4257,14 +4262,14 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
     }
 
     function writeWord() {
-        w.span.textContent = 
-            w.span.textContent.slice(0, w.indexColumn_SpanTextContentRelative) +
+        w_span.textContent = 
+            w_span.textContent.slice(0, w_indexColumn_SpanTextContentRelative) +
             EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(wordStart, wordStart + wordLength)) +
-            w.span.textContent.slice(w.indexColumn_SpanTextContentRelative);
+            w_span.textContent.slice(w_indexColumn_SpanTextContentRelative);
 
         cursor.indexColumn += wordLength;
         last_valid_indexColumn_currentLine += wordLength;
-        w.indexColumn_SpanTextContentRelative += wordLength;
+        w_indexColumn_SpanTextContentRelative += wordLength;
         wordStart = 0;
         wordLength = 0;
     }
@@ -4293,12 +4298,12 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                 EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, beltIndexLine_current);
                 get_EDITOR_textElement().children[beltIndexLine_current].appendChild(document.createElement('span'));
 
-                w.div = lineDiv;
-                w.indexSpan = 0;
-                w.span = lineDiv.children[w.indexSpan];
-                w.indexColumn_Goal = 0;
-                w.indexColumn_Sum = 0;
-                w.indexColumn_SpanTextContentRelative = 0;
+                w_div = lineDiv;
+                w_indexSpan = 0;
+                w_span = lineDiv.children[w_indexSpan];
+                w_indexColumn_Goal = 0;
+                w_indexColumn_Sum = 0;
+                w_indexColumn_SpanTextContentRelative = 0;
                 cursor.indexLine++;
                 cursor.indexColumn = 0;
                 EDITOR_beltIndexLine_NEXT(beltIndexLine_current);
@@ -4313,12 +4318,12 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                     let span = document.createElement('span');
                     get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)].appendChild(span);
 
-                    w.div = lineDiv;
-                    w.indexSpan = 0;
-                    w.span = lineDiv.children[w.indexSpan];
-                    w.indexColumn_Goal = 0;
-                    w.indexColumn_Sum = 0;
-                    w.indexColumn_SpanTextContentRelative = 0;
+                    w_div = lineDiv;
+                    w_indexSpan = 0;
+                    w_span = lineDiv.children[w_indexSpan];
+                    w_indexColumn_Goal = 0;
+                    w_indexColumn_Sum = 0;
+                    w_indexColumn_SpanTextContentRelative = 0;
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     last_valid_indexColumn_currentLine = 0;
@@ -4332,15 +4337,15 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                     let spanClassName = '';
                     let spanText = '';
 
-                    if (w.indexColumn_Goal > 0) {
-                        if (w.indexColumn_Goal !== w.indexColumn_Sum + w.span.textContent.length) {
-                            let firstText = w.span.textContent.substring(0, w.indexColumn_SpanTextContentRelative);
-                            let lastText = w.span.textContent.substring(w.indexColumn_SpanTextContentRelative);
+                    if (w_indexColumn_Goal > 0) {
+                        if (w_indexColumn_Goal !== w_indexColumn_Sum + w_span.textContent.length) {
+                            let firstText = w_span.textContent.substring(0, w_indexColumn_SpanTextContentRelative);
+                            let lastText = w_span.textContent.substring(w_indexColumn_SpanTextContentRelative);
                             last_valid_indexColumn_currentLine = lastText.length;
-                            w.span.textContent = firstText;
+                            w_span.textContent = firstText;
                             spanText += lastText; // This might NOT have to be +=, but it is due to the enter key method having needed += and this continues the pattern.
                             if (shouldPreserveCssClassWhenSplittingAmongLine) {
-                                spanClassName = w.span.className;
+                                spanClassName = w_span.className;
                             }
                         }
                     }
@@ -4353,18 +4358,18 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                     span.textContent = spanText;
                     aaa.appendChild(span);
 
-                    let rememberIndex = w.indexSpan + 1;
-                    let rememberLength = w.div.children.length;
+                    let rememberIndex = w_indexSpan + 1;
+                    let rememberLength = w_div.children.length;
                     for (let i = rememberIndex; i < rememberLength; i++) {
-                        aaa.appendChild(w.div.children[rememberIndex]);
+                        aaa.appendChild(w_div.children[rememberIndex]);
                     }
 
-                    w.div = lineDiv;
-                    w.indexSpan = 0;
-                    w.span = lineDiv.children[w.indexSpan];
-                    w.indexColumn_Goal = 0;
-                    w.indexColumn_Sum = 0;
-                    w.indexColumn_SpanTextContentRelative = 0;
+                    w_div = lineDiv;
+                    w_indexSpan = 0;
+                    w_span = lineDiv.children[w_indexSpan];
+                    w_indexColumn_Goal = 0;
+                    w_indexColumn_Sum = 0;
+                    w_indexColumn_SpanTextContentRelative = 0;
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     // last_valid_indexColumn_currentLine is being set when splitting the text.
@@ -4381,16 +4386,16 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
     /** Maybe some cases are not necessary here because in order to have linefeed inserted it would've had to already existed thus the syntax would already be '..M' */
     function handleNotHasSeenLinefeed() {
         // The only way to invoke this is if you encountered a linefeed for the first time,
-        // therefore 'w.span' is the original span and no variable for the original needs to be made.
-        // (unless in the future you don't end up using the w.span in some way or etc...)
+        // therefore 'w_span' is the original span and no variable for the original needs to be made.
+        // (unless in the future you don't end up using the w_span in some way or etc...)
         //
         hasSeenLinefeed = true;
-        switch (w.span.className) {
+        switch (w_span.className) {
             case 'eCm':
                 if (original_indexColumn_SpanTextContentRelative >= 2 && (original_indexColumn_SpanTextContentRelative <= original_span_textContent_length - 2)) {
-                    w.span.className = 'eCM';
+                    w_span.className = 'eCM';
                     let indexOfGreaterThanOrEqual = EDITOR_trackedSyntaxReposition_find(indexPosition);
-                    EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_Comment(), indexPosition - cursor.indexColumn + w.indexColumn_Sum, original_span_textContent_length);
+                    EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_Comment(), indexPosition - cursor.indexColumn + w_indexColumn_Sum, original_span_textContent_length);
                     shouldPreserveCssClassWhenSplittingAmongLine = true;
                 }
                 break;
@@ -4399,9 +4404,9 @@ async function EDITOR_duplicateSelection_drawUi(cursor, small, large, length) {
                 break;
             case 'eSm':
                 if (original_indexColumn_SpanTextContentRelative >= 1 && (original_indexColumn_SpanTextContentRelative <= original_span_textContent_length - 1)) {
-                    w.span.className = 'eSM';
+                    w_span.className = 'eSM';
                     let indexOfGreaterThanOrEqual = EDITOR_trackedSyntaxReposition_find(indexPosition);
-                    EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_String(), indexPosition - cursor.indexColumn + w.indexColumn_Sum, original_span_textContent_length);
+                    EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_String(), indexPosition - cursor.indexColumn + w_indexColumn_Sum, original_span_textContent_length);
                     shouldPreserveCssClassWhenSplittingAmongLine = true;
                 }
                 break;
@@ -4893,8 +4898,8 @@ function EDITOR_paste(cursor, content) {
 
     cursor.EDITOR_paste_clipboardContent = content;
 
-    let w = walkLineUntilIndexColumn(cursor);
-    if (w.indexColumn_Goal === -1 || !w.div || w.div.children.length === 0) {
+    walkLineUntilIndexColumn(cursor);
+    if (w_indexColumn_Goal === -1 || !w_div || w_div.children.length === 0) {
         // TODO: silent error bad
         alert('// EDITOR_paste TODO: silent error bad');
         return;
@@ -4935,9 +4940,9 @@ function EDITOR_paste(cursor, content) {
     let shouldPreserveCssClassWhenSplittingAmongLine = false;
     let hasSeenLinefeed = false;
 
-    let original_indexColumn_SpanTextContentRelative = w.indexColumn_SpanTextContentRelative;
-    let original_span_textContent_length = w.span.textContent.length;
-    let original_tracked_syntax_start = positionIndex - cursor.indexColumn + w.indexColumn_Sum;
+    let original_indexColumn_SpanTextContentRelative = w_indexColumn_SpanTextContentRelative;
+    let original_span_textContent_length = w_span.textContent.length;
+    let original_tracked_syntax_start = positionIndex - cursor.indexColumn + w_indexColumn_Sum;
 
     for (var sourceI = 0; sourceI < content.length; sourceI++) {
         switch (content[sourceI]) {
@@ -5006,14 +5011,14 @@ function EDITOR_paste(cursor, content) {
     }
     
     function writeWord() {
-        w.span.textContent = 
-            w.span.textContent.slice(0, w.indexColumn_SpanTextContentRelative) +
+        w_span.textContent = 
+            w_span.textContent.slice(0, w_indexColumn_SpanTextContentRelative) +
             content.substring(wordStart, wordStart + wordLength) +
-            w.span.textContent.slice(w.indexColumn_SpanTextContentRelative);
+            w_span.textContent.slice(w_indexColumn_SpanTextContentRelative);
 
         cursor.indexColumn += wordLength;
         last_valid_indexColumn_currentLine += wordLength;
-        w.indexColumn_SpanTextContentRelative += wordLength;
+        w_indexColumn_SpanTextContentRelative += wordLength;
         wordStart = 0;
         wordLength = 0;
     }
@@ -5028,15 +5033,15 @@ function EDITOR_paste(cursor, content) {
             stringBuilderArray.length = 0;
         }
 
-        w.span.textContent =
-            w.span.textContent.slice(0, w.indexColumn_SpanTextContentRelative) +
+        w_span.textContent =
+            w_span.textContent.slice(0, w_indexColumn_SpanTextContentRelative) +
             previouslyGeneratedTabString_value +
-            w.span.textContent.slice(w.indexColumn_SpanTextContentRelative);
+            w_span.textContent.slice(w_indexColumn_SpanTextContentRelative);
 
         let thisInsertionLength = 4 * tabLength;
         cursor.indexColumn += thisInsertionLength;
         last_valid_indexColumn_currentLine += thisInsertionLength;
-        w.indexColumn_SpanTextContentRelative += thisInsertionLength;
+        w_indexColumn_SpanTextContentRelative += thisInsertionLength;
         tabLength = 0;
     }
     
@@ -5065,12 +5070,12 @@ function EDITOR_paste(cursor, content) {
                 let lineDiv = get_EDITOR_textElement().children[beltIndexLine_current];
                 get_EDITOR_textElement().children[beltIndexLine_current].appendChild(document.createElement('span'));
 
-                w.div = lineDiv;
-                w.indexSpan = 0;
-                w.span = lineDiv.children[w.indexSpan];
-                w.indexColumn_Goal = 0;
-                w.indexColumn_Sum = 0;
-                w.indexColumn_SpanTextContentRelative = 0;
+                w_div = lineDiv;
+                w_indexSpan = 0;
+                w_span = lineDiv.children[w_indexSpan];
+                w_indexColumn_Goal = 0;
+                w_indexColumn_Sum = 0;
+                w_indexColumn_SpanTextContentRelative = 0;
                 cursor.indexLine++;
                 cursor.indexColumn = 0;
                 EDITOR_beltIndexLine_NEXT(beltIndexLine_current);
@@ -5085,12 +5090,12 @@ function EDITOR_paste(cursor, content) {
                     let lineDiv = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)];
                     get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(beltIndexLine_current)].appendChild(span);
 
-                    w.div = lineDiv;
-                    w.indexSpan = 0;
-                    w.span = lineDiv.children[w.indexSpan];
-                    w.indexColumn_Goal = 0;
-                    w.indexColumn_Sum = 0;
-                    w.indexColumn_SpanTextContentRelative = 0;
+                    w_div = lineDiv;
+                    w_indexSpan = 0;
+                    w_span = lineDiv.children[w_indexSpan];
+                    w_indexColumn_Goal = 0;
+                    w_indexColumn_Sum = 0;
+                    w_indexColumn_SpanTextContentRelative = 0;
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     last_valid_indexColumn_currentLine = 0;
@@ -5103,15 +5108,15 @@ function EDITOR_paste(cursor, content) {
                     let spanClassName = '';
                     let spanText = '';
 
-                    if (w.indexColumn_Goal > 0) {
-                        if (w.indexColumn_Goal !== w.indexColumn_Sum + w.span.textContent.length) {
-                            let firstText = w.span.textContent.substring(0, w.indexColumn_SpanTextContentRelative);
-                            let lastText = w.span.textContent.substring(w.indexColumn_SpanTextContentRelative);
+                    if (w_indexColumn_Goal > 0) {
+                        if (w_indexColumn_Goal !== w_indexColumn_Sum + w_span.textContent.length) {
+                            let firstText = w_span.textContent.substring(0, w_indexColumn_SpanTextContentRelative);
+                            let lastText = w_span.textContent.substring(w_indexColumn_SpanTextContentRelative);
                             last_valid_indexColumn_currentLine = lastText.length;
-                            w.span.textContent = firstText;
+                            w_span.textContent = firstText;
                             spanText += lastText; // This might NOT have to be +=, but it is due to the enter key method having needed += and this continues the pattern.
                             if (shouldPreserveCssClassWhenSplittingAmongLine) {
-                                spanClassName = w.span.className;
+                                spanClassName = w_span.className;
                             }
                         }
                     }
@@ -5124,18 +5129,18 @@ function EDITOR_paste(cursor, content) {
                     span.textContent = spanText;
                     aaa.appendChild(span);
 
-                    let rememberIndex = w.indexSpan + 1;
-                    let rememberLength = w.div.children.length;
+                    let rememberIndex = w_indexSpan + 1;
+                    let rememberLength = w_div.children.length;
                     for (let i = rememberIndex; i < rememberLength; i++) {
-                        aaa.appendChild(w.div.children[rememberIndex]);
+                        aaa.appendChild(w_div.children[rememberIndex]);
                     }
 
-                    w.div = lineDiv;
-                    w.indexSpan = 0;
-                    w.span = lineDiv.children[w.indexSpan];
-                    w.indexColumn_Goal = 0;
-                    w.indexColumn_Sum = 0;
-                    w.indexColumn_SpanTextContentRelative = 0;
+                    w_div = lineDiv;
+                    w_indexSpan = 0;
+                    w_span = lineDiv.children[w_indexSpan];
+                    w_indexColumn_Goal = 0;
+                    w_indexColumn_Sum = 0;
+                    w_indexColumn_SpanTextContentRelative = 0;
                     cursor.indexLine++;
                     cursor.indexColumn = 0;
                     // last_valid_indexColumn_currentLine is being set when splitting the text.
@@ -5151,16 +5156,16 @@ function EDITOR_paste(cursor, content) {
 
     function handleNotHasSeenLinefeed() {
         // The only way to invoke this is if you encountered a linefeed for the first time,
-        // therefore 'w.span' is the original span and no variable for the original needs to be made.
-        // (unless in the future you don't end up using the w.span in some way or etc...)
+        // therefore 'w_span' is the original span and no variable for the original needs to be made.
+        // (unless in the future you don't end up using the w_span in some way or etc...)
         //
         hasSeenLinefeed = true;
-        switch (w.span.className) {
+        switch (w_span.className) {
             case 'eCm':
                 if (original_indexColumn_SpanTextContentRelative >= 2 && (original_indexColumn_SpanTextContentRelative <= original_span_textContent_length - 2)) {
-                    w.span.className = 'eCM';
+                    w_span.className = 'eCM';
                     let indexOfGreaterThanOrEqual = EDITOR_trackedSyntaxReposition_find(indexPosition);
-                    EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_Comment(), indexPosition - cursor.indexColumn + w.indexColumn_Sum, original_span_textContent_length);
+                    EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_Comment(), indexPosition - cursor.indexColumn + w_indexColumn_Sum, original_span_textContent_length);
                     shouldPreserveCssClassWhenSplittingAmongLine = true;
                 }
                 break;
@@ -5169,9 +5174,9 @@ function EDITOR_paste(cursor, content) {
                 break;
             case 'eSm':
                 if (original_indexColumn_SpanTextContentRelative >= 1 && (original_indexColumn_SpanTextContentRelative <= original_span_textContent_length - 1)) {
-                    w.span.className = 'eSM';
+                    w_span.className = 'eSM';
                     let indexOfGreaterThanOrEqual = EDITOR_trackedSyntaxReposition_find(indexPosition);
-                    EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_String(), indexPosition - cursor.indexColumn + w.indexColumn_Sum, original_span_textContent_length);
+                    EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_String(), indexPosition - cursor.indexColumn + w_indexColumn_Sum, original_span_textContent_length);
                     shouldPreserveCssClassWhenSplittingAmongLine = true;
                 }
                 break;
@@ -5193,11 +5198,11 @@ function EDITOR_tabKey(cursor) {
     
     EDITOR_trackedSyntaxList_inefficientUpdateStartAndLength(indexPosition, 4);
 
-    let w = walkLineUntilIndexColumn(cursor);
+    walkLineUntilIndexColumn(cursor);
 
-    cursor.indexColumn += 4; // this has to come after the 'let w = ...'
+    cursor.indexColumn += 4; // this has to come after the 'walkLineUntilIndexColumn' invocation.
 
-    if (w.indexColumn_Goal === -1 || !w.div || w.div.children.length === 0) {
+    if (w_indexColumn_Goal === -1 || !w_div || w_div.children.length === 0) {
         // TODO: silent error bad
         return;
     }
@@ -5208,10 +5213,10 @@ function EDITOR_tabKey(cursor) {
         EDITOR_on_tab_string += String.fromCharCode(EDITOR_on_tab_bytes[i]);
     }
 
-    w.span.textContent = 
-        w.span.textContent.slice(0, w.indexColumn_SpanTextContentRelative) +
+    w_span.textContent = 
+        w_span.textContent.slice(0, w_indexColumn_SpanTextContentRelative) +
         EDITOR_on_tab_string +
-        w.span.textContent.slice(w.indexColumn_SpanTextContentRelative);
+        w_span.textContent.slice(w_indexColumn_SpanTextContentRelative);
 }
 
 /**
@@ -5428,17 +5433,17 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
                 let spanClassName = '';
                 let spanText = cursor.cached_indentation_string;
 
-                let w = walkLineUntilIndexColumn(cursor);
+                walkLineUntilIndexColumn(cursor);
 
                 let shouldPreserveCssClassWhenSplittingAmongLine = false;
                 
                 if (!ctrlKey && !shiftKey) { // Is this '!ctrlKey && !shiftKey' check redundant? I feel like this conditional branch would never be reached regardless.
-                    switch (w.span.className) {
+                    switch (w_span.className) {
                         case 'eCm':
-                            if (w.indexColumn_SpanTextContentRelative >= 2 && (w.indexColumn_SpanTextContentRelative <= w.span.textContent.length - 2)) {
-                                w.span.className = 'eCM';
+                            if (w_indexColumn_SpanTextContentRelative >= 2 && (w_indexColumn_SpanTextContentRelative <= w_span.textContent.length - 2)) {
+                                w_span.className = 'eCM';
                                 let indexOfGreaterThanOrEqual = EDITOR_trackedSyntaxReposition_find(indexPosition);
-                                EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_Comment(), indexPosition - cursor.indexColumn + w.indexColumn_Sum, w.span.textContent.length);
+                                EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_Comment(), indexPosition - cursor.indexColumn + w_indexColumn_Sum, w_span.textContent.length);
                                 shouldPreserveCssClassWhenSplittingAmongLine = true;
                             }
                             break;
@@ -5446,10 +5451,10 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
                             shouldPreserveCssClassWhenSplittingAmongLine = true;
                             break;
                         case 'eSm':
-                            if (w.indexColumn_SpanTextContentRelative >= 1 && (w.indexColumn_SpanTextContentRelative <= w.span.textContent.length - 1)) {
-                                w.span.className = 'eSM';
+                            if (w_indexColumn_SpanTextContentRelative >= 1 && (w_indexColumn_SpanTextContentRelative <= w_span.textContent.length - 1)) {
+                                w_span.className = 'eSM';
                                 let indexOfGreaterThanOrEqual = EDITOR_trackedSyntaxReposition_find(indexPosition);
-                                EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_String(), indexPosition - cursor.indexColumn + w.indexColumn_Sum, w.span.textContent.length);
+                                EDITOR_trackedSyntaxList.insert(indexOfGreaterThanOrEqual, get_TrackedSyntaxKind_String(), indexPosition - cursor.indexColumn + w_indexColumn_Sum, w_span.textContent.length);
                                 shouldPreserveCssClassWhenSplittingAmongLine = true;
                             }
                             break;
@@ -5459,30 +5464,30 @@ function EDITOR_EnterKey(cursor, ctrlKey, shiftKey) {
                     }
                 }
                 
-                if (w.indexColumn_Goal > 0) {
-                    if (w.indexColumn_Goal !== w.indexColumn_Sum + w.span.textContent.length) {
-                        let firstText = w.span.textContent.substring(0, w.indexColumn_SpanTextContentRelative);
-                        let lastText = w.span.textContent.substring(w.indexColumn_SpanTextContentRelative);
-                        w.span.textContent = firstText;
+                if (w_indexColumn_Goal > 0) {
+                    if (w_indexColumn_Goal !== w_indexColumn_Sum + w_span.textContent.length) {
+                        let firstText = w_span.textContent.substring(0, w_indexColumn_SpanTextContentRelative);
+                        let lastText = w_span.textContent.substring(w_indexColumn_SpanTextContentRelative);
+                        w_span.textContent = firstText;
                         spanText += lastText; // += due to the possibility of indentation
                         if (shouldPreserveCssClassWhenSplittingAmongLine) {
-                            spanClassName = w.span.className;
+                            spanClassName = w_span.className;
                         }
                     }
                 }
 
-                EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, EDITOR_beltIndexLine_NEXT(w.beltIndexLine));
+                EDITOR_shiftLinesOfTextDownByOne(beltIndexLine_last, EDITOR_beltIndexLine_NEXT(w_beltIndexLine));
 
-                let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(w.beltIndexLine)];
+                let aaa = get_EDITOR_textElement().children[EDITOR_beltIndexLine_NEXT(w_beltIndexLine)];
                 let span = document.createElement('span');
                 span.className = spanClassName;
                 span.textContent = spanText;
                 aaa.appendChild(span);
 
-                let rememberIndex = w.indexSpan + 1;
-                let rememberLength = w.div.children.length;
+                let rememberIndex = w_indexSpan + 1;
+                let rememberLength = w_div.children.length;
                 for (let i = rememberIndex; i < rememberLength; i++) {
-                    aaa.appendChild(w.div.children[rememberIndex]);
+                    aaa.appendChild(w_div.children[rememberIndex]);
                 }
                 
                 if (cursor.cached_indentation_byteList) {
@@ -6303,7 +6308,7 @@ function EDITOR_removeSelection(cursor) {
         cursor.indexLine = smallLineAndColumnIndices.indexLine;
         cursor.indexColumn = smallLineAndColumnIndices.indexColumn;
 
-        let w = walkLineUntilIndexColumn(cursor);
+        walkLineUntilIndexColumn(cursor);
         
         let lineBoundaryPositions = EDITOR_getLineBoundaryPositions(cursor.indexLine);
         let remaining;
@@ -6314,28 +6319,28 @@ function EDITOR_removeSelection(cursor) {
             remaining = largePosition - smallPosition;
         }
 
-        if (w.span && w.indexColumn_SpanTextContentRelative >= 0) {
-            smallLineDiv = w.div;
+        if (w_span && w_indexColumn_SpanTextContentRelative >= 0) {
+            smallLineDiv = w_div;
             while (remaining > 0) {
-                let available = w.span.textContent.length - w.indexColumn_SpanTextContentRelative;
+                let available = w_span.textContent.length - w_indexColumn_SpanTextContentRelative;
                 let count = remaining > available ? available : remaining;
                 remaining -= count;    
                 
                 if (count > 0) {
-                    w.span.textContent = w.span.textContent.slice(0, w.indexColumn_SpanTextContentRelative) + w.span.textContent.slice(w.indexColumn_SpanTextContentRelative + count);
+                    w_span.textContent = w_span.textContent.slice(0, w_indexColumn_SpanTextContentRelative) + w_span.textContent.slice(w_indexColumn_SpanTextContentRelative + count);
                 }
 
-                if (w.div.children.length > 1 && w.span.textContent.length === 0) {
-                    w.div.removeChild(w.span);
+                if (w_div.children.length > 1 && w_span.textContent.length === 0) {
+                    w_div.removeChild(w_span);
                 }
                 else {
-                    w.indexSpan++;
+                    w_indexSpan++;
                 }
     
                 if (remaining > 0) {
-                    if (w.indexSpan >= w.div.children.length) break;
-                    w.span = w.div.children[w.indexSpan];
-                    w.indexColumn_SpanTextContentRelative = 0;
+                    if (w_indexSpan >= w_div.children.length) break;
+                    w_span = w_div.children[w_indexSpan];
+                    w_indexColumn_SpanTextContentRelative = 0;
                 }
             }
         }
@@ -6350,27 +6355,27 @@ function EDITOR_removeSelection(cursor) {
         let lineBoundaryPositions = EDITOR_getLineBoundaryPositions(cursor.indexLine);
         let remaining = largePosition - lineBoundaryPositions.start;
 
-        let w = walkLineUntilIndexColumn(cursor);
+        walkLineUntilIndexColumn(cursor);
 
-        if (w.span && w.indexColumn_SpanTextContentRelative >= 0) {
-            largeLineDiv = w.div;
+        if (w_span && w_indexColumn_SpanTextContentRelative >= 0) {
+            largeLineDiv = w_div;
             while (remaining > 0) {
-                let available = w.span.textContent.length - w.indexColumn_SpanTextContentRelative;
+                let available = w_span.textContent.length - w_indexColumn_SpanTextContentRelative;
                 let count = remaining > available ? available : remaining;
                 remaining -= count;
 
                 if (count > 0)
-                    w.span.textContent = w.span.textContent.slice(0, w.indexColumn_SpanTextContentRelative) + w.span.textContent.slice(w.indexColumn_SpanTextContentRelative + count);
+                    w_span.textContent = w_span.textContent.slice(0, w_indexColumn_SpanTextContentRelative) + w_span.textContent.slice(w_indexColumn_SpanTextContentRelative + count);
 
-                if (w.div.children.length > 1 && w.span.textContent.length === 0)
-                    w.div.removeChild(w.span);
+                if (w_div.children.length > 1 && w_span.textContent.length === 0)
+                    w_div.removeChild(w_span);
                 else
-                    w.indexSpan++;
+                    w_indexSpan++;
     
                 if (remaining > 0) {
-                    if (w.indexSpan >= w.div.children.length) break;
-                    w.span = w.div.children[w.indexSpan];
-                    w.indexColumn_SpanTextContentRelative = 0;
+                    if (w_indexSpan >= w_div.children.length) break;
+                    w_span = w_div.children[w_indexSpan];
+                    w_indexColumn_SpanTextContentRelative = 0;
                 }
             }
         }
@@ -6570,13 +6575,13 @@ function EDITOR_deleteDo(cursor, event) {
     let lineEnd = EDITOR_getLineEnd_pos(cursor.indexLine);
     let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
 
-    let w = walkLineUntilIndexColumn(cursor);
-    if (w.indexColumn_Goal == lastValidIndexColumn) {
+    walkLineUntilIndexColumn(cursor);
+    if (w_indexColumn_Goal == lastValidIndexColumn) {
 
         if (cursor.indexLine < EDITOR_lineEndPositionList.count - 1) {
             cursor.editLength++;
 
-            if (w.span.className === 'eCM') {
+            if (w_span.className === 'eCM') {
                 EDITOR_stopTrackingIfTrackedSyntaxMadeToSpanSingleLine(cursor);
             }
 
@@ -6585,7 +6590,7 @@ function EDITOR_deleteDo(cursor, event) {
             // Visually, immediately merge the lines if both are visible.
             let beltIndexLine_next = EDITOR_indexLineTo_beltIndexLine(cursor.indexLine + 1);
             if (beltIndexLine_next >= 0) {
-                let keepingDiv = w.div;
+                let keepingDiv = w_div;
                 let removingDiv = get_EDITOR_textElement().children[beltIndexLine_next];
 
                 let rememberRemovingDivLength = removingDiv.children.length;
@@ -6641,36 +6646,36 @@ function EDITOR_deleteDo(cursor, event) {
             }
         }
 
-        if (!w.span|| !w.span.textContent || w.indexColumn_SpanTextContentRelative < 0) {
+        if (!w_span|| !w_span.textContent || w_indexColumn_SpanTextContentRelative < 0) {
             cursor.editLength += remaining;
         }
         else {
             // TODO: The shared "remove" method would likely look something like this 'while (remaining ...)' logic...
             // ...and also have to include the line ending removal logic
             while (remaining > 0) {
-                let available = w.span.textContent.length - w.indexColumn_SpanTextContentRelative;
+                let available = w_span.textContent.length - w_indexColumn_SpanTextContentRelative;
                 let count = remaining > available ? available : remaining;
                 remaining -= count;
     
                 // When the cursor is at the end of a span, there is no text to delete, because the text starts in the next span.
                 if (count > 0) {
                     // this is probably wrong
-                    w.span.textContent = w.span.textContent.slice(0, w.indexColumn_SpanTextContentRelative) + w.span.textContent.slice(w.indexColumn_SpanTextContentRelative + count);
+                    w_span.textContent = w_span.textContent.slice(0, w_indexColumn_SpanTextContentRelative) + w_span.textContent.slice(w_indexColumn_SpanTextContentRelative + count);
                     cursor.editLength += count;
                 }
 
-                if (w.div.children.length > 1 && w.span.textContent.length === 0) {
-                    w.div.removeChild(w.span);
+                if (w_div.children.length > 1 && w_span.textContent.length === 0) {
+                    w_div.removeChild(w_span);
                 }
                 else {
-                    w.indexSpan++;
+                    w_indexSpan++;
                 }
     
                 if (remaining > 0) {
-                    if (w.indexSpan >= w.div.children.length) return;
+                    if (w_indexSpan >= w_div.children.length) return;
                     
-                    w.span = w.div.children[w.indexSpan];
-                    w.indexColumn_SpanTextContentRelative = 0;
+                    w_span = w_div.children[w_indexSpan];
+                    w_indexColumn_SpanTextContentRelative = 0;
                 }
             }
         }
@@ -6688,9 +6693,9 @@ function EDITOR_backspaceDo(cursor, event) {
         return;
     }
 
-    let w = walkLineUntilIndexColumn(cursor);
+    walkLineUntilIndexColumn(cursor);
     
-    if (w.indexColumn_Goal == 0) {
+    if (w_indexColumn_Goal == 0) {
         if (cursor.indexLine > 0) {
             let rememberIndexLine = cursor.indexLine;
 
@@ -6704,7 +6709,7 @@ function EDITOR_backspaceDo(cursor, event) {
             cursor.editPosition--;
             cursor.editLength++;
 
-            if (w.span.className === 'eCM') {
+            if (w_span.className === 'eCM') {
                 EDITOR_stopTrackingIfTrackedSyntaxMadeToSpanSingleLine(cursor);
             }
 
@@ -6712,7 +6717,7 @@ function EDITOR_backspaceDo(cursor, event) {
             let beltIndexLine_previous = EDITOR_indexLineTo_beltIndexLine(rememberIndexLine - 1);
             if (beltIndexLine_previous >= 0) {
                 let keepingDiv = get_EDITOR_textElement().children[beltIndexLine_previous];
-                let removingDiv = w.div;
+                let removingDiv = w_div;
 
                 let rememberRemovingDivLength = removingDiv.children.length;
                 for (var i = 0; i < rememberRemovingDivLength; i++) {
@@ -6730,7 +6735,7 @@ function EDITOR_backspaceDo(cursor, event) {
                 }
 
                 let beltIndexLine_last = EDITOR_indexLineTo_beltIndexLine(get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount() - 1);
-                EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, w.beltIndexLine, 1);
+                EDITOR_shiftLinesOfText_ToASmaller_IndexLine_byDistance(beltIndexLine_last, w_beltIndexLine, 1);
             }
 
             cursor.editLineFeedCount++;
@@ -6773,32 +6778,32 @@ function EDITOR_backspaceDo(cursor, event) {
             cursor.editIndexColumn -= 1;
         }
 
-        if (!w.span || !w.span.textContent || w.indexColumn_SpanTextContentRelative < 0) {
+        if (!w_span || !w_span.textContent || w_indexColumn_SpanTextContentRelative < 0) {
             cursor.editLength += remaining;
         }
         else {
             // TODO: The shared "remove" method would likely look something like this 'while (remaining ...)' logic...
             // ...and also have to include the line ending removal logic
             while (remaining > 0) {
-                let count = remaining > w.indexColumn_SpanTextContentRelative ? w.indexColumn_SpanTextContentRelative : remaining;
+                let count = remaining > w_indexColumn_SpanTextContentRelative ? w_indexColumn_SpanTextContentRelative : remaining;
                 remaining -= count;
     
                 // this is probably wrong
-                w.span.textContent = w.span.textContent.slice(0, w.indexColumn_SpanTextContentRelative - count) + w.span.textContent.slice(w.indexColumn_SpanTextContentRelative);
+                w_span.textContent = w_span.textContent.slice(0, w_indexColumn_SpanTextContentRelative - count) + w_span.textContent.slice(w_indexColumn_SpanTextContentRelative);
     
                 cursor.editLength += count;
 
-                if (w.div.children.length > 1 && w.span.textContent.length === 0) {
-                    w.div.removeChild(w.span);
+                if (w_div.children.length > 1 && w_span.textContent.length === 0) {
+                    w_div.removeChild(w_span);
                 }
                 
-                w.indexSpan--;
+                w_indexSpan--;
     
                 if (remaining > 0) {
-                    if (w.indexSpan < 0) return;
+                    if (w_indexSpan < 0) return;
     
-                    w.span = w.div.children[w.indexSpan];
-                    w.indexColumn_SpanTextContentRelative = w.span.textContent.length;
+                    w_span = w_div.children[w_indexSpan];
+                    w_indexColumn_SpanTextContentRelative = w_span.textContent.length;
                 }
             }
         }
