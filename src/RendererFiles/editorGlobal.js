@@ -28,7 +28,7 @@ But if you apply the pattern it hides the word 'line'.
 And the importance when reading the code lies with the words 'line' and 'column'.
 
 - [ ] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
-- [ ] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltZerothIndex'?
+- [ ] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltIndexZero'?
 - [ ] Find any usage of 'lineIndex' pattern and change it 'indexLine' pattern.
 - [ ] Find any usage of 'columnIndex' pattern and change it 'indexColumn' pattern.
 */
@@ -240,12 +240,12 @@ function EDITOR_indexLineTo_beltIndexLine(indexLine) {
     return virtualIndexLine >= get_EDITOR_textElement().children.length ||
            virtualIndexLine < 0
                ? -1
-               : ((virtualIndexLine = (virtualIndexLine + EDITOR_domLineNodesZerothIndex)) > get_EDITOR_virtualCount()
+               : ((virtualIndexLine = (virtualIndexLine + EDITOR_beltIndexZero)) > get_EDITOR_virtualCount()
                    ? virtualIndexLine - get_EDITOR_virtualCount()
                    : virtualIndexLine);
 }
 
-/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
+/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_beltIndexZero' isn't 0. */
 function EDITOR_beltIndexLine_NEXT(beltIndexLine) {
     beltIndexLine++;
     if (beltIndexLine >= get_EDITOR_textElement().children.length) {
@@ -254,7 +254,7 @@ function EDITOR_beltIndexLine_NEXT(beltIndexLine) {
     return beltIndexLine;
 }
 
-/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too small because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
+/** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too small because 'EDITOR_beltIndexZero' isn't 0. */
 function EDITOR_beltIndexLine_PREVIOUS(beltIndexLine) {
     beltIndexLine--;
     if (beltIndexLine < 0) {
@@ -565,7 +565,7 @@ const EDITOR_gutterPaddingRight = 6;
 let EDITOR_characterWidth = 8;
 let EDITOR_horizontal_scrollbar_widthValue = 0;
 
-let EDITOR_domLineNodesZerothIndex = 0;
+let EDITOR_beltIndexZero = 0;
 
 function EDITOR_init() {
     EDITOR_measureLineHeightAndCharacterWidth();
@@ -5695,11 +5695,11 @@ function EDITOR_onScroll_WRAPIT() {
         upperBound = lowerBound + diff;
 
         vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
-        origin = EDITOR_domLineNodesZerothIndex;
+        origin = EDITOR_beltIndexZero;
 
-        EDITOR_domLineNodesZerothIndex = origin + diff;
-        if (EDITOR_domLineNodesZerothIndex >= get_EDITOR_textElement().children.length)
-            EDITOR_domLineNodesZerothIndex -= get_EDITOR_textElement().children.length;
+        EDITOR_beltIndexZero = origin + diff;
+        if (EDITOR_beltIndexZero >= get_EDITOR_textElement().children.length)
+            EDITOR_beltIndexZero -= get_EDITOR_textElement().children.length;
     }
     else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 2;
@@ -5708,15 +5708,15 @@ function EDITOR_onScroll_WRAPIT() {
 
         vertical = currVli * get_EDITOR_lineHeight();
 
-        let lastIndex = EDITOR_domLineNodesZerothIndex === 0
+        let lastIndex = EDITOR_beltIndexZero === 0
             ? get_EDITOR_textElement().children.length - 1
-            : EDITOR_domLineNodesZerothIndex - 1;
+            : EDITOR_beltIndexZero - 1;
 
-        EDITOR_domLineNodesZerothIndex = lastIndex - (diff - 1);
-        if (EDITOR_domLineNodesZerothIndex < 0)
-            EDITOR_domLineNodesZerothIndex += get_EDITOR_textElement().children.length;
+        EDITOR_beltIndexZero = lastIndex - (diff - 1);
+        if (EDITOR_beltIndexZero < 0)
+            EDITOR_beltIndexZero += get_EDITOR_textElement().children.length;
 
-        origin = EDITOR_domLineNodesZerothIndex;
+        origin = EDITOR_beltIndexZero;
     }
     else {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
@@ -5724,7 +5724,7 @@ function EDITOR_onScroll_WRAPIT() {
         upperBound = lowerBound + get_EDITOR_virtualCount();
 
         vertical = get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight();
-        origin = EDITOR_domLineNodesZerothIndex;
+        origin = EDITOR_beltIndexZero;
     }
 
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
@@ -5869,11 +5869,11 @@ function EDITOR_onScroll_bbb() {
         upperBound = lowerBound + diff;
 
         vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
-        origin = EDITOR_domLineNodesZerothIndex;
+        origin = EDITOR_beltIndexZero;
 
-        EDITOR_domLineNodesZerothIndex = origin + diff;
-        if (EDITOR_domLineNodesZerothIndex >= get_EDITOR_textElement().children.length)
-            EDITOR_domLineNodesZerothIndex -= get_EDITOR_textElement().children.length;
+        EDITOR_beltIndexZero = origin + diff;
+        if (EDITOR_beltIndexZero >= get_EDITOR_textElement().children.length)
+            EDITOR_beltIndexZero -= get_EDITOR_textElement().children.length;
     }
     else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 2;
@@ -5883,15 +5883,15 @@ function EDITOR_onScroll_bbb() {
 
         vertical = currVli * get_EDITOR_lineHeight();
         
-        let lastIndex = EDITOR_domLineNodesZerothIndex === 0
+        let lastIndex = EDITOR_beltIndexZero === 0
             ? get_EDITOR_textElement().children.length - 1
-            : EDITOR_domLineNodesZerothIndex - 1;
+            : EDITOR_beltIndexZero - 1;
 
-        EDITOR_domLineNodesZerothIndex = lastIndex - (diff - 1);
-        if (EDITOR_domLineNodesZerothIndex < 0)
-            EDITOR_domLineNodesZerothIndex += get_EDITOR_textElement().children.length;
+        EDITOR_beltIndexZero = lastIndex - (diff - 1);
+        if (EDITOR_beltIndexZero < 0)
+            EDITOR_beltIndexZero += get_EDITOR_textElement().children.length;
 
-        origin = EDITOR_domLineNodesZerothIndex;
+        origin = EDITOR_beltIndexZero;
     }
     else {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
@@ -5900,7 +5900,7 @@ function EDITOR_onScroll_bbb() {
         upperBound = lowerBound + get_EDITOR_virtualCount();
 
         vertical = get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight();
-        origin = EDITOR_domLineNodesZerothIndex;
+        origin = EDITOR_beltIndexZero;
     }
 
     if (trackedSyntax_I === NaN || trackedSyntax_I === -1)
@@ -5965,7 +5965,7 @@ function EDITOR_createViewport() {
 
     let trackedSyntax_I = trackedSyntax_StartingIndex;
 
-    EDITOR_domLineNodesZerothIndex = 0;
+    EDITOR_beltIndexZero = 0;
 
     // TODO: '... * get_EDITOR_lineHeight()'???
     // TODO: (^ with respect to the above TODO...) This creation of the viewport actually should NOT be setting any transform attribute values because it always(*double check this is true... I believe it is) is followed up by a case 3 drawing of text for the entire viewport?
