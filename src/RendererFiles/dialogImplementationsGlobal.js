@@ -33,14 +33,14 @@ class DIALOG_FindAll_TreeViewDirector {
     }
 
     /** 
-     * @param {number} caseThreeOrigin if left undefined or (falsey but not 0), this will default to 'this.component.domLineNodesZerothIndex'
+     * @param {number} caseThreeOrigin if left undefined or (falsey but not 0), this will default to 'this.component.beltIndexZero'
      */
     async tvd_drawItem_BATCH_async(start, length, onePositiveDiff_twoNegativeDiff_orThreeFullScreen, caseThreeOrigin) {
         let upperBound = start + length;
         let totalCount = this.nodeList.count_abstract;
         let loopCounter = 0;
 
-        let lastIndex = this.component.domLineNodesZerothIndex - 1;
+        let lastIndex = this.component.beltIndexZero - 1;
         if (lastIndex < 0) {
             lastIndex += this.component.virtualCount; // TODO: 'this.component.virtualCount' or 'this.component.itemListElement.children.length'
         }
@@ -54,7 +54,7 @@ class DIALOG_FindAll_TreeViewDirector {
         let verticalStyleNumber = start * this.component.itemHeightNumber;
 
         if (!caseThreeOrigin && caseThreeOrigin !== 0) {
-            caseThreeOrigin = this.component.domLineNodesZerothIndex;
+            caseThreeOrigin = this.component.beltIndexZero;
         }
         if (caseThreeOrigin < 0 || caseThreeOrigin >= this.component.itemListElement.children.length) {
             throw new RangeError();
@@ -70,7 +70,7 @@ class DIALOG_FindAll_TreeViewDirector {
 
             switch (onePositiveDiff_twoNegativeDiff_orThreeFullScreen) {
                 case 1:
-                    divIndex = this.component.domLineNodesZerothIndex + loopCounter;
+                    divIndex = this.component.beltIndexZero + loopCounter;
                     if (divIndex >= this.component.itemListElement.children.length)
                         divIndex -= this.component.itemListElement.children.length;
                     break;
@@ -134,14 +134,14 @@ class DIALOG_FindAll_TreeViewDirector {
         }
 
         if (onePositiveDiff_twoNegativeDiff_orThreeFullScreen === 1) {
-            let newZerothIndex = this.component.domLineNodesZerothIndex + loopCounter;
+            let newZerothIndex = this.component.beltIndexZero + loopCounter;
             if (newZerothIndex >= this.component.itemListElement.children.length) {
                 newZerothIndex -= this.component.itemListElement.children.length;
             }
-            this.component.domLineNodesZerothIndex = newZerothIndex;
+            this.component.beltIndexZero = newZerothIndex;
         }
         else if (onePositiveDiff_twoNegativeDiff_orThreeFullScreen === 2) {
-            this.component.domLineNodesZerothIndex = lastIndex - (loopTotalIterations - 1);
+            this.component.beltIndexZero = lastIndex - (loopTotalIterations - 1);
         }
     }
     

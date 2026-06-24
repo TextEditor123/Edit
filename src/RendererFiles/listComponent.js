@@ -39,7 +39,7 @@ class ListComponent {
         this.event_scroll_timer = null;
         /** @type {boolean} */ this.event_scroll_bool = false;
 
-        /** @type {number} */ this.domLineNodesZerothIndex = 0;
+        /** @type {number} */ this.beltIndexZero = 0;
     }
 
     /**
@@ -167,11 +167,11 @@ class ListComponent {
                     let firstIndexLineThatWasNotAlreadyRendered = prevVli + this._ONSCROLLvirtualCount;
                     let itemsCount = this.getItemsCountFunc();
                     let vertical = (prevVli + this._ONSCROLLvirtualCount) * this.itemHeightNumber;
-                    let origin = this.domLineNodesZerothIndex;
+                    let origin = this.beltIndexZero;
 
-                    this.domLineNodesZerothIndex = origin + diff;
-                    if (this.domLineNodesZerothIndex >= this.itemListElement.children.length) {
-                        this.domLineNodesZerothIndex -= this.itemListElement.children.length;
+                    this.beltIndexZero = origin + diff;
+                    if (this.beltIndexZero >= this.itemListElement.children.length) {
+                        this.beltIndexZero -= this.itemListElement.children.length;
                     }
 
                     for (var i = 0; i < diff; i++) {
@@ -201,16 +201,16 @@ class ListComponent {
                     let itemsCount = this.getItemsCountFunc();
 
                     let lastIndex;
-                    if (this.domLineNodesZerothIndex === 0) {
+                    if (this.beltIndexZero === 0) {
                         lastIndex = this.itemListElement.children.length - 1;
                     }
                     else {
-                        lastIndex = this.domLineNodesZerothIndex - 1;
+                        lastIndex = this.beltIndexZero - 1;
                     }
-                    this.domLineNodesZerothIndex = lastIndex - (diff - 1);
+                    this.beltIndexZero = lastIndex - (diff - 1);
 
-                    if (this.domLineNodesZerothIndex < 0) {
-                        this.domLineNodesZerothIndex += this.itemListElement.children.length;
+                    if (this.beltIndexZero < 0) {
+                        this.beltIndexZero += this.itemListElement.children.length;
                     }
 
                     let vertical = (currVli + (diff - 1)) * this.itemHeightNumber;
@@ -237,7 +237,7 @@ class ListComponent {
 
                     let itemsCount = this.getItemsCountFunc();
                     let vertical = this.virtualIndex * this.itemHeightNumber;
-                    let origin = this.domLineNodesZerothIndex;
+                    let origin = this.beltIndexZero;
                     
                     for (var i = 0; i < this.virtualCount; i++) {
                         let indexItem = i + this.virtualIndex;
@@ -276,8 +276,8 @@ class ListComponent {
                         }
                     }
 
-                    if (smallestTopSourceIndex !== this.domLineNodesZerothIndex) {
-                        console.log(`c2 => ${smallestTopSourceIndex} !== this.${this.domLineNodesZerothIndex}`);
+                    if (smallestTopSourceIndex !== this.beltIndexZero) {
+                        console.log(`c2 => ${smallestTopSourceIndex} !== this.${this.beltIndexZero}`);
                     }*/
             }
         }
@@ -287,7 +287,7 @@ class ListComponent {
         this._ONSCROLLvirtualCount = this.virtualCount;
         this.itemListElement.innerHTML = '';
         this.virtualIndex = Math.floor(this.rootElement.scrollTop / this.itemHeightNumber);
-        this.domLineNodesZerothIndex = 0;
+        this.beltIndexZero = 0;
 
         let itemsCount = this.getItemsCountFunc();
         let vertical = this.virtualIndex * this.itemHeightNumber;
@@ -335,7 +335,7 @@ class ListComponent {
                     this.state_cursor_validateIndex(this.cursorIndex));
                 let relativeIndex = this.cursorIndex - this.virtualIndex;
                 if (relativeIndex >= 0 && relativeIndex < this.itemListElement.children.length) { // check if is in virtualization space
-                    relativeIndex += this.domLineNodesZerothIndex; // then map the "relativeIndex" by the origin aka:'this.domLineNodesZerothIndex'... i.e.: which line in the dom is the first line from the top of the screen down.
+                    relativeIndex += this.beltIndexZero; // then map the "relativeIndex" by the origin aka:'this.beltIndexZero'... i.e.: which line in the dom is the first line from the top of the screen down.
                     if (relativeIndex >= this.itemListElement.children.length) {
                         relativeIndex -= this.itemListElement.children.length;
                     }
