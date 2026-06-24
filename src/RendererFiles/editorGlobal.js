@@ -74,6 +74,11 @@ const EDITOR_decoder = new TextDecoder();
 // like the baseline instances should all pool their state
 // then if you wanna multicursor you create an 'EDITOR_Cursor' just the same as
 // the primary cursor but now you aren't pooling the state it instead is a field of its own on the instance.
+//
+// Cause then baseline all instances approach "free" and as you need more you
+// have to incur the numbers being touched by GC and such but they're all
+// features that are separate and likely not all to exist simultaneously or something
+// so then in total you have an extremely small memory footprint.
 
 class EDITOR_Cursor {
 
