@@ -85,9 +85,9 @@ function aaa(fileName) {
   markerWhileLoop: while (pos < text.length) {
     switch (text[pos]) {
       /*
-      - [ ] The marker is specifically "//__#__" being the first non-whitespace found in a text file.
-      - [ ] It doesn't have to start at character index 0, but it needs to appear prior to any other text.
-      - [ ] An error if "//__#__" was the first non-whitespace in a file, but an ending marker of the same text was never encountered.
+      - [x] The marker is specifically "//__#__" being the first non-whitespace found in a text file and at the start of a new line.
+      - [ ] It doesn't have to start at character index 0, but it needs to appear prior to any other text and at the start of a new line.
+      - [x] An error if "//__#__" was the first non-whitespace in a file, but an ending marker of the same text was never encountered.
       - [x] A warning message is written to the console if "//__#__" is found at any location other than what was just described.
           - [x] as a token itself
           - [x] as part of a single line comment
@@ -105,6 +105,15 @@ function aaa(fileName) {
       //__#__
       */
       case '/':
+        /** @type {boolean} */
+        let meetsNewLineRequirement;
+        if (pos > 0) {
+          meetsNewLineRequirement = text[pos - 1] === '\r' || text[pos - 1] === '\n';
+        }
+        else {
+          meetsNewLineRequirement = true;
+        }
+
         if (pos <= text.length - 7 &&
             text[pos + 1] === '/' &&
             text[pos + 2] === '_' &&
@@ -113,14 +122,27 @@ function aaa(fileName) {
             text[pos + 5] === '_' &&
             text[pos + 6] === '_') {
               if (preprocessorMarkerContext === 0) {
-                pos += 7;
-                preprocessorMarkerContext = 1; // StartFound
-                continue;
+                if (meetsNewLineRequirement) {
+                  pos += 7;
+                  preprocessorMarkerContext = 1; // StartFound
+                  continue;
+                }
+                else {
+                  console.log('warning failed newline requirement => break markerWhileLoop;');
+                  break markerWhileLoop;
+                }
               }
               else {
-                pos += 7;
-                preprocessorMarkerContext = 0;
-                break markerWhileLoop;
+                if (meetsNewLineRequirement) {
+                  pos += 7;
+                  preprocessorMarkerContext = 0;
+                  break markerWhileLoop;
+                }
+                else {
+                  console.log('warning failed newline requirement => skipped this match because it did not start at a newline.');
+                  pos += 7;
+                  break;
+                }
               }
         }
         else {
