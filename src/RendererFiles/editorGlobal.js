@@ -28,6 +28,7 @@ But if you apply the pattern it hides the word 'line'.
 And the importance when reading the code lies with the words 'line' and 'column'.
 
 - [ ] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
+- [ ] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltZerothIndex'?
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
@@ -223,23 +224,23 @@ const get_EDITOR_textElement = () => EDITOR_baseElement.children[4].children[2];
 
 //                                                                (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex()
 /** SEE 'EDITOR_indexLineTo_beltIndexLine'; code duplication: this is explicitly inlined in the uncompiled source of editorGlobal.js within 'EDITOR_indexLineTo_beltIndexLine' */
-const EDITOR_indexLine_VirtualRelative_Unmatched = (indexLine) => (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex();
+const EDITOR_indexLineTo_virtualIndexLine = (indexLine) => (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex();
 
 /**
  * TODO: It should be >= ?
  * 
- * @example EDITOR_indexLineTo_beltIndexLine(EDITOR_indexLine_VirtualRelative_Unmatched(cursor.indexLine));
+ * @example EDITOR_indexLineTo_beltIndexLine(cursor.indexLine);
  * @returns you capture the variable then check it for < 0 (or the opposite '>=') i.e. => if (indexLine_VirtualRelative < 0) { return bad_state; } else { return good_state; }
  */
 function EDITOR_indexLineTo_beltIndexLine(indexLine) {
-    let unmatchedIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex();
+    let virtualIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualLineIndex();
     // TODO: The following line of code (when I at one point had it commented out in a specific way, I'm adding this clarification after originally having made this comment I don't remember the specifics of how it was commented out, but parts of it were and other parts weren't) either didn't "preprocess" correctly or... well I mean it probably is my fault i.e.: the "preprocess" but yeah this is coming out to be 'return;' and that's it nothing else in the compiled end result so somewhere along the pipeline it got borked.
-    return unmatchedIndexLine >= get_EDITOR_textElement().children.length ||
-           unmatchedIndexLine < 0
+    return virtualIndexLine >= get_EDITOR_textElement().children.length ||
+           virtualIndexLine < 0
                ? -1
-               : ((unmatchedIndexLine = (unmatchedIndexLine + EDITOR_domLineNodesZerothIndex)) > get_EDITOR_virtualCount()
-                   ? unmatchedIndexLine - get_EDITOR_virtualCount()
-                   : unmatchedIndexLine);
+               : ((virtualIndexLine = (virtualIndexLine + EDITOR_domLineNodesZerothIndex)) > get_EDITOR_virtualCount()
+                   ? virtualIndexLine - get_EDITOR_virtualCount()
+                   : virtualIndexLine);
 }
 
 /** The argument is a matchedIndexLine i.e.: the result of 'EDITOR_indexLineTo_beltIndexLine' (no validation is performed on the argument, it is presumed to be the index of a valid text editor line div dom element). This returns -1 if you go out of viewport. It will wrap around if you go too large because 'EDITOR_domLineNodesZerothIndex' isn't 0. */
