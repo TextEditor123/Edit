@@ -5596,10 +5596,6 @@ function EDITOR_drawHorizontalScrollbar() {
     }
 }
 
-/*
-I think I can fix the syntax highlighting but I'm extremely tired it's gonna take a while
-*/
-
 function EDITOR_onScroll_WRAPIT() {
 	set_EDITOR_onScroll_bool(true);
 
@@ -5616,7 +5612,6 @@ function EDITOR_onScroll_WRAPIT() {
     if (!EDITOR_timer) {
         // options.leading
         EDITOR_finalizeAllCursors();
-        //update_VirtualLineIndex();
         if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
             prevVli === get_EDITOR_virtualLineIndex() &&
             get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount()) {
@@ -5646,26 +5641,18 @@ function EDITOR_onScroll_WRAPIT() {
     // TODO: Duplicated setting of scrolltop; this case and just baseline everytime vertical scrolls it is done in this method elsewhere;; THIS IS THE BASELINE
     set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
 
-    // The same count of lines is on the UI so you can probably
-    // redraw them one by one and save "some" of the existing HTML.
-
     let diff = currVli - prevVli;
 
     let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
 
-    //let trackedSyntax_I;
     let lowerBound;
     let upperBound;
     let loopCounter = 0;
-    //let baseIndex;
     let vertical;
     let origin;
-    let lastIndex; // TODO: lastIndex can probably be origin?
 
     if (diff > 0 && diff < get_EDITOR_virtualCount()) {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
-        // firstIndexLineThatWasNotAlreadyRendered
-        //trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + get_EDITOR_ONSCROLLvirtualCount());
         lowerBound = prevVli + get_EDITOR_ONSCROLLvirtualCount();
         upperBound = lowerBound + diff;
 
@@ -5673,35 +5660,28 @@ function EDITOR_onScroll_WRAPIT() {
         origin = EDITOR_domLineNodesZerothIndex;
 
         EDITOR_domLineNodesZerothIndex = origin + diff;
-        if (EDITOR_domLineNodesZerothIndex >= get_EDITOR_textElement().children.length) {
+        if (EDITOR_domLineNodesZerothIndex >= get_EDITOR_textElement().children.length)
             EDITOR_domLineNodesZerothIndex -= get_EDITOR_textElement().children.length;
-        }
     }
     else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 2;
-        //trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(currVli);
         lowerBound = currVli;
         upperBound = lowerBound + diff;
 
         vertical = currVli * get_EDITOR_lineHeight();
-        
-        if (EDITOR_domLineNodesZerothIndex === 0) {
-            lastIndex = get_EDITOR_textElement().children.length - 1;
-        }
-        else {
-            lastIndex = EDITOR_domLineNodesZerothIndex - 1;
-        }
-        EDITOR_domLineNodesZerothIndex = lastIndex - (diff - 1);
 
-        if (EDITOR_domLineNodesZerothIndex < 0) {
+        let lastIndex = EDITOR_domLineNodesZerothIndex === 0
+            ? get_EDITOR_textElement().children.length - 1
+            : EDITOR_domLineNodesZerothIndex - 1;
+
+        EDITOR_domLineNodesZerothIndex = lastIndex - (diff - 1);
+        if (EDITOR_domLineNodesZerothIndex < 0)
             EDITOR_domLineNodesZerothIndex += get_EDITOR_textElement().children.length;
-        }
 
         origin = EDITOR_domLineNodesZerothIndex;
     }
     else {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
-        //trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(get_EDITOR_virtualLineIndex());
         lowerBound = get_EDITOR_virtualLineIndex();
         upperBound = lowerBound + get_EDITOR_virtualCount();
 
@@ -5709,22 +5689,17 @@ function EDITOR_onScroll_WRAPIT() {
         origin = EDITOR_domLineNodesZerothIndex;
     }
 
-    //if (trackedSyntax_I === NaN || trackedSyntax_I === -1) {
-    //    trackedSyntax_I = EDITOR_trackedSyntaxList.count_abstract;
-    //}
-
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
         let transform = `translateY(${vertical}px)`;
 
         vertical += get_EDITOR_lineHeight();
 
-        let aaa = origin + loopCounter;
-        if (aaa >= get_EDITOR_textElement().children.length) {
-            aaa -= get_EDITOR_textElement().children.length;
-        }
+        let matchedIndexLine = origin + loopCounter;
+        if (matchedIndexLine >= get_EDITOR_textElement().children.length)
+            matchedIndexLine -= get_EDITOR_textElement().children.length;
 
-        let gutter = get_EDITOR_gutter().children[aaa];
-        let div = get_EDITOR_textElement().children[aaa];
+        let gutter = get_EDITOR_gutter().children[matchedIndexLine];
+        let div = get_EDITOR_textElement().children[matchedIndexLine];
         loopCounter++;
 
         gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
@@ -5785,12 +5760,10 @@ function EDITOR_onScroll_WRAPIT() {
             div.removeChild(div.children[childIndex]);
         }
     }
-
-    //EDITOR_drawHorizontalScrollbar();
 }
 
 function EDITOR_onScroll_timeoutFunc() {
-    if (/*trailing && lastArgs*/ get_EDITOR_onScroll_bool()) {
+    if (get_EDITOR_onScroll_bool()) {
         set_EDITOR_onScroll_bool(false);
         //EDITOR_onScroll_bbb();
         EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 100);
@@ -5803,12 +5776,6 @@ function EDITOR_onScroll_timeoutFunc() {
     }
 }
 
-
-// I can't even read anything I'm exhausted I can't do it today
-
-/**
- * TODO: Too many verbose comments that are just ramblings
- */
 function EDITOR_onScroll_bbb() {
     EDITOR_finalizeAllCursors();
     update_VirtualLineIndex();
@@ -5845,123 +5812,106 @@ function EDITOR_onScroll_bbb() {
             EDITOR_createViewport();
     }
 
-    if (EDITOR_bbb_ONSCROLLvirtualCount === get_EDITOR_virtualCount() &&
-        get_EDITOR_gutter().children.length === get_EDITOR_virtualCount() &&
-        get_EDITOR_textElement().children.length === get_EDITOR_virtualCount()) {
+    let diff = currVli - prevVli;
 
-        // The same count of lines is on the UI so you can probably
-        // redraw them one by one and save "some" of the existing HTML.
+    let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
 
-        let diff = currVli - prevVli;
+    let trackedSyntax_I;
+    let lowerBound;
+    let upperBound;
+    let loopCounter = 0;
+    let vertical;
+    let origin;
 
-        let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
+    if (diff > 0 && diff < get_EDITOR_virtualCount()) {
+        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
+        // firstIndexLineThatWasNotAlreadyRendered
+        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + EDITOR_bbb_ONSCROLLvirtualCount);
+        lowerBound = prevVli + EDITOR_bbb_ONSCROLLvirtualCount;
+        upperBound = lowerBound + diff;
 
-        let trackedSyntax_I;
-        let lowerBound;
-        let upperBound;
-        let loopCounter = 0;
-        //let baseIndex;
-        let vertical;
-        let origin;
-        let lastIndex; // TODO: lastIndex can probably be origin?
+        vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
+        origin = EDITOR_domLineNodesZerothIndex;
 
-        if (diff > 0 && diff < get_EDITOR_virtualCount()) {
-            onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
-            // firstIndexLineThatWasNotAlreadyRendered
-            trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + EDITOR_bbb_ONSCROLLvirtualCount);
-            lowerBound = prevVli + EDITOR_bbb_ONSCROLLvirtualCount;
-            upperBound = lowerBound + diff;
+        EDITOR_domLineNodesZerothIndex = origin + diff;
+        if (EDITOR_domLineNodesZerothIndex >= get_EDITOR_textElement().children.length)
+            EDITOR_domLineNodesZerothIndex -= get_EDITOR_textElement().children.length;
+    }
+    else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
+        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 2;
+        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(currVli);
+        lowerBound = currVli;
+        upperBound = lowerBound + diff;
 
-            vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
-            origin = EDITOR_domLineNodesZerothIndex;
+        vertical = currVli * get_EDITOR_lineHeight();
+        
+        let lastIndex = EDITOR_domLineNodesZerothIndex === 0
+            ? get_EDITOR_textElement().children.length - 1
+            : EDITOR_domLineNodesZerothIndex - 1;
 
-            EDITOR_domLineNodesZerothIndex = origin + diff;
-            if (EDITOR_domLineNodesZerothIndex >= get_EDITOR_textElement().children.length) {
-                EDITOR_domLineNodesZerothIndex -= get_EDITOR_textElement().children.length;
-            }
-        }
-        else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
-            onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 2;
-            trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(currVli);
-            lowerBound = currVli;
-            upperBound = lowerBound + diff;
+        EDITOR_domLineNodesZerothIndex = lastIndex - (diff - 1);
+        if (EDITOR_domLineNodesZerothIndex < 0)
+            EDITOR_domLineNodesZerothIndex += get_EDITOR_textElement().children.length;
 
-            vertical = currVli * get_EDITOR_lineHeight();
-            
-            if (EDITOR_domLineNodesZerothIndex === 0) {
-                lastIndex = get_EDITOR_textElement().children.length - 1;
+        origin = EDITOR_domLineNodesZerothIndex;
+    }
+    else {
+        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
+        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(get_EDITOR_virtualLineIndex());
+        lowerBound = get_EDITOR_virtualLineIndex();
+        upperBound = lowerBound + get_EDITOR_virtualCount();
+
+        vertical = get_EDITOR_virtualLineIndex() * get_EDITOR_lineHeight();
+        origin = EDITOR_domLineNodesZerothIndex;
+    }
+
+    if (trackedSyntax_I === NaN || trackedSyntax_I === -1)
+        trackedSyntax_I = EDITOR_trackedSyntaxList.count_abstract;
+
+    for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
+        let transform = `translateY(${vertical}px)`;
+
+        let div;
+        let gutter;
+
+        vertical += get_EDITOR_lineHeight();
+
+        let matchedIndexLine = origin + loopCounter;
+        if (matchedIndexLine >= get_EDITOR_textElement().children.length)
+            matchedIndexLine -= get_EDITOR_textElement().children.length;
+
+        gutter = get_EDITOR_gutter().children[matchedIndexLine];
+        div = get_EDITOR_textElement().children[matchedIndexLine];
+        loopCounter++;
+
+        gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
+            ? '~'
+            : indexLine + 1;
+
+        gutter.style.transform = transform;
+        div.style.transform = transform;
+
+        let lineStart;
+        let lineEnd;
+        if (indexLine < EDITOR_lineEndPositionList.count) {
+            if (indexLine === 0) {
+                lineStart = 0;
+                lineEnd = EDITOR_lineEndPositionList.data[indexLine] - 0;
             }
             else {
-                lastIndex = EDITOR_domLineNodesZerothIndex - 1;
+                lineStart = (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
+                lineEnd = EDITOR_lineEndPositionList.data[indexLine];
             }
-            EDITOR_domLineNodesZerothIndex = lastIndex - (diff - 1);
-
-            if (EDITOR_domLineNodesZerothIndex < 0) {
-                EDITOR_domLineNodesZerothIndex += get_EDITOR_textElement().children.length;
-            }
-
-            origin = EDITOR_domLineNodesZerothIndex;
         }
         else {
-            onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
-            trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(get_EDITOR_virtualLineIndex());
-            lowerBound = get_EDITOR_virtualLineIndex();
-            upperBound = lowerBound + get_EDITOR_virtualCount();
-
-            vertical = get_EDITOR_virtualLineIndex() * get_EDITOR_lineHeight();
-            origin = EDITOR_domLineNodesZerothIndex;
+            lineStart = 0;
+            lineEnd = 0;
         }
 
-        if (trackedSyntax_I === NaN || trackedSyntax_I === -1) {
-            trackedSyntax_I = EDITOR_trackedSyntaxList.count_abstract;
-        }
-
-        for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
-            let transform = `translateY(${vertical}px)`;
-
-            let div;
-            let gutter;
-
-            vertical += get_EDITOR_lineHeight();
-
-            let aaa = origin + loopCounter;
-            if (aaa >= get_EDITOR_textElement().children.length) {
-                aaa -= get_EDITOR_textElement().children.length;
-            }
-
-            gutter = get_EDITOR_gutter().children[aaa];
-            div = get_EDITOR_textElement().children[aaa];
-            loopCounter++;
-
-            gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
-                ? '~'
-                : indexLine + 1;
-
-            gutter.style.transform = transform;
-            div.style.transform = transform;
-
-            let lineStart;
-            let lineEnd;
-            if (indexLine < EDITOR_lineEndPositionList.count) {
-                if (indexLine === 0) {
-                    lineStart = 0;
-                    lineEnd = EDITOR_lineEndPositionList.data[indexLine] - 0;
-                }
-                else {
-                    lineStart = (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
-                    lineEnd = EDITOR_lineEndPositionList.data[indexLine];
-                }
-            }
-            else {
-                lineStart = 0;
-                lineEnd = 0;
-            }
-
-            trackedSyntax_I = EDITOR_createSpansForLineOfText(div, lineStart, lineEnd, trackedSyntax_I);
-        }
-
-        EDITOR_drawHorizontalScrollbar();
+        trackedSyntax_I = EDITOR_createSpansForLineOfText(div, lineStart, lineEnd, trackedSyntax_I);
     }
+
+    EDITOR_drawHorizontalScrollbar();
 }
 
 function EDITOR_createViewport() {
@@ -5980,6 +5930,7 @@ function EDITOR_createViewport() {
     EDITOR_domLineNodesZerothIndex = 0;
 
     // TODO: '... * get_EDITOR_lineHeight()'???
+    // TODO: (^ with respect to the above TODO...) This creation of the viewport actually should NOT be setting any transform attribute values because it always(*double check this is true... I believe it is) is followed up by a case 3 drawing of text for the entire viewport?
     let top = get_EDITOR_virtualLineIndex();
 
     for (var i = 0; i < get_EDITOR_virtualCount(); i++) {
