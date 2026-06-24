@@ -247,7 +247,7 @@ class TreeViewComponent {
         let index = Math.floor(rY / this.itemHeightNumber);
         index = this.state_cursor_validateIndex(index);
 
-        let matchedIndex = this.getIndexItemToHtml_Correctly(index);
+        let matchedIndex = this.indexItemTo_beltIndexItem(index);
         if (matchedIndex < 0) {
             return;
         }
@@ -268,7 +268,7 @@ class TreeViewComponent {
         let index = Math.floor(rY / this.itemHeightNumber);
         index = this.state_cursor_validateIndex(index);
 
-        let matchedIndex = this.getIndexItemToHtml_Correctly(index);
+        let matchedIndex = this.indexItemTo_beltIndexItem(index);
         if (matchedIndex < 0) {
             return;
         }
@@ -280,7 +280,7 @@ class TreeViewComponent {
             // await this.director.tvd_expandCollapseIconWasClicked_async(divItem, index);
         }
         else {
-            let matchedIndex = this.getIndexItemToHtml_Correctly(this.cursorIndex);
+            let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
             if (matchedIndex >= 0 && matchedIndex < this.itemListElement.children.length) {
                 return this.director.tvd_ondblclick_async(this.itemListElement.children[matchedIndex], this.cursorIndex);
             }
@@ -297,7 +297,7 @@ class TreeViewComponent {
                 Math.floor(rY / this.itemHeightNumber)));
 
             // TODO: you need to move this above the divItem assignment and do checks earlier... double check all other uses
-            let matchedIndex = this.getIndexItemToHtml_Correctly(this.cursorIndex);
+            let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
             if (matchedIndex < 0) {
                 return;
             }
@@ -313,7 +313,7 @@ class TreeViewComponent {
             this.state_cursor_setIndex(this.state_cursor_validateIndex(
                 this.cursorIndex));
             
-            let matchedIndex = this.getIndexItemToHtml_Correctly(this.cursorIndex);
+            let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
             if (matchedIndex < 0) {
                 return;
             }
@@ -353,7 +353,7 @@ class TreeViewComponent {
                     this.state_cursor_setIndex(this.state_cursor_validateIndex(
                         this.cursorIndex));
                     // TODO: 'ArrowRight' when the cursor is on a valid item but isn't part of the virtualization result.
-                    let matchedIndex = this.getIndexItemToHtml_Correctly(this.cursorIndex);
+                    let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
                     if (matchedIndex < 0) {
                         return;
                     }
@@ -367,7 +367,7 @@ class TreeViewComponent {
                     event.preventDefault();
                     this.state_cursor_setIndex(this.state_cursor_validateIndex(
                         this.cursorIndex));
-                    let matchedIndex = this.getIndexItemToHtml_Correctly(this.cursorIndex);
+                    let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
                     if (matchedIndex < 0) {
                         return;
                     }
@@ -381,7 +381,7 @@ class TreeViewComponent {
                 event.preventDefault();
                 this.state_cursor_setIndex(this.state_cursor_validateIndex(
                     this.cursorIndex));
-                let matchedIndex = this.getIndexItemToHtml_Correctly(this.cursorIndex);
+                let matchedIndex = this.indexItemTo_beltIndexItem(this.cursorIndex);
                 if (matchedIndex < 0) {
                     return;
                 }
@@ -478,8 +478,9 @@ class TreeViewComponent {
      * 
      * @returns you capture the variable then check it for < 0 (or the opposite '>=') i.e. => if (indexLine_VirtualRelative < 0) { return bad_state; } else { return good_state; }
      */
-    getIndexItemToHtml_Correctly(indexItem) {
+    indexItemTo_beltIndexItem(indexItem) {
         let unmatchedIndexItem = indexItem - this.virtualIndex_ofScrollTop;
+        // TODO: You don't check the data, you just check whether an HTML element exists that could receive UI to render. Probably need to remove 'unmatchedIndexItem >= this.director.tvd_getTotalCount() ||'
         return unmatchedIndexItem >= this.director.tvd_getTotalCount() ||
                unmatchedIndexItem >= this.itemListElement.children.length ||
                unmatchedIndexItem < 0
