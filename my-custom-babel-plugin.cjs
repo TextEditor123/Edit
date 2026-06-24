@@ -204,6 +204,9 @@ module.exports = function (babel) {
     "get_js_PIPE",
     "get_js_QUESTIONMARK",
     "get_js_CARET",
+
+    "get_EDITOR_gutterPaddingLeft",
+    "get_EDITOR_gutterPaddingRight",
   ];
 
   return {

@@ -134,8 +134,11 @@ EDITOR_byte_fields[32] = 63;
 const get_js_CARET = () => EDITOR_byte_fields[33];
 EDITOR_byte_fields[33] = 94;
 
+const get_EDITOR_gutterPaddingLeft = () => EDITOR_byte_fields[34];
+EDITOR_byte_fields[34] = 3;
 
-
+const get_EDITOR_gutterPaddingRight = () => EDITOR_byte_fields[35];
+EDITOR_byte_fields[35] = 6;
 
 
 

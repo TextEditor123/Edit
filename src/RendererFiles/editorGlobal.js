@@ -304,9 +304,6 @@ let w_span = null;
 let w_div = null;
 let w_beltIndexLine = -1;  // 2026-06-24_count_other_int32_fields_11
 
-const EDITOR_gutterPaddingLeft = 3; // 2026-06-24_count_other_int32_fields_12
-const EDITOR_gutterPaddingRight = 6; // 2026-06-24_count_other_int32_fields_13
-
 /**
  * TODO: It should be >= ?
  * 
@@ -345,8 +342,8 @@ function EDITOR_beltIndexLine_PREVIOUS(beltIndexLine) {
 function EDITOR_init() {
     EDITOR_measureLineHeightAndCharacterWidth();
 
-    let gutterPaddingLeft = EDITOR_gutterPaddingLeft + 'px';
-    let gutterPaddingRight = EDITOR_gutterPaddingRight + 'px';
+    let gutterPaddingLeft = get_EDITOR_gutterPaddingLeft() + 'px';
+    let gutterPaddingRight = get_EDITOR_gutterPaddingRight() + 'px';
     let gutterWidth = EDITOR_characterWidth + 'px';
 
     get_EDITOR_gutter().style.paddingLeft = gutterPaddingLeft;
@@ -357,7 +354,7 @@ function EDITOR_init() {
     EDITOR_gutterBackgroundColor.style.paddingRight = gutterPaddingRight; 
     EDITOR_gutterBackgroundColor.style.width = gutterWidth;
 
-    let left = (EDITOR_gutterPaddingLeft + EDITOR_gutterPaddingRight + EDITOR_characterWidth) + 'px';
+    let left = (get_EDITOR_gutterPaddingLeft() + get_EDITOR_gutterPaddingRight() + EDITOR_characterWidth) + 'px';
     let width = 'calc(100% - ' + left + ')';
 
     get_EDITOR_body().style.marginLeft = left;
@@ -641,7 +638,7 @@ function EDITOR_drawGutter_Width() {
     set_EDITOR_drawn_count_of_digits_longest_line_number(digitCountOfLargestLineNumber);
 
     set_EDITOR_gutterWidthStyleValue(Math.ceil(digitCountOfLargestLineNumber * EDITOR_characterWidth));
-    set_EDITOR_gutterWidthTotal(get_EDITOR_gutterWidthStyleValue() + EDITOR_gutterPaddingLeft + EDITOR_gutterPaddingRight);
+    set_EDITOR_gutterWidthTotal(get_EDITOR_gutterWidthStyleValue() + get_EDITOR_gutterPaddingLeft() + get_EDITOR_gutterPaddingRight());
 
     let gutterWidth = get_EDITOR_gutterWidthStyleValue() + 'px';
     get_EDITOR_gutter().style.width = gutterWidth;
@@ -3479,7 +3476,7 @@ function EDITOR_registerHandlers() {
             indexColumn = lastValidIndexColumn;
         }
 
-        if (rX < -1 * EDITOR_gutterPaddingRight) {
+        if (rX < -1 * get_EDITOR_gutterPaddingRight()) {
             set_EDITOR_detailRank(3);
             EDITOR_onMouseDownDetailRankThree(event, indexLine, indexColumn);
             return;
