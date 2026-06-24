@@ -384,12 +384,12 @@ class ListComponent {
     /**
      * if (this.cursorIndex === index) return;
      * 
-     * @param {*} index 
+     * @param {*} indexItem 
      */
-    state_cursor_setIndex(index) {
-        if (this.cursorIndex === index) return;
+    state_cursor_setIndex(indexItem) {
+        if (this.cursorIndex === indexItem) return;
 
-        this.cursorIndex = index;
+        this.cursorIndex = indexItem;
         this.cursorTopNumber = this.cursorIndex * this.itemHeightNumber;
         this.cursorElement.style.top = this.cursorTopNumber + 'px';
 
@@ -409,16 +409,16 @@ class ListComponent {
     /**
      * if (this.cursorIndex === index) return;
      * 
-     * @param {*} index 
+     * @param {*} indexItem 
      */
-    state_cursor_validateIndex(index) {
+    state_cursor_validateIndex(indexItem) {
         let itemsCount = this.getItemsCountFunc();
-        if (index >= itemsCount) {
-            index = itemsCount - 1;
+        if (indexItem >= itemsCount) {
+            indexItem = itemsCount - 1;
         }
-        if (index < 0) {
-            index = 0;
+        if (indexItem < 0) {
+            indexItem = 0;
         }
-        return index;
+        return indexItem;
     }
 }
