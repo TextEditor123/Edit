@@ -335,7 +335,7 @@ class ListComponent {
                     this.state_cursor_validateIndex(this.cursorIndex));
                 let virtualIndex_ofEvent = this.cursorIndex - this.virtualIndex_ofScrollTop;
                 if (virtualIndex_ofEvent >= 0 && virtualIndex_ofEvent < this.itemListElement.children.length) { // check if is in virtualization space
-                    virtualIndex_ofEvent += this.beltIndexZero; // then map the "relativeIndex" by the origin aka:'this.beltIndexZero'... i.e.: which line in the dom is the first line from the top of the screen down.
+                    virtualIndex_ofEvent += this.beltIndexZero; // then map the "virtualIndex_ofEvent" by the origin aka:'this.beltIndexZero'... i.e.: which line in the dom is the first line from the top of the screen down.
                     if (virtualIndex_ofEvent >= this.itemListElement.children.length) {
                         virtualIndex_ofEvent -= this.itemListElement.children.length;
                     }
