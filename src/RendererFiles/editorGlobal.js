@@ -5556,6 +5556,7 @@ function EDITOR_onScroll_WRAPIT() {
 
         let span;
 
+        // TODO: perhaps some debug assertion that lineEnd > lineStart?
         let textContent = lineStart === lineEnd
             ? ''
             : EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd));
