@@ -5655,7 +5655,7 @@ function EDITOR_syntaxHighlighting() {
     EDITOR_syntaxHighlighting_previousIndexVirtual = get_EDITOR_virtualIndexLine();
 
     let diff = currVli - prevVli;
-    console.log(diff);
+    //console.log(diff);
 
     let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
 
@@ -5688,7 +5688,14 @@ function EDITOR_syntaxHighlighting() {
     Then you maybe have to check the next div whether it has the not syntax highlighted css class
     in case many scroll events occured and somehow if this results you lose information you have add a step if needed to check
     and do it only at the edge instead of entire.
+
+    It's always either the first or last.
+    So your edges to check might be 'EDITOR_beltIndexZero' and PREVIOUS('EDITOR_beltIndexZero')
+
+    Then you can loop positive or negative depending on first or last.
     */
+
+
    
 }
 
