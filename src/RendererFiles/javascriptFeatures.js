@@ -1826,7 +1826,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     // is done when there IS a valid match, in order to write out any pending text that came prior to the keyword.
                     if (substart < wordstart) {
                         // TODO: After you make these changes, span pooling is going to FAR more important now cause you're scrolling to just 1 span per line each time.
-                        // TODO: If a comment or multi-line comment are the only things on a line, and prior to them on that same line is whitespace...
+                        // TODO: If a comment or multi-line comment are the only things on a line, and prior to them on that same line is only whitespace...
                         // ...preprocessor.cjs should remove the entire line itself rather than take the line and indentation for no reason.
                         //
                         flushTextContent = divSpanTextContent.substring(substart, substart = wordstart);
