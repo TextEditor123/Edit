@@ -1662,7 +1662,7 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 }
 
 /*
-stress was getting too high, I need at least another 24 hours of rest before I come back to this
+woah Guild Wars 1 (aka just: Guild Wars) (aka: Guild Wars Reforged) got a MASSIVE rebalance patch yesterday.
 */
 
 /* sec0
