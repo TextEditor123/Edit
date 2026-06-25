@@ -1276,6 +1276,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
     let childIndex = 0;
 
     let substart = 0;
+    
     let pos = 0;
 
     let span;
@@ -1292,6 +1293,9 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
     let shouldSkipContiguous;
 
     while (pos < divSpanTextContentLength) {
+
+        let subend = divSpanTextContentLength;
+
         switch (divSpanTextContent[pos]) {
             case 'a':
             case 'b':
@@ -1354,7 +1358,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
 
                 let charIntSum = 0;
 
-                outer: while (pos < divSpanTextContentLength) {
+                outer: while (pos < subend) {
                     switch (divSpanTextContent[pos]) {
                         case 'a':
                         case 'b':
@@ -1822,6 +1826,9 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     // is done when there IS a valid match, in order to write out any pending text that came prior to the keyword.
                     if (substart < wordstart) {
                         // TODO: After you make these changes, span pooling is going to FAR more important now cause you're scrolling to just 1 span per line each time.
+                        // TODO: If a comment or multi-line comment are the only things on a line, and prior to them on that same line is whitespace...
+                        // ...preprocessor.cjs should remove the entire line itself rather than take the line and indentation for no reason.
+                        //
                         flushTextContent = divSpanTextContent.substring(substart, substart = wordstart);
                         if (childIndex < div.children.length) {
                             span = div.children[childIndex++];
@@ -1876,7 +1883,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     // All in all, this already was guaranteed to read at least 1 since the while loop's condition in this method
                     // This change is moreso a matter of anxiety and me not wanting to deal with this at the moment so I need to see the explicit read here so I can sleep at night for the time being until my stress levels are lower.
                     pos++;
-                    while (pos < divSpanTextContentLength) {
+                    while (pos < subend) {
                         if (divSpanTextContent[pos] === get_js_LINEFEED()) {
                             break;
                         }
@@ -1928,7 +1935,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     let ticketSource = 2;
                     let ticketAsterisk = -1;
                     let ticketForwardSlash = -1;
-                    while (pos < divSpanTextContentLength) {
+                    while (pos < subend) {
                         switch (divSpanTextContent[pos]) {
                             case get_js_ASTERISK():
                                 ticketAsterisk = ticketSource++;
@@ -1986,14 +1993,14 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                 //
                 // likely what started the string is the same as the terminator, so you need to move ahead one position before starting the loop.
                 pos++;
-                outer: while (pos < divSpanTextContentLength) {
+                outer: while (pos < subend) {
                     switch (divSpanTextContent[pos]) {
                         case get_js_DOUBLEQUOTE():
                             pos++;
                             break outer;
                         case get_js_BACKSLASH():
                             pos++;
-                            if (pos < divSpanTextContentLength) {
+                            if (pos < subend) {
                                 pos++; // skip the escaped character provided that the file didn't end after the original backslash
                             }
                             continue /*outer*/;
@@ -2035,14 +2042,14 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                 //
                 // likely what started the string is the same as the terminator, so you need to move ahead one position before starting the loop.
                 pos++;
-                outer: while (pos < divSpanTextContentLength) {
+                outer: while (pos < subend) {
                     switch (divSpanTextContent[pos]) {
                         case get_js_SINGLEQUOTE():
                             pos++;
                             break outer;
                         case get_js_BACKSLASH():
                             pos++;
-                            if (pos < divSpanTextContentLength) {
+                            if (pos < subend) {
                                 pos++; // skip the escaped character provided that the file didn't end after the original backslash
                             }
                             continue /*outer*/;
@@ -2084,14 +2091,14 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                 //
                 // likely what started the string is the same as the terminator, so you need to move ahead one position before starting the loop.
                 pos++;
-                outer: while (pos < divSpanTextContentLength) {
+                outer: while (pos < subend) {
                     switch (divSpanTextContent[pos]) {
                         case get_js_BACKTICK():
                             pos++;
                             break outer;
                         case get_js_BACKSLASH():
                             pos++;
-                            if (pos < divSpanTextContentLength) {
+                            if (pos < subend) {
                                 pos++; // skip the escaped character provided that the file didn't end after the original backslash
                             }
                             continue /*outer*/;
@@ -2124,7 +2131,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                 //
                 
                 // NOTE: A presumption is being made here that "any multiline syntax that spans multiple lines, won't end in ="...
-                // ...this presumption permits checking only the text that is in bounds of substart and divSpanTextContentLength.
+                // ...this presumption permits checking only the text that is in bounds of substart and subend.
                 
                 // TODO: This contiguous skipping logic isn't working for every switch case?
                 //
@@ -2150,7 +2157,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     shouldSkipContiguous = false;
                 }
                 if (!shouldSkipContiguous) {
-                    if (pos < divSpanTextContentLength && divSpanTextContent[pos + 1] === get_js_EQUALS()) {
+                    if (pos < subend && divSpanTextContent[pos + 1] === get_js_EQUALS()) {
                         shouldSkipContiguous = true;
                     }
                 }
@@ -2159,7 +2166,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     // skip current
                     pos++;
                     // skip contiguous
-                    while (pos < divSpanTextContentLength && divSpanTextContent[pos] === get_js_EQUALS()) {
+                    while (pos < subend && divSpanTextContent[pos] === get_js_EQUALS()) {
                         pos++;
                     }
                     continue;
@@ -2182,7 +2189,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     // I don't know if I would count '=>' as an "assignment operator"... maybe I would but I'm too focused on whether I'd count it as such that I can't figure out the way to make it work. So I need to just make it work first.
                     pos++;
                     substart++;
-                    if (pos < divSpanTextContentLength && divSpanTextContent[pos] === get_js_CLOSEBRACKET()) {
+                    if (pos < subend && divSpanTextContent[pos] === get_js_CLOSEBRACKET()) {
                         textContent = '=>';
                         pos++;
                         substart++;
@@ -2224,12 +2231,12 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                 //
                 
                 // NOTE: A presumption is being made here that "any multiline syntax that spans multiple lines, won't end in +"...
-                // ...this presumption permits checking only the text that is in bounds of substart and divSpanTextContentLength.
+                // ...this presumption permits checking only the text that is in bounds of substart and subend.
                 
                 // TODO: This contiguous skipping logic isn't working for every switch case?
                 shouldSkipContiguous = pos > substart && divSpanTextContent[pos - 1] === get_js_PLUS();
                 if (!shouldSkipContiguous) {
-                    if (pos < divSpanTextContentLength) {
+                    if (pos < subend) {
                         if (divSpanTextContent[pos + 1] === get_js_PLUS()) {
                             textContent = '++';
                         }
@@ -2249,7 +2256,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     // skip current
                     pos++;
                     // skip contiguous
-                    while (pos < divSpanTextContentLength && divSpanTextContent[pos] === get_js_PLUS()) {
+                    while (pos < subend && divSpanTextContent[pos] === get_js_PLUS()) {
                         pos++;
                     }
                     continue;
@@ -2290,7 +2297,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                 // -=
                 
                 // NOTE: A presumption is being made here that "any multiline syntax that spans multiple lines, won't end in -"...
-                // ...this presumption permits checking only the text that is in bounds of substart and divSpanTextContentLength.
+                // ...this presumption permits checking only the text that is in bounds of substart and subend.
                 
                 // When you switch on '+' then check for '-' or '+'... should you do something relating to NOT invoking the decode function and instead
                 // you just "know" the text that goes there based on your conditional branching?
@@ -2298,7 +2305,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                 // TODO: This contiguous skipping logic isn't working for every switch case?
                 shouldSkipContiguous = pos > substart && divSpanTextContent[pos - 1] === get_js_MINUS();
                 if (!shouldSkipContiguous) {
-                    if (pos < divSpanTextContentLength) {
+                    if (pos < subend) {
                         if (divSpanTextContent[pos + 1] === get_js_MINUS()) {
                             textContent = '--';
                         }
@@ -2318,7 +2325,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv) {
                     // skip current
                     pos++;
                     // skip contiguous
-                    while (pos < divSpanTextContentLength && divSpanTextContent[pos] === get_js_MINUS()) {
+                    while (pos < subend && divSpanTextContent[pos] === get_js_MINUS()) {
                         pos++;
                     }
                     continue;
