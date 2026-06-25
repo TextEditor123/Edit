@@ -2422,9 +2422,10 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
             let trackedSyntaxEnd = get_EDITOR_pooledTrackedSyntax_start() + get_EDITOR_pooledTrackedSyntax_length();
             subend = trackedSyntaxEnd > divSpanTextContentLength ? divSpanTextContentLength : trackedSyntaxEnd;
             
+            let length = subend - substart;
             span.textContent = divSpanTextContent.substring(substart, subend);
-            substart += (subend - substart);
-            pos += (subend - substart);
+            substart += length;
+            pos += length;
             switch (EDITOR_pooledTrackedSyntax_trackedSyntaxKind) {
                 case get_TrackedSyntaxKind_Comment():
                     span.className = 'eCM';
