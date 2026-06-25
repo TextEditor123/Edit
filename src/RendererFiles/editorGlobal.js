@@ -5692,6 +5692,15 @@ function EDITOR_syntaxHighlighting() {
         beltIndexCurrent = EDITOR_beltIndexLine_PREVIOUS(beltIndexCurrent);
     }
 
+    /*
+    I feel extremely paranoid.
+    I got 'get_EDITOR_textElement' to work yesterday by means of a "preprocessor/(somewhat bundler)" logic.
+    And I'm hovering it right now and it isn't working.
+    All I remember is that there was an update when I opened VSCode this morning.
+    Did they deliberately stop what I did from working?
+    It sounds ridiculous but I'm literally sweating in panic and I'm gonna try and just move on.
+    */
+
     //if (diff > 0 && diff < get_EDITOR_virtualCount()) {
     //    
     //}
