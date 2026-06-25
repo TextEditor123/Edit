@@ -1702,6 +1702,9 @@ Okay fine I'll look at the asynchronous syntax highlighting for an hour and see 
 
 8:36 AM
 9:36 AM?
+
+If you were in a movie.
+What would the audience be yelling at the scream for you to do next?
 */
 
 /* sec0
