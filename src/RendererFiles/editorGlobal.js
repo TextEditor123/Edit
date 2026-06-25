@@ -300,10 +300,6 @@ let EDITOR_offsetWithinSpan_withRespectToThisSpan = null;
 
 let EDITOR_timer = null;
 
-let EDITOR_bbb_ONSCROLLvirtualIndexLine = 500;  // 2026-06-24_count_other_int32_fields_2
-let EDITOR_bbb_ONSCROLLvirtualCount = 0;  // 2026-06-24_count_other_int32_fields_3
-let EDITOR_bbb_ONSCROLLscrollTop = 500;  // 2026-06-24_count_other_int32_fields_4
-
 let EDITOR_pooledTrackedSyntax_trackedSyntaxKind = get_TrackedSyntaxKind_None();  // 2026-06-24_count_other_int32_fields_5
 
 let EDITOR_characterWidth = 8;
@@ -609,7 +605,6 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
     EDITOR_drawGutter_Width();
     // Force 'case 3' within 'EDITOR_onScroll_bbb();' downstream
     set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualCount());
-    EDITOR_bbb_ONSCROLLvirtualIndexLine = get_EDITOR_virtualCount();
     EDITOR_onScroll_bbb();
 }
 
@@ -5445,7 +5440,7 @@ function EDITOR_onScroll_WRAPIT() {
                 return;
         }
 
-        EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 100);
+        EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 1000);
 
         if (get_EDITOR_ONSCROLLvirtualCount() !== get_EDITOR_virtualCount() ||
             get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
@@ -5588,8 +5583,18 @@ function EDITOR_onScroll_timeoutFunc() {
     if (get_EDITOR_onScroll_bool()) {
         set_EDITOR_onScroll_bool(false);
         //EDITOR_onScroll_bbb();
-        EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 100);
+        EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 1000);
     } else {
+        // - [?] 1: Try to get any amount of syntax highlighting to work, minimal worry about optimization.
+        //
+        // Force case 3
+        prevVli = 0;
+        currVli = get_EDITOR_virtualCount();
+        // TODO: Duplicated setting of scrolltop; this case and just baseline everytime vertical scrolls it is done in this method elsewhere
+        set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
+        //EDITOR_createViewport();
+        EDITOR_onScroll_bbb();
+
         EDITOR_timer = null;
         // Code Duplication: # Redraw cursor selection virtualization... TODO: This is using 'EDITOR_primaryCursor' rather than 'EDITOR_cursorList[i]' so it is surely incorrect?
         for (let i = 0; i < EDITOR_cursorList.length; i++) {
@@ -5602,9 +5607,9 @@ function EDITOR_onScroll_bbb() {
     EDITOR_finalizeAllCursors();
     update_VirtualIndexLine();
 
-    if (EDITOR_bbb_ONSCROLLscrollTop === EDITOR_baseElement.scrollTop &&
-        EDITOR_bbb_ONSCROLLvirtualIndexLine === get_EDITOR_virtualIndexLine() &&
-        EDITOR_bbb_ONSCROLLvirtualCount === get_EDITOR_virtualCount()) {
+    if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
+        get_EDITOR_ONSCROLLvirtualIndexLine() === get_EDITOR_virtualIndexLine() &&
+        get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount()) {
             // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
             // TODO: this code is duplicated inside EDITOR_drawHorizontalScrollbar, reduce duplication?
             if (get_EDITOR_horizontal_scrollbar().scrollLeft !== EDITOR_baseElement.scrollLeft) {
@@ -5613,18 +5618,22 @@ function EDITOR_onScroll_bbb() {
             return;
     }
 
-    EDITOR_bbb_ONSCROLLscrollTop = EDITOR_baseElement.scrollTop;
+    set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
     set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
 
-    // If I delay setting 'EDITOR_bbb_ONSCROLLvirtualIndexLine' then I can just use that.
+    // If I delay setting 'set_EDITOR_ONSCROLLvirtualIndexLine()' then I can just use that.
     // I can't bear to do that right now though. I'm just gonna make this variable.
-    let prevVli = EDITOR_bbb_ONSCROLLvirtualIndexLine;
+    let prevVli = get_EDITOR_ONSCROLLvirtualIndexLine();
     let currVli = get_EDITOR_virtualIndexLine();
 
-    EDITOR_bbb_ONSCROLLvirtualIndexLine = get_EDITOR_virtualIndexLine();
     set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualIndexLine());
 
-    if (EDITOR_bbb_ONSCROLLvirtualCount !== get_EDITOR_virtualCount() ||
+    // I think the issue is that you're trying to duplicate code to generate the text.
+    // and then have two separate copies of all the ONSCROLL
+    // vs the one ONSCROLL
+    // Then some other variables that are very similar, but SOLELY are compared to the ONSCROLL it is relative to the ONSCROLL not a duplicate?
+
+    if (get_EDITOR_ONSCROLLvirtualCount() !== get_EDITOR_virtualCount() ||
         get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
         get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount()) {
             // Force case 3
@@ -5648,8 +5657,8 @@ function EDITOR_onScroll_bbb() {
     if (diff > 0 && diff < get_EDITOR_virtualCount()) {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
         // firstIndexLineThatWasNotAlreadyRendered
-        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + EDITOR_bbb_ONSCROLLvirtualCount);
-        lowerBound = prevVli + EDITOR_bbb_ONSCROLLvirtualCount;
+        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + get_EDITOR_ONSCROLLvirtualCount());
+        lowerBound = prevVli + get_EDITOR_ONSCROLLvirtualCount();
         upperBound = lowerBound + diff;
 
         vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
@@ -5738,7 +5747,6 @@ function EDITOR_onScroll_bbb() {
 
 function EDITOR_createViewport() {
     set_EDITOR_ONSCROLLvirtualCount(get_EDITOR_virtualCount());
-    EDITOR_bbb_ONSCROLLvirtualCount = get_EDITOR_virtualCount();
 
     get_EDITOR_gutter().innerHTML = '';
     get_EDITOR_textElement().innerHTML = '';
