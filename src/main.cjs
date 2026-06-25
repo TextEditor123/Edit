@@ -1688,6 +1688,15 @@ up to this day.
 
 It depends if it feels like I'm pointlessly doing other tasks then I'll suck it up and endure more discomfort.
 But if there's active rest to be had I could use it.
+
+I think I am feeling:
+- tired
+- anxious
+
+Tired as I'm avoiding the more important feature which is the asynchronous syntax highlighting.
+
+Anxious as I feel the need to justify why I'm avoiding this today
+meanwhile I might possibly just be talking to myself in a repo that nobody even knows exists.
 */
 
 /* sec0
