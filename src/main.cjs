@@ -1685,6 +1685,9 @@ It isn't at all the case.
 That being said, yes I am exhausted and today I am avoiding that discomfort
 while I give my body time to destress from all the other coding discomforts I've endured over and over leading
 up to this day.
+
+It depends if it feels like I'm pointlessly doing other tasks then I'll suck it up and endure more discomfort.
+But if there's active rest to be had I could use it.
 */
 
 /* sec0
