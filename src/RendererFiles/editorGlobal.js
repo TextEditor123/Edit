@@ -5620,6 +5620,15 @@ You need to console log the count of lines being redrawn as you scroll.
 You changed a lot of code relating to the line drawing logic.
 And it needs to be ensured that all is working perfectly with plain text
 before you go about messing with syntax highlighting.
+
+TODO: for function 2, you need to determine whether you will lex the
+- [ ] textContent on the span,
+- [ ] or if you will decode from the bytes again.
+
+I'm going to do
+- [ ] textContent on the span,
+
+but there is 0 reasoning, understanding, or measurements behind my decision.
 */
 
 function EDITOR_createViewport() {
