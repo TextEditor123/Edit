@@ -2378,7 +2378,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
                         }
                 }
                 pos++;
-            }
+            }// gonna help mi mum brb
 
             // TODO: Consider the final pos? Is this gonna bug? I don't think it will.
             if (substart < pos && pos !== 0) {
