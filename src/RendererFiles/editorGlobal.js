@@ -5696,6 +5696,9 @@ function EDITOR_syntaxHighlighting() {
 
     My concern is with a scroll to a larger scrollY, then a scroll to a smaller scrollY
     such that either scrollY are not equal, and that there is at least a difference of 1 lineHeight between both scrollY to ensure the changes aren't cancelling out.
+
+    I think then you'd need to edge check 'EDITOR_beltIndexZero' find a hit, loop until you no longer see the not syntax highlighted css class
+    then this tells you to edge check PREVIOUS('EDITOR_beltIndexZero') and the remainder of your 'diff' to loop is in reverse.
     */
 
 
