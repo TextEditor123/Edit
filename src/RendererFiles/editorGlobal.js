@@ -5693,6 +5693,9 @@ function EDITOR_syntaxHighlighting() {
     So your edges to check might be 'EDITOR_beltIndexZero' and PREVIOUS('EDITOR_beltIndexZero')
 
     Then you can loop positive or negative depending on first or last.
+
+    My concern is with a scroll to a larger scrollY, then a scroll to a smaller scrollY
+    such that either scrollY are not equal, and that there is at least a difference of 1 lineHeight between both scrollY to ensure the changes aren't cancelling out.
     */
 
 
