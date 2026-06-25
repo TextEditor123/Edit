@@ -13,29 +13,29 @@ function JS_full_lex(bytes, count) {
 
     while (pos < count) {
         switch (bytes[pos]) {
-            case get_js_DOUBLEQUOTE():
-                pos = lex_string(bytes, count, pos, trackedSyntaxList, get_js_DOUBLEQUOTE());
+            case 34/*get_js_DOUBLEQUOTE()*/:
+                pos = lex_string(bytes, count, pos, trackedSyntaxList, 34/*get_js_DOUBLEQUOTE()*/);
                 continue;
-            case get_js_SINGLEQUOTE():
-                pos = lex_string(bytes, count, pos, trackedSyntaxList, get_js_SINGLEQUOTE());
+            case 39/*get_js_SINGLEQUOTE()*/:
+                pos = lex_string(bytes, count, pos, trackedSyntaxList, 39/*get_js_SINGLEQUOTE()*/);
                 continue;
-            case get_js_BACKTICK():
-                pos = lex_string(bytes, count, pos, trackedSyntaxList, get_js_BACKTICK());
+            case 96/*get_js_BACKTICK()*/:
+                pos = lex_string(bytes, count, pos, trackedSyntaxList, 96/*get_js_BACKTICK()*/);
                 continue;
-            case get_js_FORWARDSLASH():
-                if (bytes[pos + 1] === get_js_FORWARDSLASH()) {
+            case 47/*get_js_FORWARDSLASH()*/:
+                if (bytes[pos + 1] === 47/*get_js_FORWARDSLASH()*/) {
                     pos = lex_comment_singleLine(bytes, count, pos, trackedSyntaxList);
                     continue;
                 }
-                else if (bytes[pos + 1] === get_js_ASTERISK()) {
+                else if (bytes[pos + 1] === 42/*get_js_ASTERISK()*/) {
                     pos = lex_comment_multiLine(bytes, count, pos, trackedSyntaxList);
                     continue;
                 }
 
                 break;
-            case get_js_ASTERISK():
+            case 42/*get_js_ASTERISK()*/:
                 break;
-            case get_js_LINEFEED():
+            case 10/*get_js_LINEFEED()*/:
                 break;
         }
 
@@ -58,7 +58,7 @@ function lex_comment_singleLine(bytes, count, pos, trackedSyntaxList) {
     length++;
     pos++;
     while (pos < count) {
-        if (bytes[pos] === get_js_LINEFEED()) {
+        if (bytes[pos] === 10/*get_js_LINEFEED()*/) {
             break;
         }
         length++;
@@ -91,13 +91,13 @@ function lex_comment_multiLine(bytes, count, pos, trackedSyntaxList) {
     let ticketForwardSlash = -1;
     while (pos < count) {
         switch (bytes[pos]) {
-            case get_js_ASTERISK():
+            case 42/*get_js_ASTERISK()*/:
                 ticketAsterisk = ticketSource++;
                 break;
-            case get_js_FORWARDSLASH():
+            case 47/*get_js_FORWARDSLASH()*/:
                 ticketForwardSlash = ticketSource++;
                 break;
-            case get_js_LINEFEED():
+            case 10/*get_js_LINEFEED()*/:
                 seenLineFeed = true;
                 ticketSource++;
                 break;
@@ -135,9 +135,9 @@ function lex_string(bytes, count, pos, trackedSyntaxList, terminator) {
 
     while (pos < count) {
 
-        if (bytes[pos] === get_js_LINEFEED()) { // the editor only stores line feed ASCII codes and "swaps them out" when saving/copying text.
+        if (bytes[pos] === 10/*get_js_LINEFEED()*/) { // the editor only stores line feed ASCII codes and "swaps them out" when saving/copying text.
             seenLineFeed = true;
-            if (terminator !== get_js_BACKTICK()) break;
+            if (terminator !== 96/*get_js_BACKTICK()*/) break;
         }
 
         if (bytes[pos] === terminator) {
@@ -145,7 +145,7 @@ function lex_string(bytes, count, pos, trackedSyntaxList, terminator) {
             pos++;
             break;
         }
-        else if (bytes[pos] === get_js_BACKSLASH()) {
+        else if (bytes[pos] === 92/*get_js_BACKSLASH()*/) {
             length++;
             pos++;
             if (pos < count) {
@@ -158,7 +158,7 @@ function lex_string(bytes, count, pos, trackedSyntaxList, terminator) {
         pos++;
     }
 
-    if (seenLineFeed && terminator === get_js_BACKTICK()) {
+    if (seenLineFeed && terminator === 96/*get_js_BACKTICK()*/) {
         trackedSyntaxList.insert(trackedSyntaxList.count_abstract, get_TrackedSyntaxKind_String(), start, length);
     }
 
@@ -2416,7 +2416,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
                 childIndex++;
             }
             
-            span.textContent = EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(substart, subend));
+            span.textContent = divSpanTextContent.substring(substart, subend);
             substart += (subend - substart);
             pos += (subend - substart);
             switch (EDITOR_pooledTrackedSyntax_trackedSyntaxKind) {
@@ -2436,6 +2436,7 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
             if (trackedSyntax_I >= EDITOR_trackedSyntaxList.count_abstract) {
                 createDoLexFlag = true;
                 trackedSyntaxExhausted = true;
+                subend = divSpanTextContentLength;
                 continue;
             }
 
@@ -2444,13 +2445,15 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
             if (substart >= divSpanTextContentLength) {
                 createDoLexFlag = true;
                 trackedSyntaxExhausted = true;
-                break;
+                subend = divSpanTextContentLength;
+                continue;
             }
 
             if (get_EDITOR_pooledTrackedSyntax_start() >= lineStart + divSpanTextContentLength) {
                 createDoLexFlag = true;
                 trackedSyntaxExhausted = true;
-                break;
+                subend = divSpanTextContentLength;
+                continue;
             }
 
             if (get_EDITOR_pooledTrackedSyntax_start() + get_EDITOR_pooledTrackedSyntax_length() < lineStart) {
