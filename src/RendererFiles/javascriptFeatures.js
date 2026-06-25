@@ -1307,10 +1307,19 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
 
     let subend = divSpanTextContentLength;
 
+    let loopCounterAaa = 0;
+    let loopCounterBbb = 0;
+
     while (pos < divSpanTextContentLength) {
+        if (loopCounterAaa++ > (3 * divSpanTextContentLength)) {
+            console.log('aaa');
+        }
         if (createDoLexFlag) {
 
             while (pos < subend) {
+                if (loopCounterBbb++ > (3 * divSpanTextContentLength)) {
+                    console.log('bbb');
+                }
                 switch (divSpanTextContent[pos]) {
                     case 'a':
                     case 'b':
@@ -2495,4 +2504,6 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
             //return trackedSyntax_I;
         }
     }
+    console.log(`${loopCounterAaa} < ${3 * divSpanTextContentLength}`);
+    console.log(`${loopCounterBbb} < ${3 * divSpanTextContentLength}`);
 }
