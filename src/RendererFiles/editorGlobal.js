@@ -5594,7 +5594,7 @@ function EDITOR_onScroll_timeoutFunc() {
         //EDITOR_syntaxHighlighting(); // unless you desire to go the way of debounce in which case you wouldn't include this invocation.
         EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 1000);
     } else {
-        //EDITOR_syntaxHighlighting();
+        EDITOR_syntaxHighlighting();
 
         EDITOR_timer = null;
         // Code Duplication: # Redraw cursor selection virtualization... TODO: This is using 'EDITOR_primaryCursor' rather than 'EDITOR_cursorList[i]' so it is surely incorrect?
@@ -5639,9 +5639,45 @@ function EDITOR_syntaxHighlighting() {
     // - [ ] As you scroll, write out the lines that are in view, that weren't previously.
     // - [ ] As you scroll, remove the CSS class that is being used to signify 'not yet syntax highlighted'
     // - [ ] Do "actual syntax highlighting"
-    
+    //
+    //
+    //
+    // This might be a massive pain actually cause the zeroth index is gonna change constantly...
+
     //EDITOR_syntaxHighlighting_previousIndexVirtual;
     //EDITOR_syntaxHighlighting_previousVirtualCount;
+
+    // If I delay setting 'set_EDITOR_ONSCROLLvirtualIndexLine()' then I can just use that.
+    // I can't bear to do that right now though. I'm just gonna make this variable.
+    let prevVli = EDITOR_syntaxHighlighting_previousIndexVirtual;
+    let currVli = get_EDITOR_virtualIndexLine();
+    //
+    EDITOR_syntaxHighlighting_previousIndexVirtual = get_EDITOR_virtualIndexLine();
+
+    let diff = currVli - prevVli;
+    console.log(diff);
+
+    let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
+
+    let lowerBound;
+    let upperBound;
+    let loopCounter = 0;
+    let vertical;
+    let origin;
+
+    if (diff > 0 && diff < get_EDITOR_virtualCount()) {
+        
+    }
+    else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
+        
+    }
+    else {
+        
+    }
+
+    for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
+        
+    }
 }
 
 function EDITOR_createViewport() {
