@@ -1268,6 +1268,11 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
     return childIndex;
 }
 
+/*
+TODO: Sometimes the editor when click and dragging vertical scrollbar does a complete redraw
+TODO: Horizontal scrolling always redraw complete?
+*/
+
 function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
 
     // TODO: this is invoked per line...
