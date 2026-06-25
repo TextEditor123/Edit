@@ -5612,6 +5612,16 @@ function EDITOR_onScroll_timeoutFunc() {
     }
 }
 
+/*
+TODO: You need 2 separate functions.
+- [ ] 1 creates the plain text
+- [ ] 2 syntax highlights any lines of plain text that were drawn by function 1 since the last invocation of function 2
+
+What you currently erroneously are doing is:
+- [ ] 1 creates the plain text
+- [ ] 2 creates the text with syntax highlighting
+*/
+
 function EDITOR_onScroll_bbb() {
     EDITOR_finalizeAllCursors();
     update_VirtualIndexLine();
