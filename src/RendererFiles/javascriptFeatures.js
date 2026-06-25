@@ -2415,6 +2415,9 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
                 div.appendChild(span);
                 childIndex++;
             }
+
+            let trackedSyntaxEnd = get_EDITOR_pooledTrackedSyntax_start() + get_EDITOR_pooledTrackedSyntax_length();
+            subend = trackedSyntaxEnd > divSpanTextContentLength ? divSpanTextContentLength : trackedSyntaxEnd;
             
             span.textContent = divSpanTextContent.substring(substart, subend);
             substart += (subend - substart);
@@ -2472,8 +2475,6 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
 
             {
                 createTrackedSyntaxFlag = true;
-                let trackedSyntaxEnd = get_EDITOR_pooledTrackedSyntax_start() + get_EDITOR_pooledTrackedSyntax_length();
-                subend = trackedSyntaxEnd > divSpanTextContentLength ? divSpanTextContentLength : trackedSyntaxEnd;
                 continue;
                 
             }
