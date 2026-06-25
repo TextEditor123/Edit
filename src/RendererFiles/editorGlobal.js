@@ -5620,6 +5620,12 @@ TODO: You need 2 separate functions.
 What you currently erroneously are doing is:
 - [ ] 1 creates the plain text
 - [ ] 2 creates the text with syntax highlighting
+
+The intermediate step that will make clear what needs to be done
+is the complete deletion of EDITOR_onScroll_bbb.
+|
+You then get the editor to work entirely in plain text.
+Once this is done the answer should be "obvious".
 */
 
 function EDITOR_onScroll_bbb() {
