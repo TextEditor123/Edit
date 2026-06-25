@@ -5665,19 +5665,46 @@ function EDITOR_syntaxHighlighting() {
     let vertical;
     let origin;
 
-    if (diff > 0 && diff < get_EDITOR_virtualCount()) {
-        
+    let beltIndexZero = EDITOR_beltIndexZero;
+    let beltIndexFinal = EDITOR_beltIndexLine_PREVIOUS(beltIndexZero);
+
+    let i = 0;
+
+    let beltIndexCurrent = beltIndexZero;
+    for (; i < get_EDITOR_virtualCount(); i++) {
+        if (get_EDITOR_textElement().children[beltIndexCurrent].children.length === 1 && get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
+            get_EDITOR_textElement().children[beltIndexCurrent].children[0].className = '';
+        }
+        else {
+            break;
+        }
+        beltIndexCurrent = EDITOR_beltIndexLine_NEXT(beltIndexCurrent);
     }
-    else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
-        
-    }
-    else {
-        
+    
+    beltIndexCurrent = beltIndexFinal;
+    for (; i < get_EDITOR_virtualCount(); i++) {
+        if (get_EDITOR_textElement().children[beltIndexCurrent].children.length === 1 && get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
+            get_EDITOR_textElement().children[beltIndexCurrent].children[0].className = '';
+        }
+        else {
+            break;
+        }
+        beltIndexCurrent = EDITOR_beltIndexLine_PREVIOUS(beltIndexCurrent);
     }
 
-    for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
-        
-    }
+    //if (diff > 0 && diff < get_EDITOR_virtualCount()) {
+    //    
+    //}
+    //else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
+    //    
+    //}
+    //else {
+    //    
+    //}
+//
+    //for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
+    //    
+    //}
 
     /*
     You know there's diff many lines to syntax highlight.
