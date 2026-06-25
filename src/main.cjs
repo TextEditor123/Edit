@@ -1675,6 +1675,14 @@ I need to see if there's any use in me doing other things though.
 - [ ] all strings can be moved to a fieldBuffer to be stored as the byte representation
     - [ ] If you do this you'd want to from the get-go never introduce the string to begin with unless necessary
 - [ ] 
+
+The entire project from start to finish has been non-stop discomfort into the unknown.
+I feel as though me saying "I'd prefer to not do the syntax highlighting today"
+is something people will take as a negative character trait,
+that I avoid discomfort and just take on easy things.
+It isn't at all the case.
+
+
 */
 
 /* sec0
