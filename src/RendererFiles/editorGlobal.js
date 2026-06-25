@@ -5557,6 +5557,9 @@ function EDITOR_onScroll_WRAPIT() {
         let span;
 
         // TODO: perhaps some debug assertion that lineEnd > lineStart?
+        // TODO: perhaps just always use 'EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd));'...
+        // ...I think it would depend on the internal details of the function / measurements...
+        // ...I could see it being better for caching but worse if a subarray allocation is occuring but maybe there isn't an allocation when lineStart===lineEnd... etc...
         let textContent = lineStart === lineEnd
             ? ''
             : EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd));
