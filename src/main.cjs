@@ -1682,7 +1682,9 @@ is something people will take as a negative character trait,
 that I avoid discomfort and just take on easy things.
 It isn't at all the case.
 
-
+That being said, yes I am exhausted and today I am avoiding that discomfort
+while I give my body time to destress from all the other coding discomforts I've endured over and over leading
+up to this day.
 */
 
 /* sec0
