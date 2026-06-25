@@ -315,6 +315,9 @@ let w_span = null;
 let w_div = null;
 let w_beltIndexLine = -1;  // 2026-06-24_count_other_int32_fields_11
 
+let EDITOR_syntaxHighlighting_previousIndexVirtual = 0;
+let EDITOR_syntaxHighlighting_previousVirtualCount = 0;
+
 /**
  * TODO: It should be >= ?
  * 
@@ -5630,6 +5633,16 @@ I'm going to do
 
 but there is 0 reasoning, understanding, or measurements behind my decision.
 */
+
+function EDITOR_syntaxHighlighting() {
+    // The steps:
+    // - [ ] As you scroll, write out the lines that are in view, that weren't previously.
+    // - [ ] As you scroll, remove the CSS class that is being used to signify 'not yet syntax highlighted'
+    // - [ ] Do "actual syntax highlighting"
+    
+    //EDITOR_syntaxHighlighting_previousIndexVirtual;
+    //EDITOR_syntaxHighlighting_previousVirtualCount;
+}
 
 function EDITOR_createViewport() {
     set_EDITOR_ONSCROLLvirtualCount(get_EDITOR_virtualCount());
