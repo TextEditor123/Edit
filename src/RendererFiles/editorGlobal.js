@@ -603,7 +603,7 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
     }
 
     EDITOR_drawGutter_Width();
-    // Force 'case 3' within 'EDITOR_onScroll_bbb();' downstream
+    // Force 'case 3' within 'EDITOR_onScroll_WRAPIT();' downstream
     // TODO: (this comment is being made sometime after this solution was written but from memory...)...
     // ...I believe this works because when you change the text you guarantee a virtual index line of '0' because the scrollTop gets moved to 0...
     // ...the partial solution is to set it to anything other than '0' so the editor detects that a line of text needs to be drawn...
@@ -614,7 +614,7 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
     // ...thus 'get_EDITOR_virtualCount()' amount of lines get redrawn...
     // ...i.e.: the entire viewport is redrawn with the new file's text.
     set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualCount());
-    EDITOR_onScroll_bbb();
+    EDITOR_onScroll_WRAPIT();
 }
 
 /**
@@ -5380,7 +5380,7 @@ function EDITOR_onResize() {
     update_virtualCount();
     if (get_EDITOR_virtualCount() !== remember_virtualCount) {
         update_verticalVirtualizationBoundary(EDITOR_lineEndPositionList.count + 1);
-        EDITOR_onScroll_bbb();
+        EDITOR_onScroll_WRAPIT();
         // # Redraw cursor selection virtualization
         // Code Duplication: # Redraw cursor selection virtualization... TODO: This is using 'EDITOR_primaryCursor' rather than 'EDITOR_cursorList[i]' so it is surely incorrect?
         for (let i = 0; i < EDITOR_cursorList.length; i++) {
@@ -5416,7 +5416,7 @@ function EDITOR_drawHorizontalScrollbar() {
     }
     
     // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
-    // TODO: this code is duplicated inside EDITOR_onScroll_bbb when it returns early due to nothing vertically having changed, reduce duplication?
+    // TODO: this code is duplicated inside EDITOR_onScroll_WRAPIT when it returns early due to nothing vertically having changed, reduce duplication?
     if (get_EDITOR_horizontal_scrollbar().scrollLeft !== EDITOR_baseElement.scrollLeft) {
         get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
     }
@@ -5591,18 +5591,10 @@ function EDITOR_onScroll_WRAPIT() {
 function EDITOR_onScroll_timeoutFunc() {
     if (get_EDITOR_onScroll_bool()) {
         set_EDITOR_onScroll_bool(false);
-        //EDITOR_onScroll_bbb();
+        //EDITOR_syntaxHighlighting(); // unless you desire to go the way of debounce in which case you wouldn't include this invocation.
         EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 1000);
     } else {
-        // - [?] 1: Try to get any amount of syntax highlighting to work, minimal worry about optimization.
-        //
-        // Force case 3
-        prevVli = 0;
-        currVli = get_EDITOR_virtualCount();
-        // TODO: Duplicated setting of scrolltop; this case and just baseline everytime vertical scrolls it is done in this method elsewhere
-        set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
-        //EDITOR_createViewport();
-        EDITOR_onScroll_bbb();
+        //EDITOR_syntaxHighlighting();
 
         EDITOR_timer = null;
         // Code Duplication: # Redraw cursor selection virtualization... TODO: This is using 'EDITOR_primaryCursor' rather than 'EDITOR_cursorList[i]' so it is surely incorrect?
@@ -5626,149 +5618,12 @@ is the complete deletion of EDITOR_onScroll_bbb.
 |
 You then get the editor to work entirely in plain text.
 Once this is done the answer should be "obvious".
+
+You need to console log the count of lines being redrawn as you scroll.
+You changed a lot of code relating to the line drawing logic.
+And it needs to be ensured that all is working perfectly with plain text
+before you go about messing with syntax highlighting.
 */
-
-function EDITOR_onScroll_bbb() {
-    EDITOR_finalizeAllCursors();
-    update_VirtualIndexLine();
-
-    if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
-        get_EDITOR_ONSCROLLvirtualIndexLine() === get_EDITOR_virtualIndexLine() &&
-        get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount()) {
-            // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
-            // TODO: this code is duplicated inside EDITOR_drawHorizontalScrollbar, reduce duplication?
-            if (get_EDITOR_horizontal_scrollbar().scrollLeft !== EDITOR_baseElement.scrollLeft) {
-                get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
-            }
-            return;
-    }
-
-    set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
-    set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
-
-    // If I delay setting 'set_EDITOR_ONSCROLLvirtualIndexLine()' then I can just use that.
-    // I can't bear to do that right now though. I'm just gonna make this variable.
-    let prevVli = get_EDITOR_ONSCROLLvirtualIndexLine();
-    let currVli = get_EDITOR_virtualIndexLine();
-
-    set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualIndexLine());
-
-    // I think the issue is that you're trying to duplicate code to generate the text.
-    // and then have two separate copies of all the ONSCROLL
-    // vs the one ONSCROLL
-    // Then some other variables that are very similar, but SOLELY are compared to the ONSCROLL it is relative to the ONSCROLL not a duplicate?
-
-    if (get_EDITOR_ONSCROLLvirtualCount() !== get_EDITOR_virtualCount() ||
-        get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
-        get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount()) {
-            // Force case 3
-            prevVli = 0;
-            currVli = get_EDITOR_virtualCount();
-
-            EDITOR_createViewport();
-    }
-
-    let diff = currVli - prevVli;
-
-    let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
-
-    let trackedSyntax_I;
-    let lowerBound;
-    let upperBound;
-    let loopCounter = 0;
-    let vertical;
-    let origin;
-
-    if (diff > 0 && diff < get_EDITOR_virtualCount()) {
-        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
-        // firstIndexLineThatWasNotAlreadyRendered
-        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(prevVli + get_EDITOR_ONSCROLLvirtualCount());
-        lowerBound = prevVli + get_EDITOR_ONSCROLLvirtualCount();
-        upperBound = lowerBound + diff;
-
-        vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
-        origin = EDITOR_beltIndexZero;
-
-        EDITOR_beltIndexZero = origin + diff;
-        if (EDITOR_beltIndexZero >= get_EDITOR_textElement().children.length)
-            EDITOR_beltIndexZero -= get_EDITOR_textElement().children.length;
-    }
-    else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
-        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 2;
-        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(currVli);
-        lowerBound = currVli;
-        upperBound = lowerBound + diff;
-
-        vertical = currVli * get_EDITOR_lineHeight();
-        
-        let lastIndex = EDITOR_beltIndexZero === 0
-            ? get_EDITOR_textElement().children.length - 1
-            : EDITOR_beltIndexZero - 1;
-
-        EDITOR_beltIndexZero = lastIndex - (diff - 1);
-        if (EDITOR_beltIndexZero < 0)
-            EDITOR_beltIndexZero += get_EDITOR_textElement().children.length;
-
-        origin = EDITOR_beltIndexZero;
-    }
-    else {
-        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
-        trackedSyntax_I = EDITOR_drawViewPort_FindTrackedSyntax_StartingIndex(get_EDITOR_virtualIndexLine());
-        lowerBound = get_EDITOR_virtualIndexLine();
-        upperBound = lowerBound + get_EDITOR_virtualCount();
-
-        vertical = get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight();
-        origin = EDITOR_beltIndexZero;
-    }
-
-    if (trackedSyntax_I === NaN || trackedSyntax_I === -1)
-        trackedSyntax_I = EDITOR_trackedSyntaxList.count_abstract;
-
-    for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
-        let transform = `translateY(${vertical}px)`;
-
-        let div;
-        let gutter;
-
-        vertical += get_EDITOR_lineHeight();
-
-        let beltIndexLine = origin + loopCounter;
-        if (beltIndexLine >= get_EDITOR_textElement().children.length)
-            beltIndexLine -= get_EDITOR_textElement().children.length;
-
-        gutter = get_EDITOR_gutter().children[beltIndexLine];
-        div = get_EDITOR_textElement().children[beltIndexLine];
-        loopCounter++;
-
-        gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
-            ? '~'
-            : indexLine + 1;
-
-        gutter.style.transform = transform;
-        div.style.transform = transform;
-
-        let lineStart;
-        let lineEnd;
-        if (indexLine < EDITOR_lineEndPositionList.count) {
-            if (indexLine === 0) {
-                lineStart = 0;
-                lineEnd = EDITOR_lineEndPositionList.data[indexLine] - 0;
-            }
-            else {
-                lineStart = (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
-                lineEnd = EDITOR_lineEndPositionList.data[indexLine];
-            }
-        }
-        else {
-            lineStart = 0;
-            lineEnd = 0;
-        }
-
-        trackedSyntax_I = EDITOR_createSpansForLineOfText(div, lineStart, lineEnd, trackedSyntax_I);
-    }
-
-    EDITOR_drawHorizontalScrollbar();
-}
 
 function EDITOR_createViewport() {
     set_EDITOR_ONSCROLLvirtualCount(get_EDITOR_virtualCount());
