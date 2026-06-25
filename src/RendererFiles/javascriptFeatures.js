@@ -1303,6 +1303,9 @@ function JS_line_lex_newVersion(div, beltIndexOfDiv, indexLine, lineStart) {
 
     let createTrackedSyntaxFlag = false;
     let createDoLexFlag = false;
+    // I keep reading this variable name and it makes me extremely anxious
+    // I'm worried that by calling the variable this that I will become exhausted by nature of having named the variable that
+    // and that like saying the variable in my mind is making me exhausted.
     let trackedSyntaxExhausted = false;
 
     let subend = divSpanTextContentLength;
