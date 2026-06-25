@@ -5632,6 +5632,8 @@ I'm going to do
 - [ ] textContent on the span,
 
 but there is 0 reasoning, understanding, or measurements behind my decision.
+
+am I using the line in the sync scroll? if not make sure removed the code.
 */
 
 function EDITOR_syntaxHighlighting() {
@@ -5669,29 +5671,69 @@ function EDITOR_syntaxHighlighting() {
     let beltIndexFinal = EDITOR_beltIndexLine_PREVIOUS(beltIndexZero);
 
     let i = 0;
-
+    
     let beltIndexCurrent = beltIndexZero;
+    let indexLine = currVli;
     for (; i < get_EDITOR_virtualCount(); i++) {
         if (get_EDITOR_textElement().children[beltIndexCurrent].children.length === 1 && get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
             get_EDITOR_textElement().children[beltIndexCurrent].children[0].className = '';
-            JS_line_lex_newVersion(get_EDITOR_textElement().children[beltIndexCurrent], beltIndexCurrent);
+
+            let lineStart;
+            let lineEnd;
+            if (indexLine < EDITOR_lineEndPositionList.count) {
+                if (indexLine === 0) {
+                    lineStart = 0;
+                    lineEnd = EDITOR_lineEndPositionList.data[indexLine] - 0;
+                }
+                else {
+                    lineStart = (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
+                    lineEnd = EDITOR_lineEndPositionList.data[indexLine];
+                }
+            }
+            else {
+                lineStart = 0;
+                lineEnd = 0;
+            }
+
+            JS_line_lex_newVersion(get_EDITOR_textElement().children[beltIndexCurrent], beltIndexCurrent, indexLine, lineStart);
         }
         else {
             break;
         }
         beltIndexCurrent = EDITOR_beltIndexLine_NEXT(beltIndexCurrent);
+        indexLine++;
     }
     
     beltIndexCurrent = beltIndexFinal;
+    indexLine = currVli + get_EDITOR_virtualCount() - 1;
     for (; i < get_EDITOR_virtualCount(); i++) {
         if (get_EDITOR_textElement().children[beltIndexCurrent].children.length === 1 && get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
             get_EDITOR_textElement().children[beltIndexCurrent].children[0].className = '';
-            JS_line_lex_newVersion(get_EDITOR_textElement().children[beltIndexCurrent], beltIndexCurrent);
+
+            let lineStart;
+            let lineEnd;
+            if (indexLine < EDITOR_lineEndPositionList.count) {
+                if (indexLine === 0) {
+                    lineStart = 0;
+                    lineEnd = EDITOR_lineEndPositionList.data[indexLine] - 0;
+                }
+                else {
+                    lineStart = (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
+                    lineEnd = EDITOR_lineEndPositionList.data[indexLine];
+                }
+            }
+            else {
+                lineStart = 0;
+                lineEnd = 0;
+            }
+
+            JS_line_lex_newVersion(get_EDITOR_textElement().children[beltIndexCurrent], beltIndexCurrent, indexLine, lineStart);
         }
         else {
             break;
         }
         beltIndexCurrent = EDITOR_beltIndexLine_PREVIOUS(beltIndexCurrent);
+        indexLine--;
     }
 
     /*
