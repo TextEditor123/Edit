@@ -5678,6 +5678,18 @@ function EDITOR_syntaxHighlighting() {
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
         
     }
+
+    /*
+    You know there's diff many lines to syntax highlight.
+    You can guess that is diff < get_EDITOR_virtualCount()
+    that you'll start at 'EDITOR_beltIndexZero'
+    and loop diff amount of times.
+
+    Then you maybe have to check the next div whether it has the not syntax highlighted css class
+    in case many scroll events occured and somehow if this results you lose information you have add a step if needed to check
+    and do it only at the edge instead of entire.
+    */
+   
 }
 
 function EDITOR_createViewport() {
