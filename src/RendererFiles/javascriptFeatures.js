@@ -1269,5 +1269,1108 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
 }
 
 function JS_line_lex_newVersion(div, beltIndexOfDiv) {
-    
+
+    let divSpanTextContent = div.children[0].textContent;
+    let divSpanTextContentLength = divSpanTextContent.length;
+
+    let childIndex = 0;
+
+    let substart = 0;
+    let pos = 0;
+
+    let span;
+    let textContent;
+    let className;
+
+    /**
+     * At times you are accumulating a larger and larger span of text, up until the point of encountering a differing syntax.
+     * The textContent variable might already be in use for the differing syntax.
+     * Thus in those scenarios the flushTextContent contains the prior accumulated text that you need to write out prior to the encountered syntax.
+     */
+    let flushTextContent;
+
+    let shouldSkipContiguous;
+
+    while (pos < divSpanTextContentLength) {
+        switch (divSpanTextContent[pos]) {
+            case 'a':
+            case 'b':
+            case 'c':
+            case 'd':
+            case 'e':
+            case 'f':
+            case 'g':
+            case 'h':
+            case 'i':
+            case 'j':
+            case 'k':
+            case 'l':
+            case 'm':
+            case 'n':
+            case 'o':
+            case 'p':
+            case 'q':
+            case 'r':
+            case 's':
+            case 't':
+            case 'u':
+            case 'v':
+            case 'w':
+            case 'x':
+            case 'y':
+            case 'z':
+            case 'A':
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F':
+            case 'G':
+            case 'H':
+            case 'I':
+            case 'J':
+            case 'K':
+            case 'L':
+            case 'M':
+            case 'N':
+            case 'O':
+            case 'P':
+            case 'Q':
+            case 'R':
+            case 'S':
+            case 'T':
+            case 'U':
+            case 'V':
+            case 'W':
+            case 'X':
+            case 'Y':
+            case 'Z':
+            case '_':
+                let wordstart = pos;
+
+                // you don't know if a word is a keyword until you've read the keyword.
+                // so until that point you're tracking it along with all the other text/whitespace on the line
+                // and planning to make everything just a single span.
+
+                let charIntSum = 0;
+
+                outer: while (pos < divSpanTextContentLength) {
+                    switch (divSpanTextContent[pos]) {
+                        case 'a':
+                        case 'b':
+                        case 'c':
+                        case 'd':
+                        case 'e':
+                        case 'f':
+                        case 'g':
+                        case 'h':
+                        case 'i':
+                        case 'j':
+                        case 'k':
+                        case 'l':
+                        case 'm':
+                        case 'n':
+                        case 'o':
+                        case 'p':
+                        case 'q':
+                        case 'r':
+                        case 's':
+                        case 't':
+                        case 'u':
+                        case 'v':
+                        case 'w':
+                        case 'x':
+                        case 'y':
+                        case 'z':
+                        case 'A':
+                        case 'B':
+                        case 'C':
+                        case 'D':
+                        case 'E':
+                        case 'F':
+                        case 'G':
+                        case 'H':
+                        case 'I':
+                        case 'J':
+                        case 'K':
+                        case 'L':
+                        case 'M':
+                        case 'N':
+                        case 'O':
+                        case 'P':
+                        case 'Q':
+                        case 'R':
+                        case 'S':
+                        case 'T':
+                        case 'U':
+                        case 'V':
+                        case 'W':
+                        case 'X':
+                        case 'Y':
+                        case 'Z':
+                        case '_':
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                            charIntSum += divSpanTextContent.charCodeAt(pos);
+                            pos++;
+                            break;
+                        default:
+                            break outer;
+                    }
+                }
+                // heuristic for possible keyword is comparing char int sum:
+                //
+                // const
+                // c 99
+                // o 111
+                // n 110
+                // s 115
+                // t 116
+                //
+                // 551
+                // 
+                let wordlength = pos - wordstart;
+                switch (charIntSum) {
+                    case 551: // const
+                        if (wordlength === 5 &&
+                            divSpanTextContent[wordstart + 0] === 'c' &&
+                            divSpanTextContent[wordstart + 1] === 'o' &&
+                            divSpanTextContent[wordstart + 2] === 'n' &&
+                            divSpanTextContent[wordstart + 3] === 's' &&
+                            divSpanTextContent[wordstart + 4] === 't') {
+                                className = 'eK';
+                                textContent = 'const';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 325: // let
+                        if (wordlength === 3 &&
+                            divSpanTextContent[wordstart + 0] === 'l' &&
+                            divSpanTextContent[wordstart + 1] === 'e' &&
+                            divSpanTextContent[wordstart + 2] === 't') {
+                                className = 'eK';
+                                textContent = 'let';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 870: // function
+                        if (wordlength === 8 &&
+                            divSpanTextContent[wordstart + 0] === 'f' &&
+                            divSpanTextContent[wordstart + 1] === 'u' &&
+                            divSpanTextContent[wordstart + 2] === 'n' &&
+                            divSpanTextContent[wordstart + 3] === 'c' &&
+                            divSpanTextContent[wordstart + 4] === 't' &&
+                            divSpanTextContent[wordstart + 5] === 'i' &&
+                            divSpanTextContent[wordstart + 6] === 'o' &&
+                            divSpanTextContent[wordstart + 7] === 'n') {
+                                className = 'eK';
+                                textContent = 'function';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 207: // if
+                        if (wordlength === 2 &&
+                            divSpanTextContent[wordstart + 0] === 'i' &&
+                            divSpanTextContent[wordstart + 1] === 'f') {
+                                className = 'eKC';
+                                textContent = 'if';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 351: // try
+                        if (wordlength === 3 &&
+                            divSpanTextContent[wordstart + 0] === 't' &&
+                            divSpanTextContent[wordstart + 1] === 'r' &&
+                            divSpanTextContent[wordstart + 2] === 'y') {
+                                className = 'eK';
+                                textContent = 'try';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 327: // for
+                        if (wordlength === 3 &&
+                            divSpanTextContent[wordstart + 0] === 'f' &&
+                            divSpanTextContent[wordstart + 1] === 'o' &&
+                            divSpanTextContent[wordstart + 2] === 'r') {
+                                className = 'eKC';
+                                textContent = 'for';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 329: // var
+                        if (wordlength === 3 &&
+                            divSpanTextContent[wordstart + 0] === 'v' &&
+                            divSpanTextContent[wordstart + 1] === 'a' &&
+                            divSpanTextContent[wordstart + 2] === 'r') {
+                                className = 'eK';
+                                textContent = 'var';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 515: // catch
+                        if (wordlength === 5 &&
+                            divSpanTextContent[wordstart + 0] === 'c' &&
+                            divSpanTextContent[wordstart + 1] === 'a' &&
+                            divSpanTextContent[wordstart + 2] === 't' &&
+                            divSpanTextContent[wordstart + 3] === 'c' &&
+                            divSpanTextContent[wordstart + 4] === 'h') {
+                                className = 'eK';
+                                textContent = 'catch';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 672: // return
+                        if (wordlength === 6 &&
+                            divSpanTextContent[wordstart + 0] === 'r' &&
+                            divSpanTextContent[wordstart + 1] === 'e' &&
+                            divSpanTextContent[wordstart + 2] === 't' &&
+                            divSpanTextContent[wordstart + 3] === 'u' &&
+                            divSpanTextContent[wordstart + 4] === 'r' &&
+                            divSpanTextContent[wordstart + 5] === 'n') {
+                                className = 'eKC';
+                                textContent = 'return';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 658: // switch
+                        if (wordlength === 6 &&
+                            divSpanTextContent[wordstart + 0] === 's' &&
+                            divSpanTextContent[wordstart + 1] === 'w' &&
+                            divSpanTextContent[wordstart + 2] === 'i' &&
+                            divSpanTextContent[wordstart + 3] === 't' &&
+                            divSpanTextContent[wordstart + 4] === 'c' &&
+                            divSpanTextContent[wordstart + 5] === 'h') {
+                                className = 'eKC';
+                                textContent = 'switch';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 412: // case
+                        if (wordlength === 4 &&
+                            divSpanTextContent[wordstart + 0] === 'c' &&
+                            divSpanTextContent[wordstart + 1] === 'a' &&
+                            divSpanTextContent[wordstart + 2] === 's' &&
+                            divSpanTextContent[wordstart + 3] === 'e') {
+                                className = 'eKC';
+                                textContent = 'case';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 542: // async
+                        if (wordlength === 5 &&
+                            divSpanTextContent[wordstart + 0] === 'a' &&
+                            divSpanTextContent[wordstart + 1] === 's' &&
+                            divSpanTextContent[wordstart + 2] === 'y' &&
+                            divSpanTextContent[wordstart + 3] === 'n' &&
+                            divSpanTextContent[wordstart + 4] === 'c') {
+                                className = 'eK';
+                                textContent = 'async';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 425: // else
+                        if (wordlength === 4 &&
+                            divSpanTextContent[wordstart + 0] === 'e' &&
+                            divSpanTextContent[wordstart + 1] === 'l' &&
+                            divSpanTextContent[wordstart + 2] === 's' &&
+                            divSpanTextContent[wordstart + 3] === 'e') {
+                                className = 'eKC';
+                                textContent = 'else';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 741: // default
+                        if (wordlength === 7 &&
+                            divSpanTextContent[wordstart + 0] === 'd' &&
+                            divSpanTextContent[wordstart + 1] === 'e' &&
+                            divSpanTextContent[wordstart + 2] === 'f' &&
+                            divSpanTextContent[wordstart + 3] === 'a' &&
+                            divSpanTextContent[wordstart + 4] === 'u' &&
+                            divSpanTextContent[wordstart + 5] === 'l' &&
+                            divSpanTextContent[wordstart + 6] === 't') {
+                                className = 'eK';
+                                textContent = 'default';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 564: // throw
+                        if (wordlength === 5 &&
+                            divSpanTextContent[wordstart + 0] === 't' &&
+                            divSpanTextContent[wordstart + 1] === 'h' &&
+                            divSpanTextContent[wordstart + 2] === 'r' &&
+                            divSpanTextContent[wordstart + 3] === 'o' &&
+                            divSpanTextContent[wordstart + 4] === 'w') {
+                                className = 'eK';
+                                textContent = 'throw';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 330: // new
+                        if (wordlength === 3 &&
+                            divSpanTextContent[wordstart + 0] === 'n' &&
+                            divSpanTextContent[wordstart + 1] === 'e' &&
+                            divSpanTextContent[wordstart + 2] === 'w') {
+                                className = 'eK';
+                                textContent = 'new';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 534: // class
+                        if (wordlength === 5) {
+                            if (divSpanTextContent[wordstart + 0] === 'a' &&
+                                divSpanTextContent[wordstart + 1] === 'w' &&
+                                divSpanTextContent[wordstart + 2] === 'a' &&
+                                divSpanTextContent[wordstart + 3] === 'i' &&
+                                divSpanTextContent[wordstart + 4] === 't') {
+                                
+                                    className = 'eK';
+                                	textContent = 'await';
+                                    break;
+                            }
+                            else if (divSpanTextContent[wordstart + 0] === 'c' &&
+                                     divSpanTextContent[wordstart + 1] === 'l' &&
+                                     divSpanTextContent[wordstart + 2] === 'a' &&
+                                     divSpanTextContent[wordstart + 3] === 's' &&
+                                     divSpanTextContent[wordstart + 4] === 's') {
+
+                                    className = 'eK';
+                                	textContent = 'class';
+                                    break;
+                            }
+                        }
+                        className = '';
+                        break;
+                    case 1222: // constructor
+                        if (wordlength === 11 &&
+                            divSpanTextContent[wordstart + 0]  === 'c' &&
+                            divSpanTextContent[wordstart + 1]  === 'o' &&
+                            divSpanTextContent[wordstart + 2]  === 'n' &&
+                            divSpanTextContent[wordstart + 3]  === 's' &&
+                            divSpanTextContent[wordstart + 4]  === 't' &&
+                            divSpanTextContent[wordstart + 5]  === 'r' &&
+                            divSpanTextContent[wordstart + 6]  === 'u' &&
+                            divSpanTextContent[wordstart + 7]  === 'c' &&
+                            divSpanTextContent[wordstart + 8]  === 't' &&
+                            divSpanTextContent[wordstart + 9]  === 'o' &&
+                            divSpanTextContent[wordstart + 10] === 'r') {
+                                className = 'eK';
+                                textContent = 'constructor';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 667: // import
+                        if (wordlength === 6 &&
+                            divSpanTextContent[wordstart + 0] === 'i' &&
+                            divSpanTextContent[wordstart + 1] === 'm' &&
+                            divSpanTextContent[wordstart + 2] === 'p' &&
+                            divSpanTextContent[wordstart + 3] === 'o' &&
+                            divSpanTextContent[wordstart + 4] === 'r' &&
+                            divSpanTextContent[wordstart + 5] === 't') {
+                                className = 'eKC';
+                                textContent = 'import';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 436: // from
+                        if (wordlength === 4 &&
+                            divSpanTextContent[wordstart + 0] === 'f' &&
+                            divSpanTextContent[wordstart + 1] === 'r' &&
+                            divSpanTextContent[wordstart + 2] === 'o' &&
+                            divSpanTextContent[wordstart + 3] === 'm') {
+                                className = 'eKC';
+                                textContent = 'from';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 674: // export
+                        if (wordlength === 6 &&
+                            divSpanTextContent[wordstart + 0] === 'e' &&
+                            divSpanTextContent[wordstart + 1] === 'x' &&
+                            divSpanTextContent[wordstart + 2] === 'p' &&
+                            divSpanTextContent[wordstart + 3] === 'o' &&
+                            divSpanTextContent[wordstart + 4] === 'r' &&
+                            divSpanTextContent[wordstart + 5] === 't') {
+                                className = 'eK';
+                                textContent = 'export';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 440: // this
+                        if (wordlength === 4 &&
+                            divSpanTextContent[wordstart + 0] === 't' &&
+                            divSpanTextContent[wordstart + 1] === 'h' &&
+                            divSpanTextContent[wordstart + 2] === 'i' &&
+                            divSpanTextContent[wordstart + 3] === 's') {
+                                className = 'eK';
+                                textContent = 'this';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 537: // while
+                        if (wordlength === 5 &&
+                            divSpanTextContent[wordstart + 0] === 'w' &&
+                            divSpanTextContent[wordstart + 1] === 'h' &&
+                            divSpanTextContent[wordstart + 2] === 'i' &&
+                            divSpanTextContent[wordstart + 3] === 'l' &&
+                            divSpanTextContent[wordstart + 4] === 'e') {
+                                className = 'eKC';
+                                textContent = 'while';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 517: // break
+                        if (wordlength === 5 &&
+                            divSpanTextContent[wordstart + 0] === 'b' &&
+                            divSpanTextContent[wordstart + 1] === 'r' &&
+                            divSpanTextContent[wordstart + 2] === 'e' &&
+                            divSpanTextContent[wordstart + 3] === 'a' &&
+                            divSpanTextContent[wordstart + 4] === 'k') {
+                                className = 'eKC';
+                                textContent = 'break';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 869: // continue
+                        if (wordlength === 8 &&
+                            divSpanTextContent[wordstart + 0] === 'c' &&
+                            divSpanTextContent[wordstart + 1] === 'o' &&
+                            divSpanTextContent[wordstart + 2] === 'n' &&
+                            divSpanTextContent[wordstart + 3] === 't' &&
+                            divSpanTextContent[wordstart + 4] === 'i' &&
+                            divSpanTextContent[wordstart + 5] === 'n' &&
+                            divSpanTextContent[wordstart + 6] === 'u' &&
+                            divSpanTextContent[wordstart + 7] === 'e') {
+                                className = 'eKC';
+                                textContent = 'continue';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 448: // true
+                        if (wordlength === 4 &&
+                            divSpanTextContent[wordstart + 0] === 't' &&
+                            divSpanTextContent[wordstart + 1] === 'r' &&
+                            divSpanTextContent[wordstart + 2] === 'u' &&
+                            divSpanTextContent[wordstart + 3] === 'e') {
+                                className = 'eK';
+                                textContent = 'true';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 523: // false
+                        if (wordlength === 5 &&
+                            divSpanTextContent[wordstart + 0] === 'f' &&
+                            divSpanTextContent[wordstart + 1] === 'a' &&
+                            divSpanTextContent[wordstart + 2] === 'l' &&
+                            divSpanTextContent[wordstart + 3] === 's' &&
+                            divSpanTextContent[wordstart + 4] === 'e') {
+                                className = 'eK';
+                                textContent = 'false';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    case 443: // null
+                        if (wordlength === 4 &&
+                            divSpanTextContent[wordstart + 0] === 'n' &&
+                            divSpanTextContent[wordstart + 1] === 'u' &&
+                            divSpanTextContent[wordstart + 2] === 'l' &&
+                            divSpanTextContent[wordstart + 3] === 'l') {
+                                className = 'eK';
+                                textContent = 'null';
+                                break;
+                        }
+                        className = '';
+                        break;
+                    default:
+                        className = '';
+                        break;
+                }
+                if (className) {
+                    // is done when there IS a valid match, in order to write out any pending text that came prior to the keyword.
+                    if (substart < wordstart) {
+                        // TODO: After you make these changes, span pooling is going to FAR more important now cause you're scrolling to just 1 span per line each time.
+                        flushTextContent = divSpanTextContent.substring(substart, substart = wordstart);
+                        if (childIndex < div.children.length) {
+                            span = div.children[childIndex++];
+                            span.className = '';
+                            span.textContent = flushTextContent;
+                        }
+                        else {
+                            span = document.createElement('span');
+                            span.textContent = flushTextContent;
+                            div.appendChild(span);
+                            childIndex++;
+                        }
+                    }
+
+                    if (childIndex < div.children.length) {
+                        span = div.children[childIndex++];
+                        span.className = className;
+                        span.textContent = textContent;
+                    }
+                    else {
+                        span = document.createElement('span');
+                        span.className = className;
+                        span.textContent = textContent;
+                        div.appendChild(span);
+                        childIndex++;
+                    }
+                    substart += wordlength;
+                }
+                continue;
+            case get_js_FORWARDSLASH():
+                if (divSpanTextContent[pos + 1] === get_js_FORWARDSLASH()) {
+
+                    if (substart < pos) {
+                        flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+                        if (childIndex < div.children.length) {
+                            span = div.children[childIndex++];
+                            span.className = '';
+                            span.textContent = flushTextContent;
+                        }
+                        else {
+                            span = document.createElement('span');
+                            span.textContent = flushTextContent;
+                            div.appendChild(span);
+                            childIndex++;
+                        }
+                    }
+
+                    // lex_comment_singleLine(...)
+
+                    // The current character is the first forward slash of the 'two consecutive ones' that represent the start of a single line comment.
+                    // "changing" this to guarantee at least 1 read means you can continue after the invocation returns (for the while loop)
+                    // All in all, this already was guaranteed to read at least 1 since the while loop's condition in this method
+                    // This change is moreso a matter of anxiety and me not wanting to deal with this at the moment so I need to see the explicit read here so I can sleep at night for the time being until my stress levels are lower.
+                    pos++;
+                    while (pos < divSpanTextContentLength) {
+                        if (divSpanTextContent[pos] === get_js_LINEFEED()) {
+                            break;
+                        }
+                        pos++;
+                    }
+
+                    // TODO: I think checking this is redundant because you guaranteed at least one increment?
+                    if (substart < pos) {
+                        textContent = divSpanTextContent.substring(substart, substart = pos);
+                        if (childIndex < div.children.length) {
+                            span = div.children[childIndex++];
+                            span.className = 'eC';
+                            span.textContent = textContent;
+                        }
+                        else {
+                            span = document.createElement('span');
+                            span.className = 'eC';
+                            span.textContent = textContent;
+                            div.appendChild(span);
+                            childIndex++;
+                        }
+                    }
+
+                    continue;
+                }
+                else if (divSpanTextContent[pos + 1] === get_js_ASTERISK()) {
+                    if (substart < pos) { // write any text that came prior, and on the same line.
+                        flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+                        if (childIndex < div.children.length) {
+                            span = div.children[childIndex++];
+                            span.className = '';
+                            span.textContent = flushTextContent;
+                        }
+                        else {
+                            span = document.createElement('span');
+                            span.textContent = flushTextContent;
+                            div.appendChild(span);
+                            childIndex++;
+                        }
+                    }
+
+                    // Move past the 'forwardslash and asterisk'
+                    pos += 2;
+
+                    // I'm starting this at 2 because 0 would bug (-1 + 1 === 0)
+                    // but then I just don't want to deal with this so I need to go 1,
+                    // then like I'm tired and I don't want to deal with this so I'll just go to 2 and surely nothing bad can happen
+                    // but in reality I probably only need to start at 1 (or start of other ticket variables + 2 or something idk I don't wanna deal with this right now).
+                    let ticketSource = 2;
+                    let ticketAsterisk = -1;
+                    let ticketForwardSlash = -1;
+                    while (pos < divSpanTextContentLength) {
+                        switch (divSpanTextContent[pos]) {
+                            case get_js_ASTERISK():
+                                ticketAsterisk = ticketSource++;
+                                break;
+                            case get_js_FORWARDSLASH():
+                                ticketForwardSlash = ticketSource++;
+                                break;
+                            case get_js_LINEFEED():
+                                ticketSource++;
+                                break;
+                            default:
+                                ticketSource++;
+                                break;
+                        }
+                        pos++;
+                        if (ticketAsterisk + 1 === ticketForwardSlash) {
+                            break;
+                        }
+                    }
+
+                    textContent = divSpanTextContent.substring(substart, substart = pos);
+                    if (childIndex < div.children.length) {
+                        span = div.children[childIndex++];
+                        span.className = 'eCm';
+                        span.textContent = textContent;
+                    }
+                    else {
+                        span = document.createElement('span');
+                        span.className = 'eCm';
+                        span.textContent = textContent;
+                        div.appendChild(span);
+                        childIndex++;
+                    }
+
+                    continue;
+                }
+
+                break;
+            case get_js_DOUBLEQUOTE():
+                if (substart < pos) {
+                    flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+                    if (childIndex < div.children.length) {
+                        span = div.children[childIndex++];
+                        span.className = '';
+                        span.textContent = flushTextContent;
+                    }
+                    else {
+                        span = document.createElement('span');
+                        span.textContent = flushTextContent;
+                        div.appendChild(span);
+                        childIndex++;
+                    }
+                }
+                // This code is somewhat a duplication of 'function lex_string(...)'
+                //
+                // likely what started the string is the same as the terminator, so you need to move ahead one position before starting the loop.
+                pos++;
+                outer: while (pos < divSpanTextContentLength) {
+                    switch (divSpanTextContent[pos]) {
+                        case get_js_DOUBLEQUOTE():
+                            pos++;
+                            break outer;
+                        case get_js_BACKSLASH():
+                            pos++;
+                            if (pos < divSpanTextContentLength) {
+                                pos++; // skip the escaped character provided that the file didn't end after the original backslash
+                            }
+                            continue /*outer*/;
+                        default:
+                            pos++;
+                            break;
+                    }
+                }
+                textContent = divSpanTextContent.substring(substart, substart = pos);
+                if (childIndex < div.children.length) {
+                    span = div.children[childIndex++];
+                    span.className = 'eS';
+                    span.textContent = textContent;
+                }
+                else {
+                    span = document.createElement('span');
+                    span.className = 'eS';
+                    span.textContent = textContent;
+                    div.appendChild(span);
+                    childIndex++;
+                }
+                continue;
+            case get_js_SINGLEQUOTE():
+                if (substart < pos) {
+                    flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+                    if (childIndex < div.children.length) {
+                        span = div.children[childIndex++];
+                        span.className = '';
+                        span.textContent = flushTextContent;
+                    }
+                    else {
+                        span = document.createElement('span');
+                        span.textContent = flushTextContent;
+                        div.appendChild(span);
+                        childIndex++;
+                    }
+                }
+                // This code is somewhat a duplication of 'function lex_string(...)'
+                //
+                // likely what started the string is the same as the terminator, so you need to move ahead one position before starting the loop.
+                pos++;
+                outer: while (pos < divSpanTextContentLength) {
+                    switch (divSpanTextContent[pos]) {
+                        case get_js_SINGLEQUOTE():
+                            pos++;
+                            break outer;
+                        case get_js_BACKSLASH():
+                            pos++;
+                            if (pos < divSpanTextContentLength) {
+                                pos++; // skip the escaped character provided that the file didn't end after the original backslash
+                            }
+                            continue /*outer*/;
+                        default:
+                            pos++;
+                            break;
+                    }
+                }
+                textContent = divSpanTextContent.substring(substart, substart = pos);
+                if (childIndex < div.children.length) {
+                    span = div.children[childIndex++];
+                    span.className = 'eS';
+                    span.textContent = textContent;
+                }
+                else {
+                    span = document.createElement('span');
+                    span.className = 'eS';
+                    span.textContent = textContent;
+                    div.appendChild(span);
+                    childIndex++;
+                }
+                continue;
+            case get_js_BACKTICK():
+                if (substart < pos) {
+                    flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+                    if (childIndex < div.children.length) {
+                        span = div.children[childIndex++];
+                        span.className = '';
+                        span.textContent = flushTextContent;
+                    }
+                    else {
+                        span = document.createElement('span');
+                        span.textContent = flushTextContent;
+                        div.appendChild(span);
+                        childIndex++;
+                    }
+                }
+                // This code is somewhat a duplication of 'function lex_string(...)'
+                //
+                // likely what started the string is the same as the terminator, so you need to move ahead one position before starting the loop.
+                pos++;
+                outer: while (pos < divSpanTextContentLength) {
+                    switch (divSpanTextContent[pos]) {
+                        case get_js_BACKTICK():
+                            pos++;
+                            break outer;
+                        case get_js_BACKSLASH():
+                            pos++;
+                            if (pos < divSpanTextContentLength) {
+                                pos++; // skip the escaped character provided that the file didn't end after the original backslash
+                            }
+                            continue /*outer*/;
+                        default:
+                            pos++;
+                            break;
+                    }
+                }
+                textContent = divSpanTextContent.substring(substart, substart = pos);
+                if (childIndex < div.children.length) {
+                    span = div.children[childIndex++];
+                    span.className = 'eSm';
+                    span.textContent = textContent;
+                }
+                else {
+                    span = document.createElement('span');
+                    span.className = 'eSm';
+                    span.textContent = textContent;
+                    div.appendChild(span);
+                    childIndex++;
+                }
+                continue;
+            case get_js_EQUALS():
+                // I think I actually want to handle the '==', '===', and '===...=' cases just so I can skip over the text quickly.
+                // Otherwise every time I see '=' I have to check the left and right side and it is quite redundant?
+                //
+                // I also have to consider anything of the form '+=' then typing '=' after it for '+=='. I don't think this is valid but I need to consider it I'll probably skip over any '=' that appear after the first '+=' text and is contiguous?
+                // No that doesn't work because you're adding this step to every syntax that ends in '=' that it has to understand the '=' case.
+                // What you want is a left check, but that the left check only happens once per contiguous block of '=' incase the left '=' isn't part of your syntax.
+                //
+                
+                // NOTE: A presumption is being made here that "any multiline syntax that spans multiple lines, won't end in ="...
+                // ...this presumption permits checking only the text that is in bounds of substart and divSpanTextContentLength.
+                
+                // TODO: This contiguous skipping logic isn't working for every switch case?
+                //
+                // TODO: If this contiguous skipping logic works for the '=' it will handle both '!=' and '!==' solely by checking for '!='
+                //
+                // let shouldSkipContiguous;... sneaky uninitialized variable conversion to a falsey or something was going on?
+                shouldSkipContiguous = false;
+                if (pos > substart) {
+                    if (divSpanTextContent[pos - 1] === get_js_EQUALS()) {
+                        shouldSkipContiguous = true;
+                    }
+                    else if (divSpanTextContent[pos - 1] === get_js_BANG()) {
+                        shouldSkipContiguous = true;
+                    }
+                    else if (divSpanTextContent[pos - 1] === get_js_OPENBRACKET()) {
+                        shouldSkipContiguous = true;
+                    }
+                    else if (divSpanTextContent[pos - 1] === get_js_CLOSEBRACKET()) {
+                        shouldSkipContiguous = true;
+                    }
+                }
+                else {
+                    shouldSkipContiguous = false;
+                }
+                if (!shouldSkipContiguous) {
+                    if (pos < divSpanTextContentLength && divSpanTextContent[pos + 1] === get_js_EQUALS()) {
+                        shouldSkipContiguous = true;
+                    }
+                }
+                
+                if (shouldSkipContiguous) {
+                    // skip current
+                    pos++;
+                    // skip contiguous
+                    while (pos < divSpanTextContentLength && divSpanTextContent[pos] === get_js_EQUALS()) {
+                        pos++;
+                    }
+                    continue;
+                }
+                else {
+                    if (substart < pos) { // write any text that came prior, and on the same line.
+                        flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+                        if (childIndex < div.children.length) {
+                            span = div.children[childIndex++];
+                            span.className = '';
+                            span.textContent = flushTextContent;
+                        }
+                        else {
+                            span = document.createElement('span');
+                            span.textContent = flushTextContent;
+                            div.appendChild(span);
+                            childIndex++;
+                        }
+                    }
+                    // I don't know if I would count '=>' as an "assignment operator"... maybe I would but I'm too focused on whether I'd count it as such that I can't figure out the way to make it work. So I need to just make it work first.
+                    pos++;
+                    substart++;
+                    if (pos < divSpanTextContentLength && divSpanTextContent[pos] === get_js_CLOSEBRACKET()) {
+                        textContent = '=>';
+                        pos++;
+                        substart++;
+                    }
+                    else {
+                        textContent = '=';
+                    }
+                    if (childIndex < div.children.length) {
+                        span = div.children[childIndex++];
+                        span.className = 'eOA';
+                        span.textContent = textContent;
+                    }
+                    else {
+                        span = document.createElement('span');
+                        span.className = 'eOA';
+                        span.textContent = textContent;
+                        div.appendChild(span);
+                        childIndex++;
+                    }
+                    continue;
+                }
+                
+                // TODO: you don't understand how code caching or like instruction caching etc works with respect to whether inlining interupts things
+                break;
+            case get_js_PLUS():
+                // ++
+                // +=
+                
+                // If "some syntax that I don't actually think exists" such as '=+' were to exist I'd need to care for '=+' then a '+' making '=++'
+                // this should cause a skipping of contiguous '+' in my initial opinion so that's what I'll probably do.
+                // 
+                // I have a better example now... '++' then you type '+' causing '+++', the first two '++' are syntax highlighted and the third isn't.
+                // Some might say you should not syntax highlight any of the plus in that case because you're reading the operator as '++'
+                // rather than the combination of '++' and '+'. I think I'm somewhat indifferent but I lean towards syntax highlighting
+                // the two plus characters and not doing so for the final '+' (at least my initial opinion is that).
+                //
+                // ++++
+                // It doesn't actually work... I tried it and '+++' works but then '++++' is two '++' rather than one '++' and then just the "text of '++'".
+                //
+                
+                // NOTE: A presumption is being made here that "any multiline syntax that spans multiple lines, won't end in +"...
+                // ...this presumption permits checking only the text that is in bounds of substart and divSpanTextContentLength.
+                
+                // TODO: This contiguous skipping logic isn't working for every switch case?
+                shouldSkipContiguous = pos > substart && divSpanTextContent[pos - 1] === get_js_PLUS();
+                if (!shouldSkipContiguous) {
+                    if (pos < divSpanTextContentLength) {
+                        if (divSpanTextContent[pos + 1] === get_js_PLUS()) {
+                            textContent = '++';
+                        }
+                        else if (divSpanTextContent[pos + 1] === get_js_EQUALS()) {
+                            textContent = '+=';
+                        }
+                        else {
+                            shouldSkipContiguous = true;
+                        }
+                    }
+                    else {
+                        shouldSkipContiguous = true;
+                    }
+                }
+                
+                if (shouldSkipContiguous) {
+                    // skip current
+                    pos++;
+                    // skip contiguous
+                    while (pos < divSpanTextContentLength && divSpanTextContent[pos] === get_js_PLUS()) {
+                        pos++;
+                    }
+                    continue;
+                }
+                else {
+                    if (substart < pos) { // write any text that came prior, and on the same line.
+                        flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+                        if (childIndex < div.children.length) {
+                            span = div.children[childIndex++];
+                            span.className = '';
+                            span.textContent = flushTextContent;
+                        }
+                        else {
+                            span = document.createElement('span');
+                            span.textContent = flushTextContent;
+                            div.appendChild(span);
+                            childIndex++;
+                        }
+                    }
+                    pos += 2;
+                    substart += 2;
+                    if (childIndex < div.children.length) {
+                        span = div.children[childIndex++];
+                        span.className = 'eOA';
+                        span.textContent = textContent;
+                    }
+                    else {
+                        span = document.createElement('span');
+                        span.className = 'eOA';
+                        span.textContent = textContent;
+                        div.appendChild(span);
+                        childIndex++;
+                    }
+                    continue;
+                }
+            case get_js_MINUS():
+                // --
+                // -=
+                
+                // NOTE: A presumption is being made here that "any multiline syntax that spans multiple lines, won't end in -"...
+                // ...this presumption permits checking only the text that is in bounds of substart and divSpanTextContentLength.
+                
+                // When you switch on '+' then check for '-' or '+'... should you do something relating to NOT invoking the decode function and instead
+                // you just "know" the text that goes there based on your conditional branching?
+                    
+                // TODO: This contiguous skipping logic isn't working for every switch case?
+                shouldSkipContiguous = pos > substart && divSpanTextContent[pos - 1] === get_js_MINUS();
+                if (!shouldSkipContiguous) {
+                    if (pos < divSpanTextContentLength) {
+                        if (divSpanTextContent[pos + 1] === get_js_MINUS()) {
+                            textContent = '--';
+                        }
+                        else if (divSpanTextContent[pos + 1] === get_js_EQUALS()) {
+                            textContent = '-=';
+                        }
+                        else {
+                            shouldSkipContiguous = true;
+                        }
+                    }
+                    else {
+                        shouldSkipContiguous = true;
+                    }
+                }
+                
+                if (shouldSkipContiguous) {
+                    // skip current
+                    pos++;
+                    // skip contiguous
+                    while (pos < divSpanTextContentLength && divSpanTextContent[pos] === get_js_MINUS()) {
+                        pos++;
+                    }
+                    continue;
+                }
+                else {
+                    if (substart < pos) { // write any text that came prior, and on the same line.
+                        flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+                        if (childIndex < div.children.length) {
+                            span = div.children[childIndex++];
+                            span.className = '';
+                            span.textContent = flushTextContent;
+                        }
+                        else {
+                            span = document.createElement('span');
+                            span.textContent = flushTextContent;
+                            div.appendChild(span);
+                            childIndex++;
+                        }
+                    }
+                    pos += 2;
+                    substart += 2;
+                    if (childIndex < div.children.length) {
+                        span = div.children[childIndex++];
+                        span.className = 'eOA';
+                        span.textContent = textContent;
+                    }
+                    else {
+                        span = document.createElement('span');
+                        span.className = 'eOA';
+                        span.textContent = textContent;
+                        div.appendChild(span);
+                        childIndex++;
+                    }
+                    continue;
+                }
+        }
+        pos++;
+    }
+
+    // TODO: Consider the final pos? Is this gonna bug? I don't think it will.
+    if (substart < pos && pos !== 0) {
+        flushTextContent = divSpanTextContent.substring(substart, substart = pos);
+        if (childIndex < div.children.length) {
+            span = div.children[childIndex++];
+            span.className = '';
+            span.textContent = flushTextContent;
+        }
+        else {
+            span = document.createElement('span');
+            span.textContent = flushTextContent;
+            div.appendChild(span);
+            childIndex++;
+        }
+    }
 }
