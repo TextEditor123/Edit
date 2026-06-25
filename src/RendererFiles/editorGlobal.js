@@ -5699,6 +5699,9 @@ function EDITOR_syntaxHighlighting() {
 
     I think then you'd need to edge check 'EDITOR_beltIndexZero' find a hit, loop until you no longer see the not syntax highlighted css class
     then this tells you to edge check PREVIOUS('EDITOR_beltIndexZero') and the remainder of your 'diff' to loop is in reverse.
+
+    I'm trying to think about whether the scroll function could leave behind data that indicates to this function
+    whether it is a 'EDITOR_beltIndexZero', PREVIOUS('EDITOR_beltIndexZero'), or both case without checking the edge divs whether they have the not syntax highlighted css class.
     */
 
 
