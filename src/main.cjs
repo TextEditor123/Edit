@@ -1669,7 +1669,7 @@ I'd prefer to not do the syntax highlighting today.
 
 I need to see if there's any use in me doing other things though.
 
-- [ ] classes, if an instance will always exist compile two versions:
+- [ ] classes, if an instance will "always exist" compile two versions:
     - [ ] The baseline always existing will use fieldBuffer.js
 	- [ ] Any instance created beyond that as necessary will use fields themselves.
 - [ ] all strings can be moved to a fieldBuffer to be stored as the byte representation
