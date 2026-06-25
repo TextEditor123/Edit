@@ -5554,30 +5554,37 @@ function EDITOR_onScroll_WRAPIT() {
 
         let childIndex = 0;
 
+        let span;
+
+        // You need to collapse these branches because branching is slow and bad for caching; this is an extremely hot path.
         if (lineStart === lineEnd) {
             if (childIndex < div.children.length) {
-                let span = div.children[childIndex++];
+                span = div.children[childIndex++];
                 span.textContent = '';
-                span.className = '';
+                span.className = 'eN';
             }
             else {
-                div.appendChild(document.createElement('span'));
+                span = document.createElement('span');
+                span.className = 'eN';
+                div.appendChild(span);
                 childIndex++;
             }
         }
         else {
+            let textContent = EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd));
             if (lineStart < lineEnd) {
-                let span;
                 if (childIndex < div.children.length) {
                     span = div.children[childIndex++];
-                    span.className = '';
+                    span.textContent = textContent;
+                    span.className = 'eN';
                 }
                 else {
                     span = document.createElement('span');
+                    span.className = 'eN';
+                    span.textContent = textContent;
                     div.appendChild(span);
                     childIndex++;
                 }
-                span.textContent = EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd));
             }
         }
 

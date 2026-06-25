@@ -287,6 +287,11 @@ the class names that linearly scale in usage as you show more and more text.
   /*background-color: var(--editor-syntax-member-access-background-color);*/
 }
 
+/* .eN (i.e.: Editor Not_yet_syntax_highlighted) */
+.eN {
+  color: var(--editor-syntax-operatorAssignment-color);
+}
+
 /*
 TODO: Is it better to have one virtualization element that has both the width and height set to non '1px' values...
 ...or separate them? i.e.: is it easier to render an element that has a 1px width or height than both measurements being large?
