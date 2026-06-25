@@ -5699,6 +5699,9 @@ function EDITOR_syntaxHighlighting() {
     All I remember is that there was an update when I opened VSCode this morning.
     Did they deliberately stop what I did from working?
     It sounds ridiculous but I'm literally sweating in panic and I'm gonna try and just move on.
+
+    I restarted VSCode and it still isn't working, I need to just move on instead of having my mind race about all the reasons
+    why this was deliberatly done to me.
     */
 
     //if (diff > 0 && diff < get_EDITOR_virtualCount()) {
