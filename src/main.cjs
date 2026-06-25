@@ -1697,6 +1697,8 @@ Tired as I'm avoiding the more important feature which is the asynchronous synta
 
 Anxious as I feel the need to justify why I'm avoiding this today
 meanwhile I might possibly just be talking to myself in a repo that nobody even knows exists.
+
+Okay fine I'll look at the asynchronous syntax highlighting for an hour and see where things go.
 */
 
 /* sec0
