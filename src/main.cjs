@@ -1663,6 +1663,18 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 
 /*
 woah Guild Wars 1 (aka just: Guild Wars) (aka: Guild Wars Reforged) got a MASSIVE rebalance patch yesterday.
+
+I feel very tired.
+I'd prefer to not do the syntax highlighting today.
+
+I need to see if there's any use in me doing other things though.
+
+- [ ] classes, if an instance will always exist compile two versions:
+    - [ ] The baseline always existing will use fieldBuffer.js
+	- [ ] Any instance created beyond that as necessary will use fields themselves.
+- [ ] all strings can be moved to a fieldBuffer to be stored as the byte representation
+    - [ ] If you do this you'd want to from the get-go never introduce the string to begin with unless necessary
+- [ ] 
 */
 
 /* sec0
