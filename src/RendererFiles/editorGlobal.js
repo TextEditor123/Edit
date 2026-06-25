@@ -5674,6 +5674,7 @@ function EDITOR_syntaxHighlighting() {
     for (; i < get_EDITOR_virtualCount(); i++) {
         if (get_EDITOR_textElement().children[beltIndexCurrent].children.length === 1 && get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
             get_EDITOR_textElement().children[beltIndexCurrent].children[0].className = '';
+            JS_line_lex_newVersion(get_EDITOR_textElement().children[beltIndexCurrent], beltIndexCurrent);
         }
         else {
             break;
@@ -5685,6 +5686,7 @@ function EDITOR_syntaxHighlighting() {
     for (; i < get_EDITOR_virtualCount(); i++) {
         if (get_EDITOR_textElement().children[beltIndexCurrent].children.length === 1 && get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
             get_EDITOR_textElement().children[beltIndexCurrent].children[0].className = '';
+            JS_line_lex_newVersion(get_EDITOR_textElement().children[beltIndexCurrent], beltIndexCurrent);
         }
         else {
             break;

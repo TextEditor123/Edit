@@ -1267,3 +1267,7 @@ function JS_line_lex(div, substart, lineEnd, childIndex) {
 
     return childIndex;
 }
+
+function JS_line_lex_newVersion(div, beltIndexOfDiv) {
+    
+}
