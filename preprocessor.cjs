@@ -99,9 +99,18 @@ posChar
 a
     // bbb
 ```
+init: {
+    posChar = -1
+    posNewline = -1
+    substart = 0
+}
+
+skipEmptyLine: {
+    if (isChar === -1) | chunk(overritePos(posNewline))
+}
 
 posThis = 0 | isChar    => posChar = 0
-posThis = 1 | isNewline => posNewline = 1
+posThis = 1 | isNewline => char= -1
 
 posThis = 2 | isNonNewlineWhitespace => nop
 posThis = 3 | isNonNewlineWhitespace => nop
