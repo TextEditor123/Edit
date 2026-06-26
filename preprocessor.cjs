@@ -3,25 +3,52 @@
 const fs = require('fs');
 const path = require('path');
 
-const inputFolder = './src/RendererFiles';
+//const inputFolder = './src/RendererFiles';
+const inputFolder = './src/Test';
 const outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
+
+/*
+```
+    measureElement.style.top = '0';
+    
+
+// ss
+"ss"
+```
+
+=>
+
+```
+
+
+// ========
+// ========
+// test.js
+// ========
+// ========
+
+measureElement.style.top = '0';
+
+"ss"
+```
+*/
 
 // 1. Define the exact loading priority order
 const filePriorityOrder = [
-  "fieldBuffer.js",
-  "header_editorGlobal_header.js",
-  "widgetGlobal.js",
-  "menuGlobal.js",
-  "dialogGlobal.js",
-  "trackedSyntaxTypes.js",
-  "treeViewComponent.js",
-  "dialogImplementationsGlobal.js",
-  "listComponent.js",
-  "listTypes.js",
-  "editorGlobal.js",
-  "javascriptFeatures.js",
-  "explorerGlobal.js",
-  "applicationRendererRoot.js"
+  //"fieldBuffer.js",
+  //"header_editorGlobal_header.js",
+  //"widgetGlobal.js",
+  //"menuGlobal.js",
+  //"dialogGlobal.js",
+  //"trackedSyntaxTypes.js",
+  //"treeViewComponent.js",
+  //"dialogImplementationsGlobal.js",
+  //"listComponent.js",
+  //"listTypes.js",
+  //"editorGlobal.js",
+  //"javascriptFeatures.js",
+  //"explorerGlobal.js",
+  //"applicationRendererRoot.js"
 ];
 
 let writeBuilder = [];
@@ -250,7 +277,7 @@ function aaa(fileName) {
    * Although I don't understand why the singleLineComment logic isn't dropping the newline causing a merge with the next line of text...
    * The reason is cause it has been wrong all this time lol??? You can't - 2 after pos++
   */
-  let posRecentNewline;
+  let posRecentNewline = -1;
   while (pos < text.length) {
     switch (text[pos]) {
       case '/':
@@ -356,6 +383,10 @@ function aaa(fileName) {
         }
         posRecentNewline = pos;
 
+        pos++;
+        continue;
+      case ' ':
+      case '\t':
         pos++;
         continue;
       default:
