@@ -5696,7 +5696,9 @@ function EDITOR_syntaxHighlighting() {
     //     - A line that is out of bounds of 'indexLine < EDITOR_lineEndPositionList.count'
     //         - ...consider separating the loop bounds in some way to remove conditional branches related to 'if (indexLine < EDITOR_lineEndPositionList.count)'
     //
-    // 
+    // - [ ] TODO: The reverse case currently loops in reverse...
+    // ...this means the above 'TODO' cases won't be applicable there, they'll only work for the initial forwards case. So:
+    //     - [ ] determine the smallest index that will be handled by the reverse case and then start from there?
     //
 
     
