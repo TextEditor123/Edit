@@ -5479,7 +5479,7 @@ function EDITOR_onScroll_WRAPIT() {
     let upperBound;
     let loopCounter = 0;
     let vertical;
-    let origin;
+    let beltIndexLine;
 
     if (diff > 0 && diff < get_EDITOR_virtualCount()) {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
@@ -5487,9 +5487,9 @@ function EDITOR_onScroll_WRAPIT() {
         upperBound = lowerBound + diff;
 
         vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
-        origin = EDITOR_beltIndexZero;
+        beltIndexLine = EDITOR_beltIndexZero;
 
-        EDITOR_beltIndexZero = origin + diff;
+        EDITOR_beltIndexZero = beltIndexLine + diff;
         if (EDITOR_beltIndexZero >= get_EDITOR_textElement().children.length)
             EDITOR_beltIndexZero -= get_EDITOR_textElement().children.length;
     }
@@ -5508,7 +5508,7 @@ function EDITOR_onScroll_WRAPIT() {
         if (EDITOR_beltIndexZero < 0)
             EDITOR_beltIndexZero += get_EDITOR_textElement().children.length;
 
-        origin = EDITOR_beltIndexZero;
+        beltIndexLine = EDITOR_beltIndexZero;
     }
     else {
         onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
@@ -5516,18 +5516,17 @@ function EDITOR_onScroll_WRAPIT() {
         upperBound = lowerBound + get_EDITOR_virtualCount();
 
         vertical = get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight();
-        origin = EDITOR_beltIndexZero;
+        beltIndexLine = EDITOR_beltIndexZero;
     }
+
+    beltIndexLine--; // The 0th loop will increment somewhat awkwardly. This decrement avoids that.
 
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
         let transform = `translateY(${vertical}px)`;
 
         vertical += get_EDITOR_lineHeight();
 
-        // TODO: this always ought be have a transient result being 1 larger than the previous loop...
-        // ...you then still would do the bounds check, but perhaps simplifying this to an increment of 1
-        // and declaring the variable outside of the loop is useful?
-        let beltIndexLine = origin + loopCounter;
+        beltIndexLine++;
         if (beltIndexLine >= get_EDITOR_textElement().children.length)
             beltIndexLine -= get_EDITOR_textElement().children.length;
 
