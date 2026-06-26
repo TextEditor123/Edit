@@ -85,6 +85,12 @@ function aaa(fileName) {
 
   let pos = 0;
 
+  // Not only did that not end up working.
+  // but I'm seeing comments all throughout the output file.
+  // And they're supposed to have been removed for a while now.
+  // I just feel like an absolute clown.
+  // It's okay though. Nobody looks at this repo.
+
   markerWhileLoop: while (pos < text.length) {
     switch (text[pos]) {
       /*
