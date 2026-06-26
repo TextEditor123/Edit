@@ -3,52 +3,26 @@
 const fs = require('fs');
 const path = require('path');
 
-const inputFolder = './src/RendererFiles';
-//const inputFolder = './src/Test';
+//const inputFolder = './src/RendererFiles';
+const inputFolder = './src/Test';
 const outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
-
-/*
-```
-    measureElement.style.top = '0';
-    
-
-// ss
-"ss"
-```
-
-=>
-
-```
-
-
-// ========
-// ========
-// test.js
-// ========
-// ========
-
-measureElement.style.top = '0';
-
-"ss"
-```
-*/
 
 // 1. Define the exact loading priority order
 const filePriorityOrder = [
-  "fieldBuffer.js",
-  "header_editorGlobal_header.js",
-  "widgetGlobal.js",
-  "menuGlobal.js",
-  "dialogGlobal.js",
-  "trackedSyntaxTypes.js",
-  "treeViewComponent.js",
-  "dialogImplementationsGlobal.js",
-  "listComponent.js",
-  "listTypes.js",
-  "editorGlobal.js",
-  "javascriptFeatures.js",
-  "explorerGlobal.js",
-  "applicationRendererRoot.js"
+  //"fieldBuffer.js",
+  //"header_editorGlobal_header.js",
+  //"widgetGlobal.js",
+  //"menuGlobal.js",
+  //"dialogGlobal.js",
+  //"trackedSyntaxTypes.js",
+  //"treeViewComponent.js",
+  //"dialogImplementationsGlobal.js",
+  //"listComponent.js",
+  //"listTypes.js",
+  //"editorGlobal.js",
+  //"javascriptFeatures.js",
+  //"explorerGlobal.js",
+  //"applicationRendererRoot.js"
 ];
 
 let writeBuilder = [];
@@ -98,66 +72,9 @@ try {
   console.error('Bundling failed:', err.message);
 }
 
-/*
-I go to editorGlobal.js and go to the definition for the function 'EDITOR_indexLineTo_beltIndexLine'.
-
-I replace a specific span of 4 spaces by '~~~~' to illustrate what is happening.
-
-function EDITOR_indexLineTo_beltIndexLine(indexLine) {
-    let virtualIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualIndexLine();
-~~~~// TODO: The following line of code (when I at one point had it commented out in a specific way, I'm adding this clarification after originally having made this comment I don't remember the specifics of how it was commented out, but parts of it were and other parts weren't) either didn't "preprocess" correctly or... well I mean it probably is my fault i.e.: the "preprocess" but yeah this is coming out to be 'return;' and that's it nothing else in the compiled end result so somewhere along the pipeline it got borked.
-    return someExpressionIsHereButThatIsntImportantRightNow;
-}
-
-function EDITOR_indexLineTo_beltIndexLine(indexLine) {
-    let virtualIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualIndexLine();
-~~~~
-    return someExpressionIsHereButThatIsntImportantRightNow;
-}
-
-The comment was removed, but the 4 spaces of indentation wasn't.
-There's a variety of others things I can do in addition to this one.
-But I wanna focus on this one particularly first. I wanna do this one.
-
-posNewline
-posChar
-
-```
-a
-    // bbb
-```
-init: {
-    posChar = -1
-    posNewline = -1
-    substart = 0
-}
-
-skipEmptyLine: {
-    if (isChar === -1) | chunk(overritePos(posNewline))
-}
-
-posThis = 0 | isChar    => posChar = 0
-posThis = 1 | isNewline => char= -1
-
-posThis = 2 | isNonNewlineWhitespace => nop
-posThis = 3 | isNonNewlineWhitespace => nop
-posThis = 4 | isNonNewlineWhitespace => nop
-posThis = 5 | isNonNewlineWhitespace => nop
-
-posThis = 6 | isCommenty => lexComment | if (posThis isNewLine) | verify(posNewline )
-
-you can skip setting char to -1 if you check whether char is > than the previous newline I think?
-
-This will cause more chunks which is upsetting to think about but I prob gotta just go with it and see where it goes.
-
-*/
-
-// The exact message:
-// "[BABEL] Note: The code generator has deoptimised the styling of C:\Users\hunte\Repos\New folder (3)\Edit\preprocessor\__PREPROCESSEDbundle__.js as it exceeds the max of 500KB."
-
 function aaa(fileName) {
 
-  appendToWriteBuilder(`\n\n// preprocessor.cjs(${fileName})\n\n`);
+  appendToWriteBuilder(`\n\n// ========\n// ========\n// ${fileName}\n// ========\n// ========\n\n`);
 
   const filePath = path.join(inputFolder, fileName);
   let text = readTextNoBOM(filePath);
@@ -249,7 +166,6 @@ function aaa(fileName) {
         break;
       default:
         if (preprocessorMarkerContext === 0) {
-          pos = 0;
           break markerWhileLoop;
         }
         else {
@@ -272,16 +188,6 @@ function aaa(fileName) {
   }
 
   let chunkStart = pos;
-  let posRecentChar = -1;
-  /**
-   * Newline implies either '\r' or '\n'. If '\r\n' you still are treating them separately with respect to this variable because it doesn't matter for the purpose of removing empty lines of text.
-   * Although I guess you'd want to avoid having to check immediately after the '\r' if you had an empty line at the immediately following '\n' but I can't find the words this
-   *     shouldn't come into play cause you'll skip it in the lexing loop.
-   * 
-   * Although I don't understand why the singleLineComment logic isn't dropping the newline causing a merge with the next line of text...
-   * The reason is cause it has been wrong all this time lol??? You can't - 2 after pos++
-  */
-  let posRecentNewline = 0;
   while (pos < text.length) {
     switch (text[pos]) {
       case '/':
@@ -293,6 +199,9 @@ function aaa(fileName) {
           if (text[pos + 1] === '/') {
             endChunk();
             pos += 2;
+            if (fileName === "editorGlobal.js") {
+              let a = 2;
+            }
             singleLineCommentWhile: while (pos < text.length) {
               switch (text[pos]) {
                 case '/':
@@ -301,7 +210,15 @@ function aaa(fileName) {
                   }
                   break;
                 case '\r':
+                  pos++;
+                  if (pos <= text.length - 2) {
+                    if (text[pos + 1] === '\n') {
+                      pos++;
+                    }
+                  }
+                  break singleLineCommentWhile;
                 case '\n':
+                  pos++;
                   break singleLineCommentWhile;
               }
               pos++;
@@ -338,7 +255,6 @@ function aaa(fileName) {
       case '\'':
       case '"':
       case '`':
-        posRecentChar = pos;
         let terminator = text[pos];
         pos++;
         stringWhile: while (pos < text.length) {
@@ -352,50 +268,6 @@ function aaa(fileName) {
           pos++;
         }
         continue;
-      case '\r':
-        // This will move the newlines around...
-        // It says you had a newline that lacks any characters before the "newline after that one"
-        //
-        // So I want you to end your chunk at the original newline
-        // then start a new one just prior to this upcoming newline.
-        //
-        // The newline in the middle is lost so hopefully they're all consistent (if it matters in the given scenario)
-        if (posRecentChar < posRecentNewline) {
-          endChunk(posRecentNewline);
-          startChunk();
-        }
-        posRecentNewline = pos;
-        
-        if (pos <= text.length - 2) {
-          if (text[pos + 1] === '\n') {
-            pos++;
-          }
-        }
-        pos++;
-        continue;
-      case '\n':
-        // This will move the newlines around...
-        // It says you had a newline that lacks any characters before the "newline after that one"
-        //
-        // So I want you to end your chunk at the original newline
-        // then start a new one just prior to this upcoming newline.
-        //
-        // The newline in the middle is lost so hopefully they're all consistent (if it matters in the given scenario)
-        if (posRecentChar < posRecentNewline) {
-          endChunk(posRecentNewline);
-          startChunk();
-        }
-        posRecentNewline = pos;
-
-        pos++;
-        continue;
-      case ' ':
-      case '\t':
-        pos++;
-        continue;
-      default:
-        posRecentChar = pos++;
-        continue;
     }
     pos++;
   }
@@ -403,36 +275,14 @@ function aaa(fileName) {
 
   function startChunk() {
     if (chunkStart !== -1 && chunkStart < pos) {
-      endChunk();
+      appendToWriteBuilder(text.substring(chunkStart, pos));
     }
     chunkStart = pos;
   }
   
-  function endChunk(overritePos) {
-    //let localPos;
-    //if (!overritePos && overritePos !== 0) {
-    //  localPos = pos;
-    //}
-    //else {
-    //  localPos = overritePos;
-    //}
-
-    // now startchunk doesn't work right?
-
-    // - [ ] empty first line
-    // - [ ] whitespace only first line
-    // - [ ] text only first line
-    // - [ ] whitespace then text first line
-    // - [ ] preprocessor mark causing non 0 offset
-
-    let localPos = pos;
-
-    if (posRecentChar < posRecentNewline) {
-      localPos = posRecentNewline;
-    }
-
-    if (chunkStart < localPos) {
-      appendToWriteBuilder(text.substring(chunkStart, localPos));
+  function endChunk() {
+    if (chunkStart < pos) {
+      appendToWriteBuilder(text.substring(chunkStart, pos));
     }
     chunkStart = -1;
   }
