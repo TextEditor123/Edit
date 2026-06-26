@@ -5473,8 +5473,6 @@ function EDITOR_onScroll_WRAPIT() {
 
     let diff = currVli - prevVli;
 
-    let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
-
     let lowerBound;
     let upperBound;
     let loopCounter = 0;
@@ -5482,7 +5480,6 @@ function EDITOR_onScroll_WRAPIT() {
     let beltIndexLine;
 
     if (diff > 0 && diff < get_EDITOR_virtualCount()) {
-        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 1;
         lowerBound = prevVli + get_EDITOR_ONSCROLLvirtualCount();
         upperBound = lowerBound + diff;
 
@@ -5494,7 +5491,6 @@ function EDITOR_onScroll_WRAPIT() {
             EDITOR_beltIndexZero -= get_EDITOR_textElement().children.length;
     }
     else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
-        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 2;
         lowerBound = currVli;
         upperBound = lowerBound + diff;
 
@@ -5511,7 +5507,6 @@ function EDITOR_onScroll_WRAPIT() {
         beltIndexLine = EDITOR_beltIndexZero;
     }
     else {
-        onePositiveDiff_twoNegativeDiff_orThreeFullScreen = 3;
         lowerBound = get_EDITOR_virtualIndexLine();
         upperBound = lowerBound + get_EDITOR_virtualCount();
 
@@ -5658,8 +5653,6 @@ function EDITOR_syntaxHighlighting() {
     EDITOR_syntaxHighlighting_previousIndexVirtual = get_EDITOR_virtualIndexLine();
 
     let diff = currVli - prevVli;
-
-    let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
 
     let lowerBound;
     let upperBound;
