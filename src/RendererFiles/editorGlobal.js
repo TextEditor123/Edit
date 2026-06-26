@@ -5700,6 +5700,8 @@ function EDITOR_syntaxHighlighting() {
     // ...this means the above 'TODO' cases won't be applicable there, they'll only work for the initial forwards case. So:
     //     - [ ] determine the smallest index that will be handled by the reverse case and then start from there?
     //
+    // - [ ] TODO: Checking the length is 1 is probably not useful; short of there having been "corrupt state" from someone messing with developer tools or an exception having stopped code early, but it doesn't feel sensible to cover these cases here.
+    //
 
     
     let beltIndexCurrent = beltIndexZero;
