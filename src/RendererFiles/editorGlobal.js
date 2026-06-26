@@ -5479,10 +5479,13 @@ function EDITOR_onScroll_WRAPIT() {
     let beltIndexLine;
 
     if (diff > 0 && diff < get_EDITOR_virtualCount()) {
+        // Note: this case has 'vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();'
+        // I believe 'get_EDITOR_virtualCount' === 'get_EDITOR_ONSCROLLvirtualCount' in this case, thus all vertical calculations can be moved after the if statements to be lowerBound * ...
+        // All cases other than this one were exact 1 to 1 matches.
+        //
         lowerBound = prevVli + get_EDITOR_ONSCROLLvirtualCount();
         upperBound = lowerBound + diff;
 
-        vertical = (prevVli + get_EDITOR_virtualCount()) * get_EDITOR_lineHeight();
         beltIndexLine = EDITOR_beltIndexZero;
 
         EDITOR_beltIndexZero = beltIndexLine + diff;
@@ -5492,8 +5495,6 @@ function EDITOR_onScroll_WRAPIT() {
     else if (diff < 0 && (diff *= -1) < get_EDITOR_virtualCount()) {
         lowerBound = currVli;
         upperBound = lowerBound + diff;
-
-        vertical = currVli * get_EDITOR_lineHeight();
 
         let lastIndex = EDITOR_beltIndexZero === 0
             ? get_EDITOR_textElement().children.length - 1
@@ -5509,9 +5510,10 @@ function EDITOR_onScroll_WRAPIT() {
         lowerBound = get_EDITOR_virtualIndexLine();
         upperBound = lowerBound + get_EDITOR_virtualCount();
 
-        vertical = get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight();
         beltIndexLine = EDITOR_beltIndexZero;
     }
+
+    vertical = lowerBound * get_EDITOR_lineHeight();
 
     beltIndexLine--; // The 0th loop will increment somewhat awkwardly. This decrement avoids that.
 
