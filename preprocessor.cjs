@@ -91,6 +91,27 @@ function EDITOR_indexLineTo_beltIndexLine(indexLine) {
 The comment was removed, but the 4 spaces of indentation wasn't.
 There's a variety of others things I can do in addition to this one.
 But I wanna focus on this one particularly first. I wanna do this one.
+
+posNewline
+posChar
+
+```
+a
+    // bbb
+```
+
+posThis = 0 | isChar    => posChar = 0
+posThis = 1 | isNewline => posNewline = 1
+
+posThis = 2 | isNonNewlineWhitespace => nop
+posThis = 3 | isNonNewlineWhitespace => nop
+posThis = 4 | isNonNewlineWhitespace => nop
+posThis = 5 | isNonNewlineWhitespace => nop
+
+posThis = 6 | isCommenty => lexComment | if (posThis isNewLine) | verify(posNewline )
+
+
+
 */
 
 function aaa(fileName) {
