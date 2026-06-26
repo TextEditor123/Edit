@@ -5524,6 +5524,13 @@ function EDITOR_onScroll_WRAPIT() {
     
     // Not feelings great, just am grinding out some progress this is kinda messy but I think it is working.
     //
+    /**
+     * Important detail to consider:
+     * the lines that are >= EDITOR_lineEndPositionList.count will continually increment lineStart by 1
+     * So if you expect this to accurately represent the EOF position when it is in view, it probably does NOT.
+     * 
+     * TODO: I think I saw how to do it in a way that is more sensible. There is no reason to not just put the lineStart = lineEnd + 1 inside the if that is immediately following I think? Then you'd avoid this 'note'.
+     */
     let lineStart = 0;
     let lineEnd;
     if (lowerBound < EDITOR_lineEndPositionList.count) {
@@ -5559,11 +5566,6 @@ function EDITOR_onScroll_WRAPIT() {
         gutter.style.transform = transform;
         div.style.transform = transform;
 
-        /**
-         * Important detail to consider:
-         * the lines that are >= EDITOR_lineEndPositionList.count will continually increment lineStart by 1
-         * So if you expect this to accurately represent the EOF position when it is in view, it probably does NOT.
-         */
         lineStart = lineEnd + 1;
         if (indexLine < EDITOR_lineEndPositionList.count) {
             gutter.textContent = indexLine + 1;
