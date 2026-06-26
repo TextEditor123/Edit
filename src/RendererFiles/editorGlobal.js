@@ -5475,7 +5475,6 @@ function EDITOR_onScroll_WRAPIT() {
 
     let lowerBound;
     let upperBound;
-    let loopCounter = 0;
     let vertical;
     let beltIndexLine;
 
@@ -5527,7 +5526,6 @@ function EDITOR_onScroll_WRAPIT() {
 
         let gutter = get_EDITOR_gutter().children[beltIndexLine];
         let div = get_EDITOR_textElement().children[beltIndexLine];
-        loopCounter++;
 
         // - [ ] TODO: order of setting 'transform' vs 'textContent' vs 'className'; you need to understand the differences, if any.
         //     - [ ] TODO: there exists an HTML syntax that will group your changes. I'm not talking about animation frame, I think it is something like the name "fragment". Is this useful here?
@@ -5656,7 +5654,6 @@ function EDITOR_syntaxHighlighting() {
 
     let lowerBound;
     let upperBound;
-    let loopCounter = 0;
     let vertical;
     let origin;
 
