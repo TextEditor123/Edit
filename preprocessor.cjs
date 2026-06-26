@@ -212,16 +212,18 @@ function aaa(fileName) {
                         console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a single line comment.`);
                   }
                   break;
+                // Single line comments cannot delete their ending newline character(s) otherwise a line ending of just '\n' or just '\r' would result in:
+                // ```
+                // let x = 2; // set x to 2
+                // return x + 1;
+                // ```
+                //
+                // Would become:
+                // ```
+                // let x = 2; return x + 1;
+                // ```
                 case '\r':
-                  pos++; // TODO: You can't check length -2 after a pos++ you moved forwards so it borks
-                  if (pos <= text.length - 2) {
-                    if (text[pos + 1] === '\n') {
-                      pos++;
-                    }
-                  }
-                  break singleLineCommentWhile;
                 case '\n':
-                  pos++;
                   break singleLineCommentWhile;
               }
               pos++;
