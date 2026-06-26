@@ -3,8 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
-//const inputFolder = './src/RendererFiles';
-const inputFolder = './src/Test';
+const inputFolder = './src/RendererFiles';
+//const inputFolder = './src/Test';
 const outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
 
 /*
@@ -35,20 +35,20 @@ measureElement.style.top = '0';
 
 // 1. Define the exact loading priority order
 const filePriorityOrder = [
-  //"fieldBuffer.js",
-  //"header_editorGlobal_header.js",
-  //"widgetGlobal.js",
-  //"menuGlobal.js",
-  //"dialogGlobal.js",
-  //"trackedSyntaxTypes.js",
-  //"treeViewComponent.js",
-  //"dialogImplementationsGlobal.js",
-  //"listComponent.js",
-  //"listTypes.js",
-  //"editorGlobal.js",
-  //"javascriptFeatures.js",
-  //"explorerGlobal.js",
-  //"applicationRendererRoot.js"
+  "fieldBuffer.js",
+  "header_editorGlobal_header.js",
+  "widgetGlobal.js",
+  "menuGlobal.js",
+  "dialogGlobal.js",
+  "trackedSyntaxTypes.js",
+  "treeViewComponent.js",
+  "dialogImplementationsGlobal.js",
+  "listComponent.js",
+  "listTypes.js",
+  "editorGlobal.js",
+  "javascriptFeatures.js",
+  "explorerGlobal.js",
+  "applicationRendererRoot.js"
 ];
 
 let writeBuilder = [];
@@ -151,6 +151,9 @@ you can skip setting char to -1 if you check whether char is > than the previous
 This will cause more chunks which is upsetting to think about but I prob gotta just go with it and see where it goes.
 
 */
+
+// The exact message:
+// "[BABEL] Note: The code generator has deoptimised the styling of C:\Users\hunte\Repos\New folder (3)\Edit\preprocessor\__PREPROCESSEDbundle__.js as it exceeds the max of 500KB."
 
 function aaa(fileName) {
 
