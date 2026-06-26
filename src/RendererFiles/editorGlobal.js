@@ -5688,7 +5688,16 @@ function EDITOR_syntaxHighlighting() {
     // "The lineStart of the next line is the lineEnd of the previous line + 1"
     //
     // 
+    // - [ ] TODO: get the initial trackedSyntax_i, then just keep re-using it, rather than doing the binary search for the trackedSyntax_i every line. (pass it in to / return from 'JS_line_lex_newVersion')
+    //
+    // - [ ] TODO: There is something in this method that is decently pointless overhead relating to...:
+    //     - An empty line, a line only consisting of whitespace, or a line that is indented.
+    //         - ...this one is perhaps less obvious from a non-branching perspective. And perhaps even just adding a conditional branch that avoids invoking 'JS_line_lex_newVersion' in this case is worthwhile.
+    //     - A line that is out of bounds of 'indexLine < EDITOR_lineEndPositionList.count'
+    //         - ...consider separating the loop bounds in some way to remove conditional branches related to 'if (indexLine < EDITOR_lineEndPositionList.count)'
+    //
     // 
+    //
 
     
     let beltIndexCurrent = beltIndexZero;
