@@ -154,7 +154,7 @@ This will cause more chunks which is upsetting to think about but I prob gotta j
 
 function aaa(fileName) {
 
-  appendToWriteBuilder(`\n\n// ========\n// ========\n// ${fileName}\n// ========\n// ========\n\n`);
+  appendToWriteBuilder(`\n\n// preprocessor.cjs(${fileName})\n\n`);
 
   const filePath = path.join(inputFolder, fileName);
   let text = readTextNoBOM(filePath);
