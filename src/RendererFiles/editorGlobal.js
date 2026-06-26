@@ -5695,7 +5695,7 @@ function EDITOR_syntaxHighlighting() {
     // ...this means the above 'TODO' cases won't be applicable there, they'll only work for the initial forwards case. So:
     //     - [ ] determine the smallest index that will be handled by the reverse case and then start from there?
     //
-    // - [ ] TODO: Checking the length is 1 is probably not useful; short of there having been "corrupt state" from someone messing with developer tools or an exception having stopped code early, but it doesn't feel sensible to cover these cases here.
+    // - [x] TODO: Checking the length is 1 is probably not useful; short of there having been "corrupt state" from someone messing with developer tools or an exception having stopped code early, but it doesn't feel sensible to cover these cases here.
     //
     // - [ ] TODO: If you have nothing better to do with you time: give a moment of thought to the reference chasing that may or may not be occuring inside these loops...
     // ...it is hard to say:
@@ -5705,12 +5705,16 @@ function EDITOR_syntaxHighlighting() {
     // 
     // 
     // - [ ] TODO: rename the 'trackedSyntaxExhausted' variable because it makes me anxious that I will manifest that state of being into reality whenever I read the variable name.
+    //
+    // - [ ] You really should do the logic to not include lines of text that are just whitespace in the preprocessor.cjs cause you now are getting the babel note:
+    //     - [ ] [BABEL] Note: The code generator has deoptimised the styling of C:\Users\hunte\Repos\New folder (3)\Edit\preprocessor\__PREPROCESSEDbundle__.js as it exceeds the max of 500KB.
+    //     - ... I don't actually know if they're counting whitespace as part of that 500KB, I'd presume they are so you should stop doing it. At least when it comes to the comments that are indented, and you include the indentation for no reason even though you removed the comment.
 
     
     let beltIndexCurrent = beltIndexZero;
     let indexLine = currVli;
     for (; i < get_EDITOR_virtualCount(); i++) {
-        if (get_EDITOR_textElement().children[beltIndexCurrent].children.length === 1 && get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
+        if (get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
             get_EDITOR_textElement().children[beltIndexCurrent].children[0].className = '';
 
             let lineStart;
@@ -5742,7 +5746,7 @@ function EDITOR_syntaxHighlighting() {
     beltIndexCurrent = beltIndexFinal;
     indexLine = currVli + get_EDITOR_virtualCount() - 1;
     for (; i < get_EDITOR_virtualCount(); i++) {
-        if (get_EDITOR_textElement().children[beltIndexCurrent].children.length === 1 && get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
+        if (get_EDITOR_textElement().children[beltIndexCurrent].children[0].className === 'eN') {
             get_EDITOR_textElement().children[beltIndexCurrent].children[0].className = '';
 
             let lineStart;
