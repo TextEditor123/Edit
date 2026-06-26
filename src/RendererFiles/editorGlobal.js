@@ -5537,17 +5537,11 @@ function EDITOR_onScroll_WRAPIT() {
         gutter.style.transform = transform;
         div.style.transform = transform;
 
-        // - [ ] TODO: redundant checks for being out of bounds of the text (case 1 of 2)
-        gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
-            ? '~'
-            : indexLine + 1;
-
-        
-
         let lineStart;
         let lineEnd;
-        // - [ ] TODO: redundant checks for being out of bounds of the text (case 2 of 2)
+
         if (indexLine < EDITOR_lineEndPositionList.count) {
+            gutter.textContent = indexLine + 1;
             if (indexLine === 0) {
                 lineStart = 0;
                 lineEnd = EDITOR_lineEndPositionList.data[indexLine] - 0;
@@ -5558,6 +5552,7 @@ function EDITOR_onScroll_WRAPIT() {
             }
         }
         else {
+            gutter.textContent = '~';
             lineStart = 0;
             lineEnd = 0;
         }
