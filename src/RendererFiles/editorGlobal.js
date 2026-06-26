@@ -2,6 +2,7 @@
 // preprocessor.cjs
 import "./header_editorGlobal_header"
 import "./fieldBuffer"
+import "./javascriptFeatures"
 //__#__
 
 /*
@@ -5671,6 +5672,18 @@ function EDITOR_syntaxHighlighting() {
     let beltIndexFinal = EDITOR_beltIndexLine_PREVIOUS(beltIndexZero);
 
     let i = 0;
+
+    // TODO: lineStart, and lineEnd; these are currently being retrieved via "random access"...
+    // ...But,  this logic currently goes from 1 indexLine to the very next indexLine by a difference of '1'.
+    // Currently, there is not any logic for code folding.
+    // I do not initially believe there is a benefit to leaving the code in the current state by some argument of
+    // "optimizing that the next line is an indexLine of 1, rather than 'random access' would not work if code folding were ever added".
+    // ...
+    // I believe this in part because I don't believe the code in its current state would work if code folding were ever added.
+    // And thus an argument of that kind ought to suggest that the current code is applicable when using a code folding feature.
+    // But ultimately I believe these changes one way or the other are "extremely trivial" given that they're common patterns in the codebase
+    // and can be changed to whatever well known manner is preferable at any moment within this "black box" of a function.
+    // 
     
     let beltIndexCurrent = beltIndexZero;
     let indexLine = currVli;
