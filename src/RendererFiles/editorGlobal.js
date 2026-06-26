@@ -5697,6 +5697,13 @@ function EDITOR_syntaxHighlighting() {
     //
     // - [ ] TODO: Checking the length is 1 is probably not useful; short of there having been "corrupt state" from someone messing with developer tools or an exception having stopped code early, but it doesn't feel sensible to cover these cases here.
     //
+    // - [ ] TODO: If you have nothing better to do with you time: give a moment of thought to the reference chasing that may or may not be occuring inside these loops...
+    // ...it is hard to say:
+    // 1. because the engine is gonna do optimizations that I don't necessarily understand completely
+    // 2. the fully optimized "minimal reference chasing" solution might be only nominal
+    // 3. ummm
+    // 
+    // 
 
     
     let beltIndexCurrent = beltIndexZero;
