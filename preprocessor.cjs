@@ -121,6 +121,8 @@ posThis = 6 | isCommenty => lexComment | if (posThis isNewLine) | verify(posNewl
 
 you can skip setting char to -1 if you check whether char is > than the previous newline I think?
 
+This will cause more chunks which is upsetting to think about but I prob gotta just go with it and see where it goes.
+
 */
 
 function aaa(fileName) {
@@ -239,6 +241,16 @@ function aaa(fileName) {
   }
 
   let chunkStart = pos;
+  let posRecentChar = -1;
+  /**
+   * Newline implies either '\r' or '\n'. If '\r\n' you still are treating them separately with respect to this variable because it doesn't matter for the purpose of removing empty lines of text.
+   * Although I guess you'd want to avoid having to check immediately after the '\r' if you had an empty line at the immediately following '\n' but I can't find the words this
+   *     shouldn't come into play cause you'll skip it in the lexing loop.
+   * 
+   * Although I don't understand why the singleLineComment logic isn't dropping the newline causing a merge with the next line of text...
+   * The reason is cause it has been wrong all this time lol??? You can't - 2 after pos++
+  */
+  let posRecentNewline;
   while (pos < text.length) {
     switch (text[pos]) {
       case '/':
@@ -319,6 +331,17 @@ function aaa(fileName) {
           pos++;
         }
         continue;
+      /*case '\r':
+        pos++;
+        if (pos <= text.length - 2) {
+          if (text[pos + 1] === '\n') {
+            pos++;
+          }
+        }
+        continue;
+      case '\n':
+        pos++;
+        continue;*/
     }
     pos++;
   }
