@@ -5605,6 +5605,7 @@ function EDITOR_onScroll_WRAPIT() {
         }
 
         // - [ ] TODO: or perhaps there is a better function to be using.
+        //     - Maybe div.children[i].remove is faster OR maybe it tells the GC more about your intent and is better that way?
         for (let i = div.children.length - 1; i >= childIndex; i--) {
             div.removeChild(div.children[i]);
         }
