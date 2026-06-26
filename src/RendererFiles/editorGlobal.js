@@ -5532,13 +5532,17 @@ function EDITOR_onScroll_WRAPIT() {
         let div = get_EDITOR_textElement().children[beltIndexLine];
         loopCounter++;
 
+        // - [ ] TODO: order of setting 'transform' vs 'textContent' vs 'className'; you need to understand the differences, if any.
+        //     - [ ] TODO: there exists an HTML syntax that will group your changes. I'm not talking about animation frame, I think it is something like the name "fragment". Is this useful here?
+        gutter.style.transform = transform;
+        div.style.transform = transform;
+
         // - [ ] TODO: redundant checks for being out of bounds of the text (case 1 of 2)
         gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
             ? '~'
             : indexLine + 1;
 
-        gutter.style.transform = transform;
-        div.style.transform = transform;
+        
 
         let lineStart;
         let lineEnd;
