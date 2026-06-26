@@ -205,9 +205,6 @@ function aaa(fileName) {
           if (text[pos + 1] === '/') {
             endChunk();
             pos += 2;
-            if (fileName === "editorGlobal.js") {
-              let a = 2;
-            }
             singleLineCommentWhile: while (pos < text.length) {
               switch (text[pos]) {
                 case '/':
@@ -270,6 +267,13 @@ function aaa(fileName) {
           else if (text[pos] === terminator) {
             pos++;
             break stringWhile;
+          }
+          else if (text[pos] === '\\') {
+            pos++;
+            if (pos <= text.length - 1) {
+              pos++;
+            }
+            continue;
           }
           pos++;
         }
