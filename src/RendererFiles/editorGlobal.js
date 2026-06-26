@@ -5681,6 +5681,8 @@ function EDITOR_syntaxHighlighting() {
     // ... 
     // That felt kinda rambly... what I'm saying is:
     // "The lineStart of the next line is the lineEnd of the previous line + 1"
+    // - [ ] TODO: in reference to the above TODO about "lineStart, and lineEnd;"...
+    // ...'EDITOR_onScroll_WRAPIT()' actually has the same logic in it. And that is running synchronously ever scroll event, so you should 100% prioritize that today above anything.
     //
     // 
     // - [ ] TODO: get the initial trackedSyntax_i, then just keep re-using it, rather than doing the binary search for the trackedSyntax_i every line. (pass it in to / return from 'JS_line_lex_newVersion')
