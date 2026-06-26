@@ -210,7 +210,7 @@ function aaa(fileName) {
                   }
                   break;
                 case '\r':
-                  pos++;
+                  pos++; // TODO: You can't check length -2 after a pos++ you moved forwards so it borks
                   if (pos <= text.length - 2) {
                     if (text[pos + 1] === '\n') {
                       pos++;
