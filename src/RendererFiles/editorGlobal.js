@@ -5704,6 +5704,7 @@ function EDITOR_syntaxHighlighting() {
     // 3. ummm
     // 
     // 
+    // - [ ] TODO: rename the 'trackedSyntaxExhausted' variable because it makes me anxious that I will manifest that state of being into reality whenever I read the variable name.
 
     
     let beltIndexCurrent = beltIndexZero;
