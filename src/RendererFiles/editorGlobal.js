@@ -5769,15 +5769,9 @@ function EDITOR_syntaxHighlighting() {
     }
 
     /*
-    I feel extremely paranoid.
-    I got 'get_EDITOR_textElement' to work yesterday by means of a "preprocessor/(somewhat bundler)" logic.
-    And I'm hovering it right now and it isn't working.
-    All I remember is that there was an update when I opened VSCode this morning.
-    Did they deliberately stop what I did from working?
-    It sounds ridiculous but I'm literally sweating in panic and I'm gonna try and just move on.
-
-    I restarted VSCode and it still isn't working, I need to just move on instead of having my mind race about all the reasons
-    why this was deliberatly done to me.
+    The first thing I did was check this...
+    And yeah it still doesn't work for some reason all of a sudden.
+    But I got home from work and I'm too tired to care anymore.
     */
 
     //if (diff > 0 && diff < get_EDITOR_virtualCount()) {
