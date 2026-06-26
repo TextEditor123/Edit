@@ -5673,7 +5673,7 @@ function EDITOR_syntaxHighlighting() {
 
     let i = 0;
 
-    // TODO: lineStart, and lineEnd; these are currently being retrieved via "random access"...
+    // - [ ] TODO: lineStart, and lineEnd; these are currently being retrieved via "random access"...
     // ...But,  this logic currently goes from 1 indexLine to the very next indexLine by a difference of '1'.
     // Currently, there is not any logic for code folding.
     // I do not initially believe there is a benefit to leaving the code in the current state by some argument of
@@ -5683,7 +5683,13 @@ function EDITOR_syntaxHighlighting() {
     // And thus an argument of that kind ought to suggest that the current code is applicable when using a code folding feature.
     // But ultimately I believe these changes one way or the other are "extremely trivial" given that they're common patterns in the codebase
     // and can be changed to whatever well known manner is preferable at any moment within this "black box" of a function.
+    // ... 
+    // That felt kinda rambly... what I'm saying is:
+    // "The lineStart of the next line is the lineEnd of the previous line + 1"
+    //
     // 
+    // 
+
     
     let beltIndexCurrent = beltIndexZero;
     let indexLine = currVli;
