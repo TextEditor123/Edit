@@ -400,7 +400,7 @@ function aaa(fileName) {
 
   function startChunk() {
     if (chunkStart !== -1 && chunkStart < pos) {
-      appendToWriteBuilder(text.substring(chunkStart, pos));
+      endChunk();
     }
     chunkStart = pos;
   }
