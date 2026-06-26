@@ -5517,6 +5517,31 @@ function EDITOR_onScroll_WRAPIT() {
 
     beltIndexLine--; // The 0th loop will increment somewhat awkwardly. This decrement avoids that.
 
+
+
+
+
+    
+    // Not feelings great, just am grinding out some progress this is kinda messy but I think it is working.
+    //
+    let lineStart = 0;
+    let lineEnd;
+    if (lowerBound < EDITOR_lineEndPositionList.count) {
+        if (lowerBound === 0) {
+            //lineStart = -1; // awkward 0th loop if lowerBound is 0
+            lineEnd = -1; // awkward 0th loop if lowerBound is 0
+        }
+        else {
+            lineEnd = EDITOR_lineEndPositionList.data[lowerBound - 1]; // awkward 0th loop if lowerBound is 0
+        }
+    }
+    else {
+        lineEnd = -1; // awkward 0th loop if lowerBound is 0
+    }
+
+
+
+
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
         let transform = `translateY(${vertical}px)`;
 
@@ -5534,24 +5559,14 @@ function EDITOR_onScroll_WRAPIT() {
         gutter.style.transform = transform;
         div.style.transform = transform;
 
-        let lineStart;
-        let lineEnd;
-
+        lineStart = lineEnd + 1;
         if (indexLine < EDITOR_lineEndPositionList.count) {
             gutter.textContent = indexLine + 1;
-            if (indexLine === 0) {
-                lineStart = 0;
-                lineEnd = EDITOR_lineEndPositionList.data[indexLine] - 0;
-            }
-            else {
-                lineStart = (EDITOR_lineEndPositionList.data[indexLine - 1] + 1);
-                lineEnd = EDITOR_lineEndPositionList.data[indexLine];
-            }
+            lineEnd = EDITOR_lineEndPositionList.data[indexLine];
         }
         else {
             gutter.textContent = '~';
-            lineStart = 0;
-            lineEnd = 0;
+            lineEnd = lineStart;
         }
 
         let childIndex = 0;
