@@ -416,6 +416,12 @@ function aaa(fileName) {
 
     // now startchunk doesn't work right?
 
+    // - [ ] empty first line
+    // - [ ] whitespace only first line
+    // - [ ] text only first line
+    // - [ ] whitespace then text first line
+    // - [ ] preprocessor mark causing non 0 offset
+
     let localPos = pos;
 
     if (posRecentChar < posRecentNewline) {
