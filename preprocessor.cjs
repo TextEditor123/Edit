@@ -262,9 +262,6 @@ function aaa(fileName) {
           if (text[pos + 1] === '/') {
             endChunk();
             pos += 2;
-            if (fileName === "editorGlobal.js") {
-              let a = 2;
-            }
             singleLineCommentWhile: while (pos < text.length) {
               switch (text[pos]) {
                 case '/':
@@ -273,15 +270,7 @@ function aaa(fileName) {
                   }
                   break;
                 case '\r':
-                  pos++;
-                  if (pos <= text.length - 2) {
-                    if (text[pos + 1] === '\n') {
-                      pos++;
-                    }
-                  }
-                  break singleLineCommentWhile;
                 case '\n':
-                  pos++;
                   break singleLineCommentWhile;
               }
               pos++;
@@ -318,6 +307,7 @@ function aaa(fileName) {
       case '\'':
       case '"':
       case '`':
+        posRecentChar = pos;
         let terminator = text[pos];
         pos++;
         stringWhile: while (pos < text.length) {
@@ -331,17 +321,46 @@ function aaa(fileName) {
           pos++;
         }
         continue;
-      /*case '\r':
-        pos++;
+      case '\r':
+        // This will move the newlines around...
+        // It says you had a newline that lacks any characters before the "newline after that one"
+        //
+        // So I want you to end your chunk at the original newline
+        // then start a new one just prior to this upcoming newline.
+        //
+        // The newline in the middle is lost so hopefully they're all consistent (if it matters in the given scenario)
+        if (posRecentChar < posRecentNewline) {
+          endChunk(posRecentNewline);
+          startChunk();
+        }
+        posRecentNewline = pos;
+        
         if (pos <= text.length - 2) {
           if (text[pos + 1] === '\n') {
             pos++;
           }
         }
+        pos++;
         continue;
       case '\n':
+        // This will move the newlines around...
+        // It says you had a newline that lacks any characters before the "newline after that one"
+        //
+        // So I want you to end your chunk at the original newline
+        // then start a new one just prior to this upcoming newline.
+        //
+        // The newline in the middle is lost so hopefully they're all consistent (if it matters in the given scenario)
+        if (posRecentChar < posRecentNewline) {
+          endChunk(posRecentNewline);
+          startChunk();
+        }
+        posRecentNewline = pos;
+
         pos++;
-        continue;*/
+        continue;
+      default:
+        posRecentChar = pos++;
+        continue;
     }
     pos++;
   }
@@ -354,9 +373,17 @@ function aaa(fileName) {
     chunkStart = pos;
   }
   
-  function endChunk() {
-    if (chunkStart < pos) {
-      appendToWriteBuilder(text.substring(chunkStart, pos));
+  function endChunk(overritePos) {
+    let localPos;
+    if (!overritePos && overritePos !== 0) {
+      localPos = pos;
+    }
+    else {
+      localPos = overritePos;
+    }
+
+    if (chunkStart < localPos) {
+      appendToWriteBuilder(text.substring(chunkStart, localPos));
     }
     chunkStart = -1;
   }
