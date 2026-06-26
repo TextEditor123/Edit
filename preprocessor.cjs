@@ -246,6 +246,7 @@ function aaa(fileName) {
         break;
       default:
         if (preprocessorMarkerContext === 0) {
+          pos = 0;
           break markerWhileLoop;
         }
         else {
