@@ -5578,8 +5578,6 @@ function EDITOR_onScroll_WRAPIT() {
             lineEnd = lineStart;
         }
 
-        let childIndex = 0;
-
         let span;
 
         // TODO: perhaps some debug assertion that lineEnd > lineStart?
@@ -5591,18 +5589,11 @@ function EDITOR_onScroll_WRAPIT() {
             ? ''
             : EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd));
 
-        if (childIndex < div.children.length) {
-            span = div.children[childIndex++];
-            span.className = 'eN';
-            span.textContent = textContent;
-        }
-        else {
-            span = document.createElement('span');
-            span.className = 'eN';
-            span.textContent = textContent;
-            div.appendChild(span);
-            childIndex++;
-        }
+        // Corrupt state if assumption is not met:
+        // - All lines of text are to contain at least 1 span at all times even if that span is just an empty one.
+        span = div.children[0];
+        span.className = 'eN';
+        span.textContent = textContent;
 
         /*
         I feel like the AI whisperer.
@@ -5646,7 +5637,7 @@ function EDITOR_onScroll_WRAPIT() {
 
         // - [ ] TODO: or perhaps there is a better function to be using.
         //     - Maybe div.children[i].remove is faster OR maybe it tells the GC more about your intent and is better that way?
-        for (let i = div.children.length - 1; i >= childIndex; i--) {
+        for (let i = div.children.length - 1; i >= 1; i--) {
             div.removeChild(div.children[i]);
         }
     }
@@ -5917,6 +5908,8 @@ function EDITOR_createViewport() {
         div.className = 'eT';
         get_EDITOR_textElement().appendChild(div);
         div.style.transform = transform;
+
+        div.appendChild(document.createElement('span'));
     }
     EDITOR_drawHorizontalScrollbar();
 }
