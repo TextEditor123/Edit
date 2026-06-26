@@ -278,7 +278,7 @@ function aaa(fileName) {
    * Although I don't understand why the singleLineComment logic isn't dropping the newline causing a merge with the next line of text...
    * The reason is cause it has been wrong all this time lol??? You can't - 2 after pos++
   */
-  let posRecentNewline = -1;
+  let posRecentNewline = 0;
   while (pos < text.length) {
     switch (text[pos]) {
       case '/':
@@ -406,12 +406,20 @@ function aaa(fileName) {
   }
   
   function endChunk(overritePos) {
-    let localPos;
-    if (!overritePos && overritePos !== 0) {
-      localPos = pos;
-    }
-    else {
-      localPos = overritePos;
+    //let localPos;
+    //if (!overritePos && overritePos !== 0) {
+    //  localPos = pos;
+    //}
+    //else {
+    //  localPos = overritePos;
+    //}
+
+    // now startchunk doesn't work right?
+
+    let localPos = pos;
+
+    if (posRecentChar < posRecentNewline) {
+      localPos = posRecentNewline;
     }
 
     if (chunkStart < localPos) {
