@@ -5644,11 +5644,7 @@ function EDITOR_syntaxHighlighting() {
     // - [ ] Do "actual syntax highlighting"
     //
     //
-    //
     // This might be a massive pain actually cause the zeroth index is gonna change constantly...
-
-    //EDITOR_syntaxHighlighting_previousIndexVirtual;
-    //EDITOR_syntaxHighlighting_previousVirtualCount;
 
     // If I delay setting 'set_EDITOR_ONSCROLLvirtualIndexLine()' then I can just use that.
     // I can't bear to do that right now though. I'm just gonna make this variable.
@@ -5658,7 +5654,6 @@ function EDITOR_syntaxHighlighting() {
     EDITOR_syntaxHighlighting_previousIndexVirtual = get_EDITOR_virtualIndexLine();
 
     let diff = currVli - prevVli;
-    //console.log(diff);
 
     let onePositiveDiff_twoNegativeDiff_orThreeFullScreen;
 
@@ -5767,12 +5762,6 @@ function EDITOR_syntaxHighlighting() {
         beltIndexCurrent = EDITOR_beltIndexLine_PREVIOUS(beltIndexCurrent);
         indexLine--;
     }
-
-    /*
-    The first thing I did was check this...
-    And yeah it still doesn't work for some reason all of a sudden.
-    But I got home from work and I'm too tired to care anymore.
-    */
 
     //if (diff > 0 && diff < get_EDITOR_virtualCount()) {
     //    
