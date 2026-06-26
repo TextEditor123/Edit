@@ -5604,6 +5604,46 @@ function EDITOR_onScroll_WRAPIT() {
             childIndex++;
         }
 
+        /*
+        I feel like the AI whisperer.
+
+        Google AI overview:
+        "
+        What are your thoughts on the comment in this code snippet:
+        '
+        //     - Maybe div.children[i].remove is faster OR maybe it tells the GC more about your intent and is better that way?
+        for (let i = div.children.length - 1; i >= childIndex; i--) {
+            div.removeChild(div.children[i]);
+        }
+        '
+        "
+
+        ...
+
+        > The comment raises a great question about JavaScript performance and memory management, but its assumptions are slightly off.
+
+        All in all it said > Speed is identical
+
+
+        Then it said
+
+        > To clear ALL children: If childIndex is 0, using div.textContent = '' or div.replaceChildren() is drastically faster than looping.
+
+        And then asked > Is childIndex usually zero, or are you keeping some initial children?
+
+        I say "'childIndex' is guaranteed to be at least '1'"
+
+        It says > The Best Alternative: Range API
+        > ```
+        const range = document.createRange();
+        range.setStartAfter(div.children[childIndex - 1]);
+        range.setEndAfter(div.lastChild);
+        range.deleteContents();
+        > ```
+
+        I have no opinion on whether range is the write API, but I never heard of the API and now I have I gotta look into it.
+        */
+
         // - [ ] TODO: or perhaps there is a better function to be using.
         //     - Maybe div.children[i].remove is faster OR maybe it tells the GC more about your intent and is better that way?
         for (let i = div.children.length - 1; i >= childIndex; i--) {
