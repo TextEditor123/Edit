@@ -3,26 +3,26 @@
 const fs = require('fs');
 const path = require('path');
 
-//const inputFolder = './src/RendererFiles';
-const inputFolder = './src/Test';
+const inputFolder = './src/RendererFiles';
+//const inputFolder = './src/Test';
 const outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
 
 // 1. Define the exact loading priority order
 const filePriorityOrder = [
-  //"fieldBuffer.js",
-  //"header_editorGlobal_header.js",
-  //"widgetGlobal.js",
-  //"menuGlobal.js",
-  //"dialogGlobal.js",
-  //"trackedSyntaxTypes.js",
-  //"treeViewComponent.js",
-  //"dialogImplementationsGlobal.js",
-  //"listComponent.js",
-  //"listTypes.js",
-  //"editorGlobal.js",
-  //"javascriptFeatures.js",
-  //"explorerGlobal.js",
-  //"applicationRendererRoot.js"
+  "fieldBuffer.js",
+  "header_editorGlobal_header.js",
+  "widgetGlobal.js",
+  "menuGlobal.js",
+  "dialogGlobal.js",
+  "trackedSyntaxTypes.js",
+  "treeViewComponent.js",
+  "dialogImplementationsGlobal.js",
+  "listComponent.js",
+  "listTypes.js",
+  "editorGlobal.js",
+  "javascriptFeatures.js",
+  "explorerGlobal.js",
+  "applicationRendererRoot.js"
 ];
 
 let writeBuilder = [];
