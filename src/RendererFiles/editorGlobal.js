@@ -5604,10 +5604,9 @@ function EDITOR_onScroll_WRAPIT() {
             childIndex++;
         }
 
-        // - [ ] TODO: the way this is written might have pointless shifting involved. Either remove the last child repeatedly, or perhaps there is a better function to be using.
-        let bbb = div.children.length - childIndex;
-        for (let i = 0; i < bbb; i++) {
-            div.removeChild(div.children[childIndex]);
+        // - [ ] TODO: or perhaps there is a better function to be using.
+        for (let i = div.children.length - 1; i >= childIndex; i--) {
+            div.removeChild(div.children[i]);
         }
     }
 }
