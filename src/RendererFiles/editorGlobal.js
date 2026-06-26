@@ -5578,8 +5578,6 @@ function EDITOR_onScroll_WRAPIT() {
             lineEnd = lineStart;
         }
 
-        let span;
-
         // TODO: perhaps some debug assertion that lineEnd > lineStart?
         // TODO: perhaps just always use 'EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd));'...
         // ...I think it would depend on the internal details of the function / measurements...
@@ -5591,7 +5589,7 @@ function EDITOR_onScroll_WRAPIT() {
 
         // Corrupt state if assumption is not met:
         // - All lines of text are to contain at least 1 span at all times even if that span is just an empty one.
-        span = div.children[0];
+        let span = div.children[0];
         span.className = 'eN';
         span.textContent = textContent;
 

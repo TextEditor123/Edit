@@ -71,6 +71,28 @@ try {
   console.error('Bundling failed:', err.message);
 }
 
+/*
+I go to editorGlobal.js and go to the definition for the function 'EDITOR_indexLineTo_beltIndexLine'.
+
+I replace a specific span of 4 spaces by '~~~~' to illustrate what is happening.
+
+function EDITOR_indexLineTo_beltIndexLine(indexLine) {
+    let virtualIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualIndexLine();
+~~~~// TODO: The following line of code (when I at one point had it commented out in a specific way, I'm adding this clarification after originally having made this comment I don't remember the specifics of how it was commented out, but parts of it were and other parts weren't) either didn't "preprocess" correctly or... well I mean it probably is my fault i.e.: the "preprocess" but yeah this is coming out to be 'return;' and that's it nothing else in the compiled end result so somewhere along the pipeline it got borked.
+    return someExpressionIsHereButThatIsntImportantRightNow;
+}
+
+function EDITOR_indexLineTo_beltIndexLine(indexLine) {
+    let virtualIndexLine = (indexLine + get_EDITOR_offsetLine()) - get_EDITOR_virtualIndexLine();
+~~~~
+    return someExpressionIsHereButThatIsntImportantRightNow;
+}
+
+The comment was removed, but the 4 spaces of indentation wasn't.
+There's a variety of others things I can do in addition to this one.
+But I wanna focus on this one particularly first. I wanna do this one.
+*/
+
 function aaa(fileName) {
 
   appendToWriteBuilder(`\n\n// ========\n// ========\n// ${fileName}\n// ========\n// ========\n\n`);
