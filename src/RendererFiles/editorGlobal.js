@@ -5559,6 +5559,11 @@ function EDITOR_onScroll_WRAPIT() {
         gutter.style.transform = transform;
         div.style.transform = transform;
 
+        /**
+         * Important detail to consider:
+         * the lines that are >= EDITOR_lineEndPositionList.count will continually increment lineStart by 1
+         * So if you expect this to accurately represent the EOF position when it is in view, it probably does NOT.
+         */
         lineStart = lineEnd + 1;
         if (indexLine < EDITOR_lineEndPositionList.count) {
             gutter.textContent = indexLine + 1;
