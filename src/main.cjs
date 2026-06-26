@@ -1662,13 +1662,6 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 }
 
 /*
-woah Guild Wars 1 (aka just: Guild Wars) (aka: Guild Wars Reforged) got a MASSIVE rebalance patch yesterday.
-
-I feel very tired.
-I'd prefer to not do the syntax highlighting today.
-
-I need to see if there's any use in me doing other things though.
-
 - [ ] classes, if an instance will "always exist" compile two versions:
     - [ ] The baseline always existing will use fieldBuffer.js
 	- [ ] Any instance created beyond that as necessary will use fields themselves.
@@ -1676,36 +1669,8 @@ I need to see if there's any use in me doing other things though.
     - [ ] If you do this you'd want to from the get-go never introduce the string to begin with unless necessary
 - [ ] 
 
-The entire project from start to finish has been non-stop discomfort into the unknown.
-I feel as though me saying "I'd prefer to not do the syntax highlighting today"
-is something people will take as a negative character trait,
-that I avoid discomfort and just take on easy things.
-It isn't at all the case.
-
-That being said, yes I am exhausted and today I am avoiding that discomfort
-while I give my body time to destress from all the other coding discomforts I've endured over and over leading
-up to this day.
-
-It depends if it feels like I'm pointlessly doing other tasks then I'll suck it up and endure more discomfort.
-But if there's active rest to be had I could use it.
-
-I think I am feeling:
-- tired
-- anxious
-
-Tired as I'm avoiding the more important feature which is the asynchronous syntax highlighting.
-
-Anxious as I feel the need to justify why I'm avoiding this today
-meanwhile I might possibly just be talking to myself in a repo that nobody even knows exists.
-
-Okay fine I'll look at the asynchronous syntax highlighting for an hour and see where things go.
-
-8:36 AM
-9:36 AM?
-
-If you were in a movie.
-What would the audience be yelling at the scream for you to do next?
-omg I'm so tired look at that sentence... you know what I mean
+10:45
+11:45?
 */
 
 /* sec0
