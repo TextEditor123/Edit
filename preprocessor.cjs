@@ -119,7 +119,7 @@ posThis = 5 | isNonNewlineWhitespace => nop
 
 posThis = 6 | isCommenty => lexComment | if (posThis isNewLine) | verify(posNewline )
 
-
+you can skip setting char to -1 if you check whether char is > than the previous newline I think?
 
 */
 
