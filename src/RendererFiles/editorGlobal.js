@@ -5532,6 +5532,7 @@ function EDITOR_onScroll_WRAPIT() {
         let div = get_EDITOR_textElement().children[beltIndexLine];
         loopCounter++;
 
+        // - [ ] TODO: redundant checks for being out of bounds of the text (case 1 of 2)
         gutter.textContent = indexLine >= EDITOR_lineEndPositionList.count
             ? '~'
             : indexLine + 1;
@@ -5541,6 +5542,7 @@ function EDITOR_onScroll_WRAPIT() {
 
         let lineStart;
         let lineEnd;
+        // - [ ] TODO: redundant checks for being out of bounds of the text (case 2 of 2)
         if (indexLine < EDITOR_lineEndPositionList.count) {
             if (indexLine === 0) {
                 lineStart = 0;
