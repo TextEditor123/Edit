@@ -5524,6 +5524,9 @@ function EDITOR_onScroll_WRAPIT() {
 
         vertical += get_EDITOR_lineHeight();
 
+        // TODO: this always ought be have a transient result being 1 larger than the previous loop...
+        // ...you then still would do the bounds check, but perhaps simplifying this to an increment of 1
+        // and declaring the variable outside of the loop is useful?
         let beltIndexLine = origin + loopCounter;
         if (beltIndexLine >= get_EDITOR_textElement().children.length)
             beltIndexLine -= get_EDITOR_textElement().children.length;
