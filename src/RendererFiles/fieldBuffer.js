@@ -3,7 +3,21 @@
 # Goal of file: #
 #################
 
-TODO: ...
+Every variable in javascript is essence a reference.
+
+Most engines optimize the storage of various primitives,
+such that the reference's value is the value of the primitive itself.
+
+They do this by tagging the reference to indicate that it is to be interpreted as a primitive value rather than a pointer.
+
+That all being said.
+
+The Garbage Collector when doing a marking phase of the "mark and sweep" algorithm still needs to
+visit the primitive variables in order to confirm that they are tagged as a primitive.
+
+The overhead of checking whether a variable is a primitive, then moving on to the next variable;
+is less than that of if it were an object which then would require further visiting of the child nodes.
+BUT even though it is less, this overhead is not zero.
 */
 
 /**
