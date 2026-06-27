@@ -95,7 +95,15 @@ function bundleFile(fileName) {
     //     - [ ] Although I suppose a string would be using the escaped character.
     //     - [ ] Short of verbatim multiline strings...
     //     - [ ] TODO: I'm not sure, make a decision on this...
+
+
     //
+
+    /*
+    in short:
+    My arrogance is unbearable.
+    I barely could figure this out.
+    */
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
