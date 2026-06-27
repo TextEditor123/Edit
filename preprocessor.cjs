@@ -50,7 +50,6 @@ It is complete euphoria, there is nothing that compares. I don't need to get det
 what comparisons people usually make here. It simply is the greatest feeling ever.
 */
 
-const { assert } = require('console');
 const fs = require('fs');
 const path = require('path');
 
@@ -132,11 +131,11 @@ function bundleFile(fileName) {
     lexPreprocessorMarker();
 
     let chunkStart = pos;
-    
+
     while (pos < text.length) {
         switch (text[pos]) {
             case '/':
-                assertPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character as a token itself.");
+                warnPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character as a token itself.");
                 if (pos <= text.length - 2) {
                     if (text[pos + 1] === '/') {
                         endChunk();
@@ -180,7 +179,7 @@ function bundleFile(fileName) {
      * message should start with a space character and be something of the pattern
      * " warning: preprocessor mark was found after the first non-whitespace character as a token itself."
      */
-    function assertPreprocessorTag(message) {
+    function warnPreprocessorTag(message) {
         if (text[pos] === '/' && pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
             console.log(filePath + message);
         }
@@ -190,7 +189,7 @@ function bundleFile(fileName) {
         let terminator = text[pos];
         pos++;
         stringWhile: while (pos < text.length) {
-            assertPreprocessorTag(`warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
+            warnPreprocessorTag(`warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
             if (text[pos] === terminator) {
                 pos++;
                 break stringWhile;
@@ -211,7 +210,7 @@ function bundleFile(fileName) {
         singleLineCommentWhile: while (pos < text.length) {
             switch (text[pos]) {
                 case '/':
-                    assertPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a single line comment.");
+                    warnPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a single line comment.");
                     break;
                 // Single line comments cannot delete their ending newline character(s) otherwise a line ending of just '\n' or just '\r' would result in:
                 // ```
@@ -236,7 +235,7 @@ function bundleFile(fileName) {
         multiLineCommentWhile: while (pos < text.length) {
             switch (text[pos]) {
                 case '/':
-                    assertPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a multi line comment.");
+                    warnPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a multi line comment.");
                     break;
                 case '*':
                     if (pos <= text.length - 2) {
