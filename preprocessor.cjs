@@ -118,6 +118,10 @@ function bundleFile(fileName) {
     when you're around other people.
     your incompetence begins to show.
     
+    I say to myself that "nobody looks at this repo" somewhat jokingly.
+    But I almost hope it's true.
+    All this is is egotistical and living delusions
+    Every day as of late I just feel extreme shame about my coding abilities
     */
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
