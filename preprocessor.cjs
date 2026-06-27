@@ -108,6 +108,8 @@ function bundleFile(fileName) {
     I think it does.
 
     But my ego is dead
+
+    It isn't fully correct I know a case. Multiline comment separating two identifiers on the same line.
     */
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
