@@ -29,37 +29,24 @@ let writeBuilder = [];
 let writeBuilderTotalLength = 0;
 
 try {
-
-  // 5. Save the output bundle
   fs.mkdirSync(path.dirname(outputFile), { recursive: true });
   fs.writeFileSync(outputFile, '');
 
-
-
-  // 2. Read the directory and filter for .js files
   let files = fs.readdirSync(inputFolder).filter(file => file.endsWith('.js'));
 
-  // 3. Sort files based on your custom priority array
   files.sort((a, b) => {
     const indexA = filePriorityOrder.indexOf(a);
     const indexB = filePriorityOrder.indexOf(b);
-
-    // If both files are in the priority list, sort by their array position
     if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-    
-    // If only file A is in the list, move it ahead of file B
     if (indexA !== -1) return -1;
-    
-    // If only file B is in the list, move it ahead of file A
     if (indexB !== -1) return 1;
-
-    // If neither file is in the list, fall back to default alphabetical order
     return a.localeCompare(b);
   });
 
   if (files.length === 0) {
     console.log(`No JavaScript files found in ${inputFolder}`);
-    process.exit(0);
+    process.exitCode = 0;
+    return;
   }
 
   // 4. Combine the contents using the sorted paths
@@ -68,8 +55,10 @@ try {
   flushAppendToFile();
 
   console.log(`Successfully bundled ${files.length} files in prioritized order into ${outputFile}`);
-} catch (err) {
+}
+catch (err) {
   console.error('Bundling failed:', err.message);
+  process.exitCode = 1;
 }
 
 function aaa(fileName) {
@@ -85,34 +74,9 @@ function aaa(fileName) {
 
   let pos = 0;
 
-  // Not only did that not end up working.
-  // but I'm seeing comments all throughout the output file.
-  // And they're supposed to have been removed for a while now.
-  // I just feel like an absolute clown.
-  // It's okay though. Nobody looks at this repo.
-
   markerWhileLoop: while (pos < text.length) {
     switch (text[pos]) {
-      /*
-      - [x] The marker is specifically "//__#__" being the first non-whitespace found in a text file and at the start of a new line.
-      - [ ] It doesn't have to start at character index 0, but it needs to appear prior to any other text and at the start of a new line.
-      - [x] An error if "//__#__" was the first non-whitespace in a file, but an ending marker of the same text was never encountered.
-      - [x] A warning message is written to the console if "//__#__" is found at any location other than what was just described.
-          - [x] as a token itself
-          - [x] as part of a single line comment
-          - [x] as part of a multi line comment
-          - [x] as part of a string
-      - [ ] Only 1 of them per file is supported.
-      - [ ] The main idea is to permit javascript header files.
-      - [ ] I'm not getting lsp results in vscode unless I add an import, but I don't need the import when I smush it all into 1 file.
-      - [ ] TODO: If this throws an error, bable shouldn't be ran; it currently is not working this way.
-      - [ ] It needs to start the line
-
-      //__#__
-      // preprocessor.cjs
-      import "./javascriptFeatures";
-      //__#__
-      */
+      /* see "marker details comment" at end of this file */
       case '/':
         /** @type {boolean} */
         let meetsNewLineRequirement;
@@ -354,3 +318,26 @@ function readTextNoBOM(filePath) {
   }
   */
 }
+
+/*
+# marker details comment
+
+- [x] The marker is specifically "//__#__" being the first non-whitespace found in a text file and at the start of a new line.
+      - [ ] It doesn't have to start at character index 0, but it needs to appear prior to any other text and at the start of a new line.
+      - [x] An error if "//__#__" was the first non-whitespace in a file, but an ending marker of the same text was never encountered.
+      - [x] A warning message is written to the console if "//__#__" is found at any location other than what was just described.
+          - [x] as a token itself
+          - [x] as part of a single line comment
+          - [x] as part of a multi line comment
+          - [x] as part of a string
+      - [ ] Only 1 of them per file is supported.
+      - [ ] The main idea is to permit javascript header files.
+      - [ ] I'm not getting lsp results in vscode unless I add an import, but I don't need the import when I smush it all into 1 file.
+      - [ ] TODO: If this throws an error, bable shouldn't be ran; it currently is not working this way.
+      - [ ] It needs to start the line
+
+      //__#__
+      // preprocessor.cjs
+      import "./javascriptFeatures";
+      //__#__
+*/
