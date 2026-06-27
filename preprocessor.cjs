@@ -87,6 +87,7 @@ function bundleFile(fileName) {
     //         - [ ] "resulting empty lines": If a line contains a single line comment, then due to comments being removed, the resuling line will be empty.
     // - [ ] If the tab size is >2, reduce tab size to 2.
     // - [ ] If the line ending kind is '\r\n', replace it with '\n' (specifically for the goal of halving the size of each line ending kind, so '\r' is fine).
+    //     - [ ] This is expected to occur within single and multiline comments but NOT strings.
     //
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
