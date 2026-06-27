@@ -13,6 +13,8 @@ in order to apply the compiler configuration.
 Notes:
 - Perhaps I'll rename the file to bundler.cjs
 - I'd written the "note:" already but I guess I should be extra clear... bundlers exist and they work well... I write the code that I think is interesting for this project and would never do this in a job scenario unless for some weird reason it was necessary.
+- I think that's a big problem with a lot of what I do.
+    - it's easy to look at the code I write and say "well vite and such and such is this guy an idiot?" no I'm just having fun.
 - Preprocessor text token (see "marker details comment" at end of this file) is used to strip out text from a javascript file.
     - in essence: I found that vscode wasn't showing me lsp cross file even if the files were in the same directory, and that directory was part of the workspace.
     - So, I needed to add an import to the top of each file that indicated to vscode what each file was dependent on.
