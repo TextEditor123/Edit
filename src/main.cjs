@@ -1712,6 +1712,10 @@ There's a mixture of "yeah that's true" but also "idk wtf I'm talking about" lik
 
 Cause I actually always say essentially the same thing over and over.
 And it seems to real in my mind but I try to explain it and it never feels possible to explain.
+
+I'm thinking of the radiohead song "no surprises"
+and then "such a pretty house and such a pretty garden"
+and "how to disappear completely" these things just start playing in my head over and over.
 */
 
 /* sec0
