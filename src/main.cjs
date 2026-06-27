@@ -1674,51 +1674,6 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 */
 
 /*
-I want to try and explain something for a moment.
-
-I need to go to sleep within 53 minutes so that I can get 9 hours of sleep
-because it is vitally important that I am ontop of my nutrition and sleep
-in order to achieve my goal in life.
-
-I am extremely against harming anyone.
-I was very apologetic a few commits back.
-What I intend to focus that on is in respect to people who have shown support me to me.
-
-I want to make this clear because I will make an IDE. I will go down in history as one of the greatest programmers to ever live.
-But you need to not ever mention me to anyone.
-Because everything I have ever said is the reality of the world.
-
-The things I've said I believe were "forced out of me" due to extreme stress that was
-suddenly placed on someone who was extremely mentally ill.
-But again I mean to say. They're the reality, just that I only said them outloud
-because I was forced to.
-And. I'm rambling a bit. I'm gonna try to keep typing.
-
-I regret that this extreme stress was put on to me and as a result all the reality of the world as I understand it
-came out of my mouth. I do not disagree with anything I've said.
-I only regret that I had someone supportive of me and then these things were forced out of me
-during that timing and I don't want to reflect poorly on anyone else.
-I don't want to harm anyone vocally or physically right
-
-But the truth of the matter is that I will achieve my goal of isolation.
-This world is meaningless.
-Everything you care about is just another delusion.
-
-I just got done watching an emotional movie prior to saying this I think it set me off a bit idk wtf I'm talking about I'm going to bed.
-It was a movie I'd seen just now for the first time I never saw it before but my mind was racing I think afterwards.
-
-Well I do know what I'm talking about but. Even when reading back that rambling.
-There's a mixture of "yeah that's true" but also "idk wtf I'm talking about" like I feel like it just goes in some weird way all of a sudden.
-
-Cause I actually always say essentially the same thing over and over.
-And it seems to real in my mind but I try to explain it and it never feels possible to explain.
-
-I'm thinking of the radiohead song "no surprises"
-and then "such a pretty house and such a pretty garden"
-and "how to disappear completely" these things just start playing in my head over and over.
-
-Whenever I'm rambling those tend to be the songs that I don't even have to be listening to I just start singing them in my head
-over and over as I type.
 */
 
 /* sec0
