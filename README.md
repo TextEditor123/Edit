@@ -1,3 +1,11 @@
+A disclaimer on the weird code I write from preprocessor.cjs:
+- I'd written the "note:" already but I guess I should be extra clear... bundlers exist and they work well... I write the code that I think is interesting for this project and would never do this in a job scenario unless for some weird reason it was necessary.
+- I think that's a big problem with a lot of what I do.
+    - it's easy to look at the code I write and say "well vite and such and such is this guy an idiot?" no I'm just having fun.
+    - at the same time there's somewhat of a responsibility on my end to ensure that someone who doesn't know that vite or some other weird thing I'm implementing already exists so that they don't foolishly do this in a job scenario. I should consider putting this at the top of the readme
+
+=============
+
 > npm install
 
 > npm run build
