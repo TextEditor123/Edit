@@ -50,6 +50,7 @@ It is complete euphoria, there is nothing that compares. I don't need to get det
 what comparisons people usually make here. It simply is the greatest feeling ever.
 */
 
+const { assert } = require('console');
 const fs = require('fs');
 const path = require('path');
 
@@ -122,102 +123,16 @@ catch (err) {
 }
 
 function bundleFile(fileName) {
-
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
     const filePath = path.join(inputFolder, fileName);
     let text = readTextNoBOM(filePath);
-
-    // 0 => None
-    // 1 => StartFound
-    let preprocessorMarkerContext = 0;
-
     let pos = 0;
 
-    markerWhileLoop: while (pos < text.length) {
-        switch (text[pos]) {
-            /* see "marker details comment" at end of this file */
-            case '/':
-                /** @type {boolean} */
-                let meetsNewLineRequirement;
-                if (pos > 0) {
-                    meetsNewLineRequirement = text[pos - 1] === '\r' || text[pos - 1] === '\n';
-                }
-                else {
-                    meetsNewLineRequirement = true;
-                }
-
-                if (pos <= text.length - 7 &&
-                    text[pos + 1] === '/' &&
-                    text[pos + 2] === '_' &&
-                    text[pos + 3] === '_' &&
-                    text[pos + 4] === '#' &&
-                    text[pos + 5] === '_' &&
-                    text[pos + 6] === '_') {
-                    if (preprocessorMarkerContext === 0) {
-                        if (meetsNewLineRequirement) {
-                            pos += 7;
-                            preprocessorMarkerContext = 1; // StartFound
-                            continue;
-                        }
-                        else {
-                            console.log('warning failed newline requirement => break markerWhileLoop;');
-                            break markerWhileLoop;
-                        }
-                    }
-                    else {
-                        if (meetsNewLineRequirement) {
-                            pos += 7;
-                            preprocessorMarkerContext = 0;
-                            break markerWhileLoop;
-                        }
-                        else {
-                            console.log('warning failed newline requirement => skipped this match because it did not start at a newline.');
-                            pos += 7;
-                            break;
-                        }
-                    }
-                }
-                else {
-                    if (preprocessorMarkerContext === 0) {
-                        break markerWhileLoop;
-                    }
-                    else {
-                        pos++;
-                        break;
-                    }
-                }
-                break;
-            case ' ':
-            case '\t':
-            case '\r':
-            case '\n':
-                pos++;
-                break;
-            default:
-                if (preprocessorMarkerContext === 0) {
-                    break markerWhileLoop;
-                }
-                else {
-                    pos++;
-                    break;
-                }
-        }
-    }
-
-    if (preprocessorMarkerContext === 1 /*StartFound*/) {
-        // Then the end was never found
-        //
-        // This is an Error because it is very specific, for some reason the file started with '//__#__'.
-        // And it was inside my 'RendererFiles' folder, so what's going on?
-        //
-        // When it comes to '//__#__' being lexed after the first non-whitespace character
-        // that feels far too vague to permit it being an error.
-        //
-        throw new Error(`${filePath} => if (preprocessorMarkerContext === 1 /*StartFound*/)`);
-    }
+    lexPreprocessorMarker();
 
     let chunkStart = pos;
+    
     while (pos < text.length) {
         switch (text[pos]) {
             case '/':
@@ -225,50 +140,13 @@ function bundleFile(fileName) {
                 if (pos <= text.length - 2) {
                     if (text[pos + 1] === '/') {
                         endChunk();
-                        pos += 2;
-                        singleLineCommentWhile: while (pos < text.length) {
-                            switch (text[pos]) {
-                                case '/':
-                                    assertPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a single line comment.");
-                                    break;
-                                // Single line comments cannot delete their ending newline character(s) otherwise a line ending of just '\n' or just '\r' would result in:
-                                // ```
-                                // let x = 2; // set x to 2
-                                // return x + 1;
-                                // ```
-                                //
-                                // Would become:
-                                // ```
-                                // let x = 2; return x + 1;
-                                // ```
-                                case '\r':
-                                case '\n':
-                                    break singleLineCommentWhile;
-                            }
-                            pos++;
-                        }
+                        lexSingleLineComment();
                         startChunk();
                         continue;
                     }
                     else if (text[pos + 1] === '*') {
                         endChunk();
-                        pos += 2;
-                        multiLineCommentWhile: while (pos < text.length) {
-                            switch (text[pos]) {
-                                case '/':
-                                    assertPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a multi line comment.");
-                                    break;
-                                case '*':
-                                    if (pos <= text.length - 2) {
-                                        if (text[pos + 1] === '/') {
-                                            pos += 2;
-                                            break multiLineCommentWhile;
-                                        }
-                                    }
-                                    break;
-                            }
-                            pos++;
-                        }
+                        lexMultiLineComment();
                         startChunk();
                         continue;
                     }
@@ -277,23 +155,7 @@ function bundleFile(fileName) {
             case '\'':
             case '"':
             case '`':
-                let terminator = text[pos];
-                pos++;
-                stringWhile: while (pos < text.length) {
-                    assertPreprocessorTag(`warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
-                    if (text[pos] === terminator) {
-                        pos++;
-                        break stringWhile;
-                    }
-                    else if (text[pos] === '\\') {
-                        pos++;
-                        if (pos <= text.length - 1) {
-                            pos++;
-                        }
-                        continue;
-                    }
-                    pos++;
-                }
+                lexString();
                 continue;
         }
         pos++;
@@ -321,6 +183,160 @@ function bundleFile(fileName) {
     function assertPreprocessorTag(message) {
         if (text[pos] === '/' && pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
             console.log(filePath + message);
+        }
+    }
+
+    function lexString() {
+        let terminator = text[pos];
+        pos++;
+        stringWhile: while (pos < text.length) {
+            assertPreprocessorTag(`warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
+            if (text[pos] === terminator) {
+                pos++;
+                break stringWhile;
+            }
+            else if (text[pos] === '\\') {
+                pos++;
+                if (pos <= text.length - 1) {
+                    pos++;
+                }
+                continue;
+            }
+            pos++;
+        }
+    }
+
+    function lexSingleLineComment() {
+        pos += 2;
+        singleLineCommentWhile: while (pos < text.length) {
+            switch (text[pos]) {
+                case '/':
+                    assertPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a single line comment.");
+                    break;
+                // Single line comments cannot delete their ending newline character(s) otherwise a line ending of just '\n' or just '\r' would result in:
+                // ```
+                // let x = 2; // set x to 2
+                // return x + 1;
+                // ```
+                //
+                // Would become:
+                // ```
+                // let x = 2; return x + 1;
+                // ```
+                case '\r':
+                case '\n':
+                    break singleLineCommentWhile;
+            }
+            pos++;
+        }
+    }
+
+    function lexMultiLineComment() {
+        pos += 2;
+        multiLineCommentWhile: while (pos < text.length) {
+            switch (text[pos]) {
+                case '/':
+                    assertPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a multi line comment.");
+                    break;
+                case '*':
+                    if (pos <= text.length - 2) {
+                        if (text[pos + 1] === '/') {
+                            pos += 2;
+                            break multiLineCommentWhile;
+                        }
+                    }
+                    break;
+            }
+            pos++;
+        }
+    }
+
+    function lexPreprocessorMarker() {
+        // 0 => None
+        // 1 => StartFound
+        let preprocessorMarkerContext = 0;
+
+        markerWhileLoop: while (pos < text.length) {
+            switch (text[pos]) {
+                /* see "marker details comment" at end of this file */
+                case '/':
+                    /** @type {boolean} */
+                    let meetsNewLineRequirement;
+                    if (pos > 0) {
+                        meetsNewLineRequirement = text[pos - 1] === '\r' || text[pos - 1] === '\n';
+                    }
+                    else {
+                        meetsNewLineRequirement = true;
+                    }
+
+                    if (pos <= text.length - 7 &&
+                        text[pos + 1] === '/' &&
+                        text[pos + 2] === '_' &&
+                        text[pos + 3] === '_' &&
+                        text[pos + 4] === '#' &&
+                        text[pos + 5] === '_' &&
+                        text[pos + 6] === '_') {
+                        if (preprocessorMarkerContext === 0) {
+                            if (meetsNewLineRequirement) {
+                                pos += 7;
+                                preprocessorMarkerContext = 1; // StartFound
+                                continue;
+                            }
+                            else {
+                                console.log('warning failed newline requirement => break markerWhileLoop;');
+                                break markerWhileLoop;
+                            }
+                        }
+                        else {
+                            if (meetsNewLineRequirement) {
+                                pos += 7;
+                                preprocessorMarkerContext = 0;
+                                break markerWhileLoop;
+                            }
+                            else {
+                                console.log('warning failed newline requirement => skipped this match because it did not start at a newline.');
+                                pos += 7;
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        if (preprocessorMarkerContext === 0) {
+                            break markerWhileLoop;
+                        }
+                        else {
+                            pos++;
+                            break;
+                        }
+                    }
+                    break;
+                case ' ':
+                case '\t':
+                case '\r':
+                case '\n':
+                    pos++;
+                    break;
+                default:
+                    if (preprocessorMarkerContext === 0) {
+                        break markerWhileLoop;
+                    }
+                    else {
+                        pos++;
+                        break;
+                    }
+            }
+        }
+
+        if (preprocessorMarkerContext === 1 /*StartFound*/) {
+            // Then the end was never found
+            //
+            // This is an Error because it is very specific, for some reason the file started with '//__#__'.
+            // And it was inside my 'RendererFiles' folder, so what's going on?
+            //
+            // When it comes to '//__#__' being lexed after the first non-whitespace character
+            // that feels far too vague to permit it being an error.
+            //
+            throw new Error(`${filePath} => if (preprocessorMarkerContext === 1 /*StartFound*/)`);
         }
     }
 }
