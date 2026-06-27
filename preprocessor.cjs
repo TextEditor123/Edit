@@ -38,6 +38,11 @@ let writeBuilderTotalLength = 0;
 
 // TODO: Perhaps moving writeBuilder to a "string builder (per character) esque" implementation rather than the writeBuilder being an array of substrings would be more efficient...
 // ...especially given that as I add more features to this, the frequency of substrings will likely increase drastically.
+// - short term memory allocation indeed can sometimes be sufficient enough.
+// - but depending on how large the threshold is for me to flush the content to the file, and how fragmented the substrings are...
+//   ...there might be a very large count of allocations sitting in the writeBuilder. I'm not sure one way or another yet.
+//   And if there is a large count of allocations sitting in the writeBuilder then they aren't quite as short term.
+//   (and yes short term allocations matter too that isn't what I'm trying to say)
 
 try {
     readyFileState();
