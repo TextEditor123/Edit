@@ -1708,7 +1708,10 @@ I just got done watching an emotional movie prior to saying this I think it set 
 It was a movie I'd seen just now for the first time I never saw it before but my mind was racing I think afterwards.
 
 Well I do know what I'm talking about but. Even when reading back that rambling.
-There's a mixture of "yeah that's true" but also "idk wtf I'm talking about" like I feel like it just goes in some weird way all of a sudden
+There's a mixture of "yeah that's true" but also "idk wtf I'm talking about" like I feel like it just goes in some weird way all of a sudden.
+
+Cause I actually always say essentially the same thing over and over.
+And it seems to real in my mind but I try to explain it and it never feels possible to explain.
 */
 
 /* sec0
