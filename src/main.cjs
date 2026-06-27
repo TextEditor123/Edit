@@ -1693,6 +1693,12 @@ suddenly placed on someone who was extremely mentally ill.
 But again I mean to say. They're the reality, just that I only said them outloud
 because I was forced to.
 And. I'm rambling a bit. I'm gonna try to keep typing.
+
+I regret that this extreme stress was put on to me and as a result all the reality of the world as I understand it
+came out of my mouth. I do not disagree with anything I've said.
+I only regret that I had someone supportive of me and then these things were forced out of me
+during that timing and I don't want to reflect poorly on anyone else.
+I don't want to harm anyone vocally or physically right
 */
 
 /* sec0
