@@ -37,14 +37,17 @@ let outputFile;
 
 let filePriorityOrder;
 
-/** An array of substrings that ought to be appended to the result file */
-let writeBuilder = [];
-/** The sum of all substrings in writeBuilder */
-let writeBuilderTotalLength = 0;
 /** this number is currently entirely arbitrary and has no understanding, measurements, or reasoning behind it. */
-const thresholdToFlushContentToFile_RelativeTo_WriteBuilderTotalLength = 1024;
+const writeBufferCapacity = 8192;
+let writeBuffer = new Uint8Array(writeBufferCapacity);
+let writeBufferCount = 0;
 
 let emptyLineCount = 0;
+
+let sourceBuffer;
+let sourceBufferCount;
+
+let textEncoder = new TextEncoder();
 
 // TODO: Perhaps moving writeBuilder to a "string builder (per character) esque" implementation rather than the writeBuilder being an array of substrings would be more efficient...
 // ...especially given that as I add more features to this, the frequency of substrings will likely increase drastically.
@@ -101,10 +104,10 @@ function bundleFile(fileName) {
     // Otherwise if I continue the current pattern I'd be substringing every line of text in order to strip off the line ending
     // With a uint8array I could move the bytes en mass to a buffer and then to string the buffer.
 
-    appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
+    appendToWriteBuilder_string(`\n\n// ${fileName}\n\n`);
 
     const filePath = path.join(inputFolder, fileName);
-    let text = readTextNoBOM(filePath);
+    readTextNoBOM_intoGlobalVariable_sourceBuffer(filePath);
     let pos = 0;
 
     lexPreprocessorMarker();
@@ -148,19 +151,19 @@ function bundleFile(fileName) {
     let lineEndRecent_posEnd = 0;
     //let nonLineEnd_causedEndChunk = false;
 
-    while (pos < text.length) {
-        switch (text[pos]) {
-            case '/':
+    while (pos < sourceBufferCount) {
+        switch (sourceBuffer[pos]) {
+            case 47 /* / */:
                 warnPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character as a token itself.");
-                if (pos <= text.length - 2) {
-                    if (text[pos + 1] === '/') {
+                if (pos <= sourceBufferCount - 2) {
+                    if (sourceBuffer[pos + 1] === 47 /* / */) {
                         endChunk();
                         lexSingleLineComment();
                         commentEndsInLineEndForceWrite();
                         startChunk();
                         continue;
                     }
-                    else if (text[pos + 1] === '*') {
+                    else if (sourceBuffer[pos + 1] === 42 /*  * */) {
                         endChunk();
                         lexMultiLineComment();
                         commentEndsInLineEndForceWrite();
@@ -169,16 +172,16 @@ function bundleFile(fileName) {
                     }
                 }
                 break;
-            case '\'':
-            case '"':
-            case '`':
+            case 39 /* \' */:
+            case 34 /*  " */:
+            case 96 /*  ` */:
                 lexString();
                 continue;
-            case '\r':
+            case 13 /* \r */:
                 let aaaShouldSetChunkStart = handleEmptyLineIfApplicable();
                 
                 pos++;
-                if (pos <= text.length - 1 && text[pos] === '\n')
+                if (pos <= sourceBufferCount - 1 && sourceBuffer[pos] === 10 /* \n */)
                     pos++;
 
                 lineEndRecent_posEnd = pos;
@@ -186,7 +189,7 @@ function bundleFile(fileName) {
                     chunkStart = lineEndRecent_posEnd;
                 }
                 continue;
-            case '\n':
+            case 10 /* \n */:
                 let bbbShouldSetChunkStart = handleEmptyLineIfApplicable();
 
                 pos++;
@@ -223,7 +226,7 @@ function bundleFile(fileName) {
         if (chunkStart < localPos) {
             //// Anyone that isn't a line end which invokes endChunk (or downstream causes an invocation) needs to "clear" the 'lineEndRecent_posEnd'.
             //lineEndRecent_posEnd = localPos;
-            appendToWriteBuilder(text.substring(chunkStart, localPos));
+            appendToWriteBuilder_byteSpan_fromSource(chunkStart, localPos);
         }
         chunkStart = -1;
     }
@@ -233,23 +236,23 @@ function bundleFile(fileName) {
      * " warning: preprocessor mark was found after the first non-whitespace character as a token itself."
      */
     function warnPreprocessorTag(message) {
-        if (text[pos] === '/' && pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+        if (sourceBuffer[pos] === 47 /* / */ && pos <= sourceBufferCount - 7 && sourceBuffer[pos + 1] === 47 /* / */ && sourceBuffer[pos + 2] === 95 /* _ */ && sourceBuffer[pos + 3] === 95 /* _ */ && sourceBuffer[pos + 4] === 35 /* # */ && sourceBuffer[pos + 5] === 95 /* _ */ && sourceBuffer[pos + 6] === 95 /* _ */) {
             console.log(filePath + message);
         }
     }
 
     function lexString() {
-        let terminator = text[pos];
+        let terminator = sourceBuffer[pos];
         pos++;
-        stringWhile: while (pos < text.length) {
+        stringWhile: while (pos < sourceBufferCount) {
             warnPreprocessorTag(`warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
-            if (text[pos] === terminator) {
+            if (sourceBuffer[pos] === terminator) {
                 pos++;
                 break stringWhile;
             }
-            else if (text[pos] === '\\') {
+            else if (sourceBuffer[pos] === 92 /* \\ */) {
                 pos++;
-                if (pos <= text.length - 1) {
+                if (pos <= sourceBufferCount - 1) {
                     pos++;
                 }
                 continue;
@@ -260,9 +263,9 @@ function bundleFile(fileName) {
 
     function lexSingleLineComment() {
         pos += 2;
-        singleLineCommentWhile: while (pos < text.length) {
-            switch (text[pos]) {
-                case '/':
+        singleLineCommentWhile: while (pos < sourceBufferCount) {
+            switch (sourceBuffer[pos]) {
+                case 47 /* / */:
                     warnPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a single line comment.");
                     break;
                 // Single line comments cannot delete their ending newline character(s) otherwise a line ending of just '\n' or just '\r' would result in:
@@ -275,8 +278,8 @@ function bundleFile(fileName) {
                 // ```
                 // let x = 2; return x + 1;
                 // ```
-                case '\r':
-                case '\n':
+                case 13 /* \r */:
+                case 10 /* \n */:
                     break singleLineCommentWhile;
             }
             pos++;
@@ -285,14 +288,14 @@ function bundleFile(fileName) {
 
     function lexMultiLineComment() {
         pos += 2;
-        multiLineCommentWhile: while (pos < text.length) {
-            switch (text[pos]) {
-                case '/':
+        multiLineCommentWhile: while (pos < sourceBufferCount) {
+            switch (sourceBuffer[pos]) {
+                case 47 /*  / */:
                     warnPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character within a multi line comment.");
                     break;
-                case '*':
-                    if (pos <= text.length - 2) {
-                        if (text[pos + 1] === '/') {
+                case 42 /*  * */:
+                    if (pos <= sourceBufferCount - 2) {
+                        if (sourceBuffer[pos + 1] === 47 /* / */) {
                             pos += 2;
                             break multiLineCommentWhile;
                         }
@@ -302,16 +305,16 @@ function bundleFile(fileName) {
             pos++;
         }
 
-        if (pos <= text.length - 1 &&
-            (text[pos] !== ' ' &&
-             text[pos] !== '\t' &&
-             text[pos] !== '\r' &&
-             text[pos] !== '\n' &&
-             text[pos] !== ')' &&
-             text[pos] !== ':')) {
+        if (pos <= sourceBufferCount - 1 &&
+            (sourceBuffer[pos] !== 32 /*    */ &&
+             sourceBuffer[pos] !== 9  /* \t */ &&
+             sourceBuffer[pos] !== 13 /* \r */ &&
+             sourceBuffer[pos] !== 10 /* \n */ &&
+             sourceBuffer[pos] !== 41 /*  ) */ &&
+             sourceBuffer[pos] !== 58 /*  : */)) {
                 // TODO: '/*y*//*x*/' becomes two spaces...
                 // ...most optimally this would be only 1 space.
-                appendToWriteBuilder(' ');
+                appendToWriteBuilder_string(' ');
         }
     }
 
@@ -339,20 +342,20 @@ function bundleFile(fileName) {
      * Without this the code sees an empty line.
      */
     function commentEndsInLineEndForceWrite() {
-        if (pos <= text.length - 1) {
-            if (text[pos] === '\r') {
+        if (pos <= sourceBufferCount - 1) {
+            if (sourceBuffer[pos] === 13 /* \r */) {
                 pos++;
-                if (pos <= text.length - 1 && text[pos] === '\n') {
+                if (pos <= sourceBufferCount - 1 && sourceBuffer[pos] === 10 /* \n */) {
                     pos++;
-                    appendToWriteBuilder('\r\n');
+                    appendToWriteBuilder_string('\r\n'); // 13 /* \r */ | 10 /* \n */
                 }
                 else {
-                    appendToWriteBuilder('\r');
+                    appendToWriteBuilder_string('\r'); // 13 /* \r */
                 }
             }
-            else if (text[pos] === '\n') {
+            else if (sourceBuffer[pos] === 10 /* \n */) {
                 pos++;
-                appendToWriteBuilder('\n');
+                appendToWriteBuilder_string('\n'); // 10 /* \n */
             }
         }
     }
@@ -363,26 +366,26 @@ function bundleFile(fileName) {
         // 2 => EndFound
         let preprocessorMarkerContext = 0;
 
-        markerWhileLoop: while (pos < text.length) {
-            switch (text[pos]) {
+        markerWhileLoop: while (pos < sourceBufferCount) {
+            switch (sourceBuffer[pos]) {
                 /* see "marker details comment" at end of this file */
-                case '/':
+                case 47 /* / */:
                     /** @type {boolean} */
                     let meetsNewLineRequirement;
                     if (pos > 0) {
-                        meetsNewLineRequirement = text[pos - 1] === '\r' || text[pos - 1] === '\n';
+                        meetsNewLineRequirement = sourceBuffer[pos - 1] === 13 /* \r */ || sourceBuffer[pos - 1] === 10 /* \n */;
                     }
                     else {
                         meetsNewLineRequirement = true;
                     }
 
-                    if (pos <= text.length - 7 &&
-                        text[pos + 1] === '/' &&
-                        text[pos + 2] === '_' &&
-                        text[pos + 3] === '_' &&
-                        text[pos + 4] === '#' &&
-                        text[pos + 5] === '_' &&
-                        text[pos + 6] === '_') {
+                    if (pos <= sourceBufferCount - 7 &&
+                        sourceBuffer[pos + 1] === 47 /* / */ &&
+                        sourceBuffer[pos + 2] === 95 /* _ */ &&
+                        sourceBuffer[pos + 3] === 95 /* _ */ &&
+                        sourceBuffer[pos + 4] === 35 /* # */ &&
+                        sourceBuffer[pos + 5] === 95 /* _ */ &&
+                        sourceBuffer[pos + 6] === 95 /* _ */) {
                         if (preprocessorMarkerContext === 0) {
                             if (meetsNewLineRequirement) {
                                 pos += 7;
@@ -418,9 +421,9 @@ function bundleFile(fileName) {
                     }
                     break;
                 case ' ':
-                case '\t':
-                case '\r':
-                case '\n':
+                case 9  /* \t */:
+                case 13 /* \r */:
+                case 10 /* \n */:
                     pos++;
                     break;
                 default:
@@ -451,19 +454,39 @@ function bundleFile(fileName) {
     }
 }
 
-function appendToWriteBuilder(substring) {
-    writeBuilder.push(substring);
-    writeBuilderTotalLength += substring.length;
-    if (writeBuilderTotalLength > thresholdToFlushContentToFile_RelativeTo_WriteBuilderTotalLength) {
+function appendToWriteBuilder_string(str) {
+    let len = str.length;
+    if (len > writeBufferCapacity) {
+        throw new Error('TODO: set over more than one invocation because the string to insert is larger than the buffer.');
+    }
+    if (writeBufferCount + len > writeBufferCapacity) {
         flushAppendToFile();
     }
+    textEncoder.encodeInto(str, writeBuffer.subarray(writeBufferCount, writeBufferCount + len));
+    writeBufferCount += len;
+}
+
+function appendToWriteBuilder_byteSpan_fromSource(sourceStart, sourceEnd, destinationOffset) {
+    //try {
+        let len = sourceEnd - sourceStart;
+        if (len > writeBufferCapacity) {
+            throw new Error('TODO: set over more than one invocation because the string to insert is larger than the buffer.');
+        }
+        if (writeBufferCount + len > writeBufferCapacity) {
+            flushAppendToFile();
+        }
+        writeBuffer.set(sourceBuffer.subarray(sourceStart, sourceEnd), writeBufferCount);
+        writeBufferCount += len;
+    //}
+    //catch (error) {
+    //    let a = 2;
+    //    //throw;
+    //}
 }
 
 function flushAppendToFile() {
-    fs.appendFileSync(outputFile, writeBuilder.join(''), 'utf8');
-    // TODO: I hear 'array.length = 0' will clear the references to the entries but I don't feel confident that it is reality. Nevertheless, this isn't a major concern right now.
-    writeBuilder.length = 0;
-    writeBuilderTotalLength = 0;
+    fs.appendFileSync(outputFile, writeBuffer.subarray(0, writeBufferCount), 'utf8');
+    writeBufferCount = 0;
 }
 
 /**
@@ -471,7 +494,7 @@ function flushAppendToFile() {
  * 
  * Copy, pasted, modified; from main.csj originally named 'hasBOM(...)'
  */
-function readTextNoBOM(filePath) {
+function readTextNoBOM_intoGlobalVariable_sourceBuffer(filePath) {
     // Use a small buffer to read just the first 3-4 bytes
     const buffer = Buffer.alloc(4);
     const fd = fs.openSync(filePath, 'r');
@@ -482,16 +505,16 @@ function readTextNoBOM(filePath) {
     // Check for common BOM signatures
     // UTF-8: EF BB BF
     if (buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF) {
-        const bufferaaa = Buffer.alloc(stat.size - 4);
-        fs.readSync(fd, bufferaaa, 0, bufferaaa.length, 3);
+        sourceBufferCount = stat.size - 4;
+        sourceBuffer = Buffer.alloc(sourceBufferCount);
+        fs.readSync(fd, sourceBuffer, 0, sourceBuffer.length, 3);
         fs.closeSync(fd);
-        return bufferaaa.toString();
     }
     else {
-        const bufferaaa = Buffer.alloc(stat.size);
-        fs.readSync(fd, bufferaaa, 0, bufferaaa.length, 0);
+        sourceBufferCount = stat.size;
+        sourceBuffer = Buffer.alloc(sourceBufferCount);
+        fs.readSync(fd, sourceBuffer, 0, sourceBuffer.length, 0);
         fs.closeSync(fd);
-        return bufferaaa.toString();
     }
 
     /*
