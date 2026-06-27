@@ -49,7 +49,7 @@ I convert them from '\t' to '\t\0\0\0'.
 Then I set tab-size to 1 for '#EDITOR_text'.
 
 This maps a tab width of 4 to 4 characters.
-I save out the content by skipping over the '\t'.
+I save out the content by skipping over the '\0'.
 
 And the editor itself ought to handle '\0' such that you are at the expected position
 rather than ever being at or modifying a '\0' itself.
