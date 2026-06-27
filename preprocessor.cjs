@@ -53,9 +53,19 @@ what comparisons people usually make here. It simply is the greatest feeling eve
 const fs = require('fs');
 const path = require('path');
 
-const inputFolder = './src/RendererFiles';
-//const inputFolder = './src/Test';
-const outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
+const args = process.argv;
+
+let inputFolder;
+let outputFile;
+
+if (args[2] === 'test') {
+    inputFolder = './src/Test';
+    outputFile = './preprocessor/testPREPROCESSEDbundletest.js';
+}
+else {
+    inputFolder = './src/RendererFiles';
+    outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
+}
 
 // 1. Define the exact loading priority order
 const filePriorityOrder = [
