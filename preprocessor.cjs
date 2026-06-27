@@ -85,6 +85,7 @@ function bundleFile(fileName) {
     // - [ ] Remove empty lines
     //     - [ ] Remove resulting empty lines
     //         - [ ] "resulting empty lines": If a line contains a single line comment, then due to comments being removed, the resuling line will be empty.
+    //     - [ ] Remove lines that only contain whitespace (this includes resulting empty lines that only contain whitespace)
     // - [ ] If the tab size is >2, reduce tab size to 2.
     // - [ ] If the line ending kind is '\r\n', replace it with '\n' (specifically for the goal of halving the size of each line ending kind, so '\r' is fine).
     //     - [ ] some edge case clarification: This is expected to occur within single and multiline comments but NOT strings.
