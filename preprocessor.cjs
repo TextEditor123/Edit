@@ -104,6 +104,41 @@ function bundleFile(fileName) {
 
     let chunkStart = pos;
 
+    // When you find a line end:
+    //     if (lineEndRecent_posExclusive === pos) then you found an empty line.
+    //
+    // '_posExclusive' permits easy maintaining of the lineEndRecent.
+    // 
+    // Example:
+    // ```
+    // apple\r\n
+    // \n
+    // EOF
+    // ```
+    // If for some reason you had a file with mixed line endings, and you wanted to maintain that.
+    // I would argue that maintenance conventionally ought to be for two characters that were side by side, to remain side by side after the removal of an empty line.
+    //
+    // Result 1 (correct and conventional):
+    // ```
+    // apple\r\n
+    // EOF
+    // ```
+    //
+    // Result 2 ("correct" but not-conventional):
+    // ```
+    // apple\n
+    // EOF
+    // ```
+    //
+    // Result 3 (flat out erroneous):
+    // ```
+    // apple\n
+    // \n
+    // EOF
+    // ```
+    //
+    let lineEndRecent_posExclusive = 0;
+
     while (pos < text.length) {
         switch (text[pos]) {
             case '/':
