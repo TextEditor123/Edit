@@ -1703,6 +1703,8 @@ I don't want to harm anyone vocally or physically right
 But the truth of the matter is that I will achieve my goal of isolation.
 This world is meaningless.
 Everything you care about is just another delusion.
+
+I just got done watching an emotional movie prior to saying this I think it set me off a bit idk wtf I'm talking about I'm going to bed.
 */
 
 /* sec0
