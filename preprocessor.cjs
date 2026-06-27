@@ -58,67 +58,35 @@ const args = process.argv;
 let inputFolder;
 let outputFile;
 
-if (args[2] === 'test') {
-    inputFolder = './src/Test';
-    outputFile = './preprocessor/testPREPROCESSEDbundletest.js';
-}
-else {
-    inputFolder = './src/RendererFiles';
-    outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
-}
-
-// 1. Define the exact loading priority order
-const filePriorityOrder = [
-    "fieldBuffer.js",
-    "header_editorGlobal_header.js",
-    "widgetGlobal.js",
-    "menuGlobal.js",
-    "dialogGlobal.js",
-    "trackedSyntaxTypes.js",
-    "treeViewComponent.js",
-    "dialogImplementationsGlobal.js",
-    "listComponent.js",
-    "listTypes.js",
-    "editorGlobal.js",
-    "javascriptFeatures.js",
-    "explorerGlobal.js",
-    "applicationRendererRoot.js"
-];
+let filePriorityOrder;
 
 let writeBuilder = [];
 let writeBuilderTotalLength = 0;
 
 try {
-    fs.mkdirSync(path.dirname(outputFile), { recursive: true });
-    fs.writeFileSync(outputFile, '');
+    readyFileState();
 
-    let files = fs.readdirSync(inputFolder).filter(file => file.endsWith('.js'));
-
-    files.sort((a, b) => {
-        const indexA = filePriorityOrder.indexOf(a);
-        const indexB = filePriorityOrder.indexOf(b);
-        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-        if (indexA !== -1) return -1;
-        if (indexB !== -1) return 1;
-        return a.localeCompare(b);
-    });
-
+    let files = getFiles();
     if (files.length === 0) {
         console.log(`No JavaScript files found in ${inputFolder}`);
         process.exitCode = 0;
         return;
     }
 
-    for (let i = 0; i < files.length; i++) {
-        bundleFile(files[i]);
-    }
+    doAllBundleFiles(files);
 
-    flushAppendToFile();
     console.log(`Successfully bundled ${files.length} files in prioritized order into ${outputFile}`);
 }
 catch (err) {
     console.error('Bundling failed:', err.message);
     process.exitCode = 1;
+}
+
+function doAllBundleFiles(files) {
+    for (let i = 0; i < files.length; i++) {
+        bundleFile(files[i]);
+    }
+    flushAppendToFile();
 }
 
 function bundleFile(fileName) {
@@ -393,6 +361,53 @@ function readTextNoBOM(filePath) {
       return 'UTF-16BE';
     }
     */
+}
+
+function readyFileState() {
+    if (args[2] === 'test') {
+        inputFolder = './src/Test';
+        outputFile = './preprocessor/testPREPROCESSEDbundletest.js';
+    }
+    else {
+        inputFolder = './src/RendererFiles';
+        outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
+    }
+
+    // 1. Define the exact loading priority order
+    filePriorityOrder = [
+        "fieldBuffer.js",
+        "header_editorGlobal_header.js",
+        "widgetGlobal.js",
+        "menuGlobal.js",
+        "dialogGlobal.js",
+        "trackedSyntaxTypes.js",
+        "treeViewComponent.js",
+        "dialogImplementationsGlobal.js",
+        "listComponent.js",
+        "listTypes.js",
+        "editorGlobal.js",
+        "javascriptFeatures.js",
+        "explorerGlobal.js",
+        "applicationRendererRoot.js"
+    ];
+
+    fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+    fs.writeFileSync(outputFile, '');
+}
+
+function getFiles() {
+    let files = fs.readdirSync(inputFolder).filter(file => file.endsWith('.js'));
+
+    files.sort((a, b) => {
+        const indexA = filePriorityOrder.indexOf(a);
+        const indexB = filePriorityOrder.indexOf(b);
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.localeCompare(b);
+    });
+
+    return files;
 }
 
 /*
