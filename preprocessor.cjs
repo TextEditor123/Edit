@@ -314,9 +314,9 @@ function bundleFile(fileName) {
         }
 
         if (pos <= text.length - 1 &&
-            (text[pos] !== ' ' ||
-             text[pos] !== '\t' ||
-             text[pos] !== '\r' ||
+            (text[pos] !== ' ' &&
+             text[pos] !== '\t' &&
+             text[pos] !== '\r' &&
              text[pos] !== '\n')) {
                 // TODO: '/*y*//*x*/' becomes two spaces...
                 // ...most optimally this would be only 1 space.
