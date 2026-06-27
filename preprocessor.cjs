@@ -45,6 +45,9 @@ It is how I feel alive.
 
 Any low you can get the code to make you feel. You'll eventually overcome that low and swing the pendulum in the other direction
 and achieve the most insane natural high you've ever experienced.
+
+It is complete euphoria, there is nothing that compares. I don't need to get detailed we all know
+what comparisons people usually make here. It simply is the greatest feeling ever.
 */
 
 const fs = require('fs');
