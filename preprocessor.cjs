@@ -301,8 +301,8 @@ function bundleFile(fileName) {
     endChunk();
 
     function startChunk() {
-        if (chunkStart !== -1 && chunkStart < pos) {
-            appendToWriteBuilder(text.substring(chunkStart, pos));
+        if (chunkStart !== -1) {
+            endChunk();
         }
         chunkStart = pos;
     }
