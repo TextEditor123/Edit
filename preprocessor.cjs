@@ -96,39 +96,6 @@ function bundleFile(fileName) {
     //     - [ ] Short of verbatim multiline strings...
     //     - [ ] TODO: I'm not sure, make a decision on this...
 
-
-    //
-
-    /*
-    in short:
-    My arrogance is unbearable.
-    I barely could figure this out.
-
-    If it does even work that is to say...
-    I think it does.
-
-    But my ego is dead
-
-    It isn't fully correct I know a case. Multiline comment separating two identifiers on the same line.
-
-    ===
-
-    you know why you wanna be alone.
-    cause then you can pretend you're him.
-    when you're around other people.
-    your incompetence begins to show.
-    
-    I say to myself that "nobody looks at this repo" somewhat jokingly.
-    But I almost hope it's true.
-    All this is is egotistical and living delusions
-    Every day as of late I just feel extreme shame about my coding abilities
-
-    yesterday I failed to solve the indentation cause I wasn't taking the problem seriously enough.
-    I rushed through some of the starting logic and then ended up in a mess partway through trying to solve it that I had to just completely undo the file
-
-    today made that very obvious to me
-    */
-
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
     const filePath = path.join(inputFolder, fileName);
@@ -343,6 +310,7 @@ function bundleFile(fileName) {
         }
     }
 
+    /** return 'true' if invoker should update 'chunkstart' to be the end position of the newline. */
     function handleEmptyLineIfApplicable() {
         if (lineEndRecent_posEnd === pos) {
             emptyLineCount++;
