@@ -74,7 +74,7 @@ try {
 
 function aaa(fileName) {
 
-  appendToWriteBuilder(`\n\n// ========\n// ========\n// ${fileName}\n// ========\n// ========\n\n`);
+  appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
   const filePath = path.join(inputFolder, fileName);
   let text = readTextNoBOM(filePath);
