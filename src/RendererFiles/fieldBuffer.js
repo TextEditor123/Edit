@@ -1,3 +1,11 @@
+/*
+#################
+# Goal of file: #
+#################
+
+TODO: ...
+*/
+
 /**
  * having a boolean be a byte isn't ideal, but most engines store them as either 4bytes or 8bytes
  * 

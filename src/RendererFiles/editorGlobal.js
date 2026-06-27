@@ -6,7 +6,10 @@ import "./javascriptFeatures"
 //__#__
 
 /*
-Wording related to "indexLine":
+###################################
+# Wording related to "indexLine": #
+###################################
+
 - indexLine        // The line number of '1' corresponds to the '0' indexLine; The end position of this line is located at index '0' within 'EDITOR_lineEndPositionList'.
 - virtualIndexLine // If you map the indexLine to an index that exists from virtualIndex to (virtualIndex + virtualCount - 1); both sides are inclusive;
                    // Then you could imagine that the UI has HTML divs available to be rendered into.
@@ -42,7 +45,9 @@ And the importance when reading the code lies with the words 'line' and 'column'
 */
 
 /*
-Handling of tabs:
+#####################
+# Handling of tabs: #
+#####################
 
 What I do with tabs is a terrible idea.
 I convert them from '\t' to '\t\0\0\0'.
