@@ -98,6 +98,8 @@ function bundleFile(fileName) {
     // 
     // I'm trying to think about how I'd swap the line endings.
     // I think the only sensible answer is to work with the bytes of the text directly.
+    // Otherwise if I continue the current pattern I'd be substringing every line of text in order to strip off the line ending
+    // With a uint8array I could move the bytes en mass to a buffer and then to string the buffer.
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
