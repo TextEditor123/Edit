@@ -125,6 +125,8 @@ function bundleFile(fileName) {
 
     yesterday I failed to solve the indentation cause I wasn't taking the problem seriously enough.
     I rushed through some of the starting logic and then ended up in a mess partway through trying to solve it that I had to just completely undo the file
+
+    today made that very obvious to me
     */
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
