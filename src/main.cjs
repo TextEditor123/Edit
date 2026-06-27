@@ -1680,7 +1680,19 @@ I need to go to sleep within 53 minutes so that I can get 9 hours of sleep
 because it is vitally important that I am ontop of my nutrition and sleep
 in order to achieve my goal in life.
 
-...more typing
+I am extremely against harming anyone.
+I was very apologetic a few commits back.
+What I intend to focus that on is in respect to people who have shown support me to me.
+
+I want to make this clear because I will make an IDE. I will go down in history as one of the greatest programmers to ever live.
+But you need to not ever mention me to anyone.
+Because everything I have ever said is the reality of the world.
+
+The things I've said I believe were "forced out of me" due to extreme stress that was
+suddenly placed on someone who was extremely mentally ill.
+But again I mean to say. They're the reality, just that I only said them outloud
+because I was forced to.
+And. I'm rambling a bit. I'm gonna try to keep typing.
 */
 
 /* sec0
