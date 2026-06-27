@@ -41,274 +41,274 @@ const outputFile = './preprocessor/__PREPROCESSEDbundle__.js';
 
 // 1. Define the exact loading priority order
 const filePriorityOrder = [
-  "fieldBuffer.js",
-  "header_editorGlobal_header.js",
-  "widgetGlobal.js",
-  "menuGlobal.js",
-  "dialogGlobal.js",
-  "trackedSyntaxTypes.js",
-  "treeViewComponent.js",
-  "dialogImplementationsGlobal.js",
-  "listComponent.js",
-  "listTypes.js",
-  "editorGlobal.js",
-  "javascriptFeatures.js",
-  "explorerGlobal.js",
-  "applicationRendererRoot.js"
+    "fieldBuffer.js",
+    "header_editorGlobal_header.js",
+    "widgetGlobal.js",
+    "menuGlobal.js",
+    "dialogGlobal.js",
+    "trackedSyntaxTypes.js",
+    "treeViewComponent.js",
+    "dialogImplementationsGlobal.js",
+    "listComponent.js",
+    "listTypes.js",
+    "editorGlobal.js",
+    "javascriptFeatures.js",
+    "explorerGlobal.js",
+    "applicationRendererRoot.js"
 ];
 
 let writeBuilder = [];
 let writeBuilderTotalLength = 0;
 
 try {
-  fs.mkdirSync(path.dirname(outputFile), { recursive: true });
-  fs.writeFileSync(outputFile, '');
+    fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+    fs.writeFileSync(outputFile, '');
 
-  let files = fs.readdirSync(inputFolder).filter(file => file.endsWith('.js'));
+    let files = fs.readdirSync(inputFolder).filter(file => file.endsWith('.js'));
 
-  files.sort((a, b) => {
-    const indexA = filePriorityOrder.indexOf(a);
-    const indexB = filePriorityOrder.indexOf(b);
-    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-    if (indexA !== -1) return -1;
-    if (indexB !== -1) return 1;
-    return a.localeCompare(b);
-  });
+    files.sort((a, b) => {
+        const indexA = filePriorityOrder.indexOf(a);
+        const indexB = filePriorityOrder.indexOf(b);
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.localeCompare(b);
+    });
 
-  if (files.length === 0) {
-    console.log(`No JavaScript files found in ${inputFolder}`);
-    process.exitCode = 0;
-    return;
-  }
+    if (files.length === 0) {
+        console.log(`No JavaScript files found in ${inputFolder}`);
+        process.exitCode = 0;
+        return;
+    }
 
-  for (let i = 0; i < files.length; i++) {
-    bundleFile(files[i]);
-  }
+    for (let i = 0; i < files.length; i++) {
+        bundleFile(files[i]);
+    }
 
-  flushAppendToFile();
-  console.log(`Successfully bundled ${files.length} files in prioritized order into ${outputFile}`);
+    flushAppendToFile();
+    console.log(`Successfully bundled ${files.length} files in prioritized order into ${outputFile}`);
 }
 catch (err) {
-  console.error('Bundling failed:', err.message);
-  process.exitCode = 1;
+    console.error('Bundling failed:', err.message);
+    process.exitCode = 1;
 }
 
 function bundleFile(fileName) {
 
-  appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
+    appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
-  const filePath = path.join(inputFolder, fileName);
-  let text = readTextNoBOM(filePath);
+    const filePath = path.join(inputFolder, fileName);
+    let text = readTextNoBOM(filePath);
 
-  // 0 => None
-  // 1 => StartFound
-  let preprocessorMarkerContext = 0;
+    // 0 => None
+    // 1 => StartFound
+    let preprocessorMarkerContext = 0;
 
-  let pos = 0;
+    let pos = 0;
 
-  markerWhileLoop: while (pos < text.length) {
-    switch (text[pos]) {
-      /* see "marker details comment" at end of this file */
-      case '/':
-        /** @type {boolean} */
-        let meetsNewLineRequirement;
-        if (pos > 0) {
-          meetsNewLineRequirement = text[pos - 1] === '\r' || text[pos - 1] === '\n';
-        }
-        else {
-          meetsNewLineRequirement = true;
-        }
-
-        if (pos <= text.length - 7 &&
-            text[pos + 1] === '/' &&
-            text[pos + 2] === '_' &&
-            text[pos + 3] === '_' &&
-            text[pos + 4] === '#' &&
-            text[pos + 5] === '_' &&
-            text[pos + 6] === '_') {
-              if (preprocessorMarkerContext === 0) {
-                if (meetsNewLineRequirement) {
-                  pos += 7;
-                  preprocessorMarkerContext = 1; // StartFound
-                  continue;
+    markerWhileLoop: while (pos < text.length) {
+        switch (text[pos]) {
+            /* see "marker details comment" at end of this file */
+            case '/':
+                /** @type {boolean} */
+                let meetsNewLineRequirement;
+                if (pos > 0) {
+                    meetsNewLineRequirement = text[pos - 1] === '\r' || text[pos - 1] === '\n';
                 }
                 else {
-                  console.log('warning failed newline requirement => break markerWhileLoop;');
-                  break markerWhileLoop;
+                    meetsNewLineRequirement = true;
                 }
-              }
-              else {
-                if (meetsNewLineRequirement) {
-                  pos += 7;
-                  preprocessorMarkerContext = 0;
-                  break markerWhileLoop;
-                }
-                else {
-                  console.log('warning failed newline requirement => skipped this match because it did not start at a newline.');
-                  pos += 7;
-                  break;
-                }
-              }
-        }
-        else {
-          if (preprocessorMarkerContext === 0) {
-            break markerWhileLoop;
-          }
-          else {
-            pos++;
-            break;
-          }
-        }
-        break;
-      case ' ':
-      case '\t':
-      case '\r':
-      case '\n':
-        pos++;
-        break;
-      default:
-        if (preprocessorMarkerContext === 0) {
-          break markerWhileLoop;
-        }
-        else {
-          pos++;
-          break;
-        }
-    }
-  }
 
-  if (preprocessorMarkerContext === 1 /*StartFound*/) {
-    // Then the end was never found
-    //
-    // This is an Error because it is very specific, for some reason the file started with '//__#__'.
-    // And it was inside my 'RendererFiles' folder, so what's going on?
-    //
-    // When it comes to '//__#__' being lexed after the first non-whitespace character
-    // that feels far too vague to permit it being an error.
-    //
-    throw new Error(`${filePath} => if (preprocessorMarkerContext === 1 /*StartFound*/)`);
-  }
-
-  let chunkStart = pos;
-  while (pos < text.length) {
-    switch (text[pos]) {
-      case '/':
-        if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
-              console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character as a token itself.`);
-        }
-
-        if (pos <= text.length - 2) {
-          if (text[pos + 1] === '/') {
-            endChunk();
-            pos += 2;
-            singleLineCommentWhile: while (pos < text.length) {
-              switch (text[pos]) {
-                case '/':
-                  if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
-                        console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a single line comment.`);
-                  }
-                  break;
-                // Single line comments cannot delete their ending newline character(s) otherwise a line ending of just '\n' or just '\r' would result in:
-                // ```
-                // let x = 2; // set x to 2
-                // return x + 1;
-                // ```
-                //
-                // Would become:
-                // ```
-                // let x = 2; return x + 1;
-                // ```
-                case '\r':
-                case '\n':
-                  break singleLineCommentWhile;
-              }
-              pos++;
-            }
-            startChunk();
-            continue;
-          }
-          else if (text[pos + 1] === '*') {
-            endChunk();
-            pos += 2;
-            multiLineCommentWhile: while (pos < text.length) {
-              switch (text[pos]) {
-                case '/':
-                  if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
-                        console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a multi line comment.`);
-                  }
-                  break;
-                case '*':
-                  if (pos <= text.length - 2) {
-                    if (text[pos + 1] === '/') {
-                      pos += 2;
-                      break multiLineCommentWhile;
+                if (pos <= text.length - 7 &&
+                    text[pos + 1] === '/' &&
+                    text[pos + 2] === '_' &&
+                    text[pos + 3] === '_' &&
+                    text[pos + 4] === '#' &&
+                    text[pos + 5] === '_' &&
+                    text[pos + 6] === '_') {
+                    if (preprocessorMarkerContext === 0) {
+                        if (meetsNewLineRequirement) {
+                            pos += 7;
+                            preprocessorMarkerContext = 1; // StartFound
+                            continue;
+                        }
+                        else {
+                            console.log('warning failed newline requirement => break markerWhileLoop;');
+                            break markerWhileLoop;
+                        }
                     }
-                  }
-                  break;
-              }
-              pos++;
-            }
-            startChunk();
-            continue;
-          }
+                    else {
+                        if (meetsNewLineRequirement) {
+                            pos += 7;
+                            preprocessorMarkerContext = 0;
+                            break markerWhileLoop;
+                        }
+                        else {
+                            console.log('warning failed newline requirement => skipped this match because it did not start at a newline.');
+                            pos += 7;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    if (preprocessorMarkerContext === 0) {
+                        break markerWhileLoop;
+                    }
+                    else {
+                        pos++;
+                        break;
+                    }
+                }
+                break;
+            case ' ':
+            case '\t':
+            case '\r':
+            case '\n':
+                pos++;
+                break;
+            default:
+                if (preprocessorMarkerContext === 0) {
+                    break markerWhileLoop;
+                }
+                else {
+                    pos++;
+                    break;
+                }
         }
-        break;
-      case '\'':
-      case '"':
-      case '`':
-        let terminator = text[pos];
-        pos++;
-        stringWhile: while (pos < text.length) {
-          if (text[pos] === '/' && pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
-                console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
-          }
-          else if (text[pos] === terminator) {
-            pos++;
-            break stringWhile;
-          }
-          else if (text[pos] === '\\') {
-            pos++;
-            if (pos <= text.length - 1) {
-              pos++;
-            }
-            continue;
-          }
-          pos++;
-        }
-        continue;
     }
-    pos++;
-  }
-  endChunk();
 
-  function startChunk() {
-    if (chunkStart !== -1 && chunkStart < pos) {
-      appendToWriteBuilder(text.substring(chunkStart, pos));
+    if (preprocessorMarkerContext === 1 /*StartFound*/) {
+        // Then the end was never found
+        //
+        // This is an Error because it is very specific, for some reason the file started with '//__#__'.
+        // And it was inside my 'RendererFiles' folder, so what's going on?
+        //
+        // When it comes to '//__#__' being lexed after the first non-whitespace character
+        // that feels far too vague to permit it being an error.
+        //
+        throw new Error(`${filePath} => if (preprocessorMarkerContext === 1 /*StartFound*/)`);
     }
-    chunkStart = pos;
-  }
-  
-  function endChunk() {
-    if (chunkStart < pos) {
-      appendToWriteBuilder(text.substring(chunkStart, pos));
+
+    let chunkStart = pos;
+    while (pos < text.length) {
+        switch (text[pos]) {
+            case '/':
+                if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+                    console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character as a token itself.`);
+                }
+
+                if (pos <= text.length - 2) {
+                    if (text[pos + 1] === '/') {
+                        endChunk();
+                        pos += 2;
+                        singleLineCommentWhile: while (pos < text.length) {
+                            switch (text[pos]) {
+                                case '/':
+                                    if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+                                        console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a single line comment.`);
+                                    }
+                                    break;
+                                // Single line comments cannot delete their ending newline character(s) otherwise a line ending of just '\n' or just '\r' would result in:
+                                // ```
+                                // let x = 2; // set x to 2
+                                // return x + 1;
+                                // ```
+                                //
+                                // Would become:
+                                // ```
+                                // let x = 2; return x + 1;
+                                // ```
+                                case '\r':
+                                case '\n':
+                                    break singleLineCommentWhile;
+                            }
+                            pos++;
+                        }
+                        startChunk();
+                        continue;
+                    }
+                    else if (text[pos + 1] === '*') {
+                        endChunk();
+                        pos += 2;
+                        multiLineCommentWhile: while (pos < text.length) {
+                            switch (text[pos]) {
+                                case '/':
+                                    if (pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+                                        console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a multi line comment.`);
+                                    }
+                                    break;
+                                case '*':
+                                    if (pos <= text.length - 2) {
+                                        if (text[pos + 1] === '/') {
+                                            pos += 2;
+                                            break multiLineCommentWhile;
+                                        }
+                                    }
+                                    break;
+                            }
+                            pos++;
+                        }
+                        startChunk();
+                        continue;
+                    }
+                }
+                break;
+            case '\'':
+            case '"':
+            case '`':
+                let terminator = text[pos];
+                pos++;
+                stringWhile: while (pos < text.length) {
+                    if (text[pos] === '/' && pos <= text.length - 7 && text[pos + 1] === '/' && text[pos + 2] === '_' && text[pos + 3] === '_' && text[pos + 4] === '#' && text[pos + 5] === '_' && text[pos + 6] === '_') {
+                        console.log(`${filePath} warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
+                    }
+                    else if (text[pos] === terminator) {
+                        pos++;
+                        break stringWhile;
+                    }
+                    else if (text[pos] === '\\') {
+                        pos++;
+                        if (pos <= text.length - 1) {
+                            pos++;
+                        }
+                        continue;
+                    }
+                    pos++;
+                }
+                continue;
+        }
+        pos++;
     }
-    chunkStart = -1;
-  }
+    endChunk();
+
+    function startChunk() {
+        if (chunkStart !== -1 && chunkStart < pos) {
+            appendToWriteBuilder(text.substring(chunkStart, pos));
+        }
+        chunkStart = pos;
+    }
+
+    function endChunk() {
+        if (chunkStart < pos) {
+            appendToWriteBuilder(text.substring(chunkStart, pos));
+        }
+        chunkStart = -1;
+    }
 }
 
 function appendToWriteBuilder(substring) {
-  writeBuilder.push(substring);
-  writeBuilderTotalLength += substring.length;
-  if (writeBuilderTotalLength > 1024) {
-    flushAppendToFile();
-  }
+    writeBuilder.push(substring);
+    writeBuilderTotalLength += substring.length;
+    if (writeBuilderTotalLength > 1024) {
+        flushAppendToFile();
+    }
 }
 
 function flushAppendToFile() {
-  fs.appendFileSync(outputFile, writeBuilder.join(''), 'utf8');
-  // TODO: I hear 'array.length = 0' will clear the references to the entries but I don't feel confident that it is reality. Nevertheless, this isn't a major concern right now.
-  writeBuilder.length = 0;
-  writeBuilderTotalLength = 0;
+    fs.appendFileSync(outputFile, writeBuilder.join(''), 'utf8');
+    // TODO: I hear 'array.length = 0' will clear the references to the entries but I don't feel confident that it is reality. Nevertheless, this isn't a major concern right now.
+    writeBuilder.length = 0;
+    writeBuilderTotalLength = 0;
 }
 
 /**
@@ -317,38 +317,38 @@ function flushAppendToFile() {
  * Copy, pasted, modified; from main.csj originally named 'hasBOM(...)'
  */
 function readTextNoBOM(filePath) {
-  // Use a small buffer to read just the first 3-4 bytes
-  const buffer = Buffer.alloc(4);
-  const fd = fs.openSync(filePath, 'r');
-  fs.readSync(fd, buffer, 0, 4, 0);
+    // Use a small buffer to read just the first 3-4 bytes
+    const buffer = Buffer.alloc(4);
+    const fd = fs.openSync(filePath, 'r');
+    fs.readSync(fd, buffer, 0, 4, 0);
 
-  let stat = fs.statSync(filePath);
+    let stat = fs.statSync(filePath);
 
-  // Check for common BOM signatures
-  // UTF-8: EF BB BF
-  if (buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF) {
-    const bufferaaa = Buffer.alloc(stat.size - 4);
-    fs.readSync(fd, bufferaaa, 0, bufferaaa.length, 3);
-    fs.closeSync(fd);
-    return bufferaaa.toString();
-  }
-  else {
-    const bufferaaa = Buffer.alloc(stat.size);
-    fs.readSync(fd, bufferaaa, 0, bufferaaa.length, 0);
-    fs.closeSync(fd);
-    return bufferaaa.toString();
-  }
+    // Check for common BOM signatures
+    // UTF-8: EF BB BF
+    if (buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF) {
+        const bufferaaa = Buffer.alloc(stat.size - 4);
+        fs.readSync(fd, bufferaaa, 0, bufferaaa.length, 3);
+        fs.closeSync(fd);
+        return bufferaaa.toString();
+    }
+    else {
+        const bufferaaa = Buffer.alloc(stat.size);
+        fs.readSync(fd, bufferaaa, 0, bufferaaa.length, 0);
+        fs.closeSync(fd);
+        return bufferaaa.toString();
+    }
 
-  /*
-  // UTF-16 Little Endian: FF FE
-  if (buffer[0] === 0xFF && buffer[1] === 0xFE) {
-    return 'UTF-16LE';
-  }
-  // UTF-16 Big Endian: FE FF
-  if (buffer[0] === 0xFE && buffer[1] === 0xFF) {
-    return 'UTF-16BE';
-  }
-  */
+    /*
+    // UTF-16 Little Endian: FF FE
+    if (buffer[0] === 0xFF && buffer[1] === 0xFE) {
+      return 'UTF-16LE';
+    }
+    // UTF-16 Big Endian: FE FF
+    if (buffer[0] === 0xFE && buffer[1] === 0xFF) {
+      return 'UTF-16BE';
+    }
+    */
 }
 
 /*
