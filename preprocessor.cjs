@@ -30,6 +30,15 @@ Notes:
 
 "you're having fun? all you do is talk about anxiety and panic attacks"
 But that's the rush of it all. Is that it is difficult for me.
+
+I've manually re-indented 'main.cjs' from 2 spaces to 4 at one point.
+That file is 1,700 lines.
+I just now re-indented this entire file using vscode and it was trivial to achieve.
+Why?
+Because I frequently code to exhaustion and then keep going.
+It's a terrible idea and what I just mentioned is 1 example of the mental fatigue that comes from it.
+Nevertheless sometimes I do squeeze out something meaningful in a state of immense mental fatigue.
+And I'm always prepared to just walk away at any moment.
 */
 
 const fs = require('fs');
