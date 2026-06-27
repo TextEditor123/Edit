@@ -1674,8 +1674,18 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 */
 
 /*
-The ending of the movie dealt with topics of the characters being alone for the rest of their lives and I think it just
-set me off in a weird headspace.
+I was having nightmares all night that I was in high school / college.
+but I notice a lot of things that
+
+I woke up this morning.
+
+I don't track the views/likes/dislikes of youtube videos.
+But I go back to old ones and from memory.
+I think one of them lost a like.
+I don't know if it was eventual consistency of the youtube
+or if I said something yesterday and someone went back to remove the like because of what I said.
+
+I feel just like anxious and I was screaming in my sleep.
 */
 
 /* sec0
