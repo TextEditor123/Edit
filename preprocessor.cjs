@@ -79,6 +79,16 @@ function doAllBundleFiles(files) {
 }
 
 function bundleFile(fileName) {
+
+    // # Goals:
+    //
+    // - [ ] Remove empty lines
+    //     - [ ] Remove resulting empty lines
+    //         - [ ] "resulting empty lines": If a line contains a single line comment, then due to comments being removed, the resuling line will be empty.
+    // - [ ] If the tab size is >2, reduce tab size to 2.
+    // - [ ] If the line ending kind is '\r\n', replace it with '\n' (specifically for the goal of halving the size of each line ending kind, so '\r' is fine).
+    //
+
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
     const filePath = path.join(inputFolder, fileName);

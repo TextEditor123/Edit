@@ -26,7 +26,7 @@ Thus 64 number variables, that would've been 64 visits during the marking phase 
 
 
 The next thing I'm doing is referring to these Uint*Array members by name through the use of const fat arrow functions.
-I want to avoid the cost of invoking these const fat arrow functions, and remove the cost of their definitions though.
+I want to avoid the cost of invoking these const fat arrow functions, and remove the cost of their definitions.
 The first statement needs to be that a JS engine might actually do what this file does at runtime through
 their own inlining, or caching. But I wanted to ensure it occured in a way that felt confidently in control of.
 
