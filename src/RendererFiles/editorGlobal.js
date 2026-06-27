@@ -59,6 +59,8 @@ Perhaps what I'm doing is working with font styling I don't know I need to find 
 
 But the issue is that tab is a control character and has extra processing than a normal character.
 And it can introduce oddities involving tabstop or very tiny changes in horizontal positioning of surrounding text or something.
+
+'\0' is a similar problem, it is a special character that might cause odd behavior.
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
