@@ -334,6 +334,10 @@ function readTextNoBOM(filePath) {
     */
 }
 
+/**
+ * These functions are at the bottom, as opposed to the order that the functions are invoked (which would place these as some of the first function definitions)
+ * due to their extremely unimportant nature beyond initialization. Thus I don't want to have to constantly scroll past them.
+ */
 function readyFileState() {
     if (args[2] === 'test') {
         inputFolder = './src/Test';
@@ -366,6 +370,10 @@ function readyFileState() {
     fs.writeFileSync(outputFile, '');
 }
 
+/**
+ * These functions are at the bottom, as opposed to the order that the functions are invoked (which would place these as some of the first function definitions)
+ * due to their extremely unimportant nature beyond initialization. Thus I don't want to have to constantly scroll past them.
+ */
 function getFiles() {
     let files = fs.readdirSync(inputFolder).filter(file => file.endsWith('.js'));
 
