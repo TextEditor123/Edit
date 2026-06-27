@@ -110,6 +110,14 @@ function bundleFile(fileName) {
     But my ego is dead
 
     It isn't fully correct I know a case. Multiline comment separating two identifiers on the same line.
+
+    ===
+
+    you know why you wanna be alone.
+    cause then you can pretend you're him.
+    when you're around other people.
+    your incompetence begins to show.
+    
     */
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
