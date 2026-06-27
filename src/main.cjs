@@ -1667,12 +1667,6 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 	- [ ] Any instance created beyond that as necessary will use fields themselves.
 - [ ] all strings can be moved to a fieldBuffer to be stored as the byte representation
     - [ ] If you do this you'd want to from the get-go never introduce the string to begin with unless necessary
-- [ ] 
-*/
-
-/*
-I think my failure to implement the removal of indentation in preprocessor.cjs
-is the source of all my anxiety I'm gonna try to implement it asap
 */
 
 /* sec0

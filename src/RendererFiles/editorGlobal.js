@@ -6,18 +6,6 @@ import "./javascriptFeatures"
 //__#__
 
 /*
-Google AI Overview "javascript does the garbage collector still have to acknowledge a const number that is defined in the global scope?":
-
-Continued with
-"
-So, if I hypothetically had 1,000 const numbers in the global scope.
-There is some kind of loop that the garbage collector performs, and has to visit each one of the 1,000 const numbers
-even if just to check that it is a number and immediately skip over it with minimal overhead involved.
-"
-
-*/
-
-/*
 Wording related to "indexLine":
 - indexLine        // The line number of '1' corresponds to the '0' indexLine; The end position of this line is located at index '0' within 'EDITOR_lineEndPositionList'.
 - virtualIndexLine // If you map the indexLine to an index that exists from virtualIndex to (virtualIndex + virtualCount - 1); both sides are inclusive;
@@ -46,18 +34,31 @@ I actually think 'lineIndex' "rolls off the tongue" a little easier.
 But if you apply the pattern it hides the word 'line'.
 And the importance when reading the code lies with the words 'line' and 'column'.
 
-- [/] Fix all wording relating to 'indexLine' within the codebase to match the above specifications.
-- [x] 'EDITOR_domLineNodesZerothIndex' renamed to 'beltIndexZero'?
-- [x] Find any usage of 'lineIndex' pattern and change it 'indexLine' pattern.
-- [x] Find any usage of 'columnIndex' pattern and change it 'indexColumn' pattern.
-
 - [ ] When getting the beltIndex of anything that follows this pattern you don't check whether the underlying data has a large enough count, it is solely related to whether the itemHeight and height of the element can fit "that many divs".
     - [ ] TreeView
     - [ ] List
 - [ ] When creating divs for the viewport you follow up by drawing the viewport afterwards.
     - [ ] Thus the creation of divs ought to be fully ignoring any excessive calculations because its style is just overriden immediately afterwards.
+*/
 
+/*
+Handling of tabs:
 
+What I do with tabs is a terrible idea.
+I convert them from '\t' to '\t\0\0\0'.
+Then I set tab-size to 1 for '#EDITOR_text'.
+
+This maps a tab width of 4 to 4 characters.
+I save out the content by skipping over the '\t'.
+
+And the editor itself ought to handle '\0' such that you are at the expected position
+rather than ever being at or modifying a '\0' itself.
+I haven't gotten to this part though.
+
+Perhaps what I'm doing is working with font styling I don't know I need to find time to look into it.
+
+But the issue is that tab is a control character and has extra processing than a normal character.
+And it can introduce oddities involving tabstop or very tiny changes in horizontal positioning of surrounding text or something.
 */
 
 let EDITOR_trackedSyntaxList = new TrackedSyntaxList(32);
@@ -70,20 +71,6 @@ let EDITOR_findOverlay_searchResultPositionList;
 let EDITOR_textByteList = new ByteList(1024);
 const EDITOR_encoder = new TextEncoder();
 const EDITOR_decoder = new TextDecoder();
-
-// I need like type generation or something
-// like the baseline instances should all pool their state
-// then if you wanna multicursor you create an 'EDITOR_Cursor' just the same as
-// the primary cursor but now you aren't pooling the state it instead is a field of its own on the instance.
-//
-// Cause then baseline all instances approach "a single reference for GC to loop over" and as you need more you
-// have to incur the numbers being touched by GC and such but they're all
-// features that are separate and likely not all to exist simultaneously or something
-// so then in total you have an extremely small memory footprint.
-//
-// More about "a single reference for GC to loop over":
-// yes it is extremely minor because it sees they're a primitive and then moves on.
-// But you still need the GC to check that it is a primitive.
 
 class EDITOR_Cursor {
 
@@ -279,7 +266,7 @@ let EDITOR_cursorList = [EDITOR_primaryCursor];
 
 let EDITOR_textSourceIdentifier = '';
 let EDITOR_FORMATTED_textSourceIdentifier = '';
-let EDITOR_extensionKind = get_ExtensionKind_None(); // 2026-06-24_count_other_int32_fields_1
+let EDITOR_extensionKind = get_ExtensionKind_None();
 
 let EDITOR_lineEndString = null;
 
@@ -301,20 +288,20 @@ let EDITOR_offsetWithinSpan_withRespectToThisSpan = null;
 
 let EDITOR_timer = null;
 
-let EDITOR_pooledTrackedSyntax_trackedSyntaxKind = get_TrackedSyntaxKind_None();  // 2026-06-24_count_other_int32_fields_5
+let EDITOR_pooledTrackedSyntax_trackedSyntaxKind = get_TrackedSyntaxKind_None();
 
 let EDITOR_characterWidth = 8;
 let EDITOR_horizontal_scrollbar_widthValue = 0;
 
-let EDITOR_beltIndexZero = 0;  // 2026-06-24_count_other_int32_fields_6
+let EDITOR_beltIndexZero = 0;
 
-let w_indexColumn_Goal = -1;  // 2026-06-24_count_other_int32_fields_7
-let w_indexColumn_Sum = -1;  // 2026-06-24_count_other_int32_fields_8
-let w_indexColumn_SpanTextContentRelative = -1;  // 2026-06-24_count_other_int32_fields_9
-let w_indexSpan = -1;  // 2026-06-24_count_other_int32_fields_10
+let w_indexColumn_Goal = -1;
+let w_indexColumn_Sum = -1;
+let w_indexColumn_SpanTextContentRelative = -1;
+let w_indexSpan = -1;
 let w_span = null;
 let w_div = null;
-let w_beltIndexLine = -1;  // 2026-06-24_count_other_int32_fields_11
+let w_beltIndexLine = -1;
 
 let EDITOR_syntaxHighlighting_previousIndexVirtual = 0;
 let EDITOR_syntaxHighlighting_previousVirtualCount = 0;
