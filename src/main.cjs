@@ -1699,6 +1699,10 @@ came out of my mouth. I do not disagree with anything I've said.
 I only regret that I had someone supportive of me and then these things were forced out of me
 during that timing and I don't want to reflect poorly on anyone else.
 I don't want to harm anyone vocally or physically right
+
+But the truth of the matter is that I will achieve my goal of isolation.
+This world is meaningless.
+Everything you care about is just another delusion.
 */
 
 /* sec0
