@@ -88,6 +88,9 @@ function bundleFile(fileName) {
     // - [ ] If the tab size is >2, reduce tab size to 2.
     // - [ ] If the line ending kind is '\r\n', replace it with '\n' (specifically for the goal of halving the size of each line ending kind, so '\r' is fine).
     //     - [ ] some edge case clarification: This is expected to occur within single and multiline comments but NOT strings.
+    //     - [ ] Although I suppose a string would be using the escaped character.
+    //     - [ ] Short of verbatim multiline strings...
+    //     - [ ] TODO: I'm not sure, make a decision on this...
     //
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
