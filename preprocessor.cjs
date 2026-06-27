@@ -7,6 +7,23 @@ This file is ran as a prebuild step in package.json.
 The generated file named '__PREPROCESSEDbundle__.js'
 is then given to babel as the build step
 in order to apply the compiler configuration.
+
+====
+
+Notes:
+- Perhaps I'll rename the file to bundler.cjs
+- I'd written the "note:" already but I guess I should be extra clear... bundlers exist and they work well... I write the code that I think is interesting for this project and would never do this in a job scenario unless for some weird reason it was necessary.
+- Preprocessor text token (see "marker details comment" at end of this file) is used to strip out text from a javascript file.
+    - in essence: I found that vscode wasn't showing me lsp cross file even if the files were in the same directory, and that directory was part of the workspace.
+    - So, I needed to add an import to the top of each file that indicated to vscode what each file was dependent on.
+    - This gave me cross file lsp.
+    - (note: you probably can put a setting in package.json to do this but I thought it was an interesting problem nevertheless
+             so I went about this way cause I'm not writing this code as a "job" I just wanted to do the more interesting thing
+             than google for a package.json setting, in a job environment I'd never do most of the things you see me do)
+    - But, you don't need the import statements after you've combined them all into a single file.
+    - Thus the preprocessor text token wraps the imports so that I can remove them when I combine it all into a single file
+
+
 */
 
 const fs = require('fs');
