@@ -1716,6 +1716,9 @@ And it seems to real in my mind but I try to explain it and it never feels possi
 I'm thinking of the radiohead song "no surprises"
 and then "such a pretty house and such a pretty garden"
 and "how to disappear completely" these things just start playing in my head over and over.
+
+Whenever I'm rambling those tend to be the songs that I don't even have to be listening to I just start singing them in my head
+over and over as I type.
 */
 
 /* sec0
