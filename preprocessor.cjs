@@ -39,6 +39,9 @@ Because I frequently code to exhaustion and then keep going.
 It's a terrible idea and what I just mentioned is 1 example of the mental fatigue that comes from it.
 Nevertheless sometimes I do squeeze out something meaningful in a state of immense mental fatigue.
 And I'm always prepared to just walk away at any moment.
+
+I want the code to destroy me mentally.
+It is how I feel alive.
 */
 
 const fs = require('fs');
