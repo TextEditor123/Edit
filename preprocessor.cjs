@@ -140,7 +140,9 @@ function bundleFile(fileName) {
     // EOF
     // ```
     //
+    /** This not only represents the recent line end. But also the last pos that was exclusively written out because comments need to "clear" the 'lineEndRecent_posEnd'. */
     let lineEndRecent_posEnd = 0;
+    //let nonLineEnd_causedEndChunk = false;
 
     while (pos < text.length) {
         switch (text[pos]) {
@@ -150,12 +152,14 @@ function bundleFile(fileName) {
                     if (text[pos + 1] === '/') {
                         endChunk();
                         lexSingleLineComment();
+                        commentEndsInLineEndForceWrite();
                         startChunk();
                         continue;
                     }
                     else if (text[pos + 1] === '*') {
                         endChunk();
                         lexMultiLineComment();
+                        commentEndsInLineEndForceWrite();
                         startChunk();
                         continue;
                     }
@@ -167,20 +171,26 @@ function bundleFile(fileName) {
                 lexString();
                 continue;
             case '\r':
-                handleEmptyLineIfApplicable();
+                let aaaShouldSetChunkStart = handleEmptyLineIfApplicable();
                 
                 pos++;
                 if (pos <= text.length - 1 && text[pos] === '\n')
                     pos++;
 
                 lineEndRecent_posEnd = pos;
+                if (aaaShouldSetChunkStart) {
+                    chunkStart = lineEndRecent_posEnd;
+                }
                 continue;
             case '\n':
-                handleEmptyLineIfApplicable();
+                let bbbShouldSetChunkStart = handleEmptyLineIfApplicable();
 
                 pos++;
 
                 lineEndRecent_posEnd = pos;
+                if (bbbShouldSetChunkStart) {
+                    chunkStart = lineEndRecent_posEnd;
+                }
                 continue;
         }
         pos++;
@@ -191,12 +201,25 @@ function bundleFile(fileName) {
         if (chunkStart !== -1) {
             endChunk();
         }
+
         chunkStart = pos;
+        // Anyone that isn't a line end which invokes endChunk (or downstream causes an invocation) needs to "clear" the 'lineEndRecent_posEnd'.
+        lineEndRecent_posEnd = chunkStart;
     }
 
-    function endChunk() {
-        if (chunkStart < pos) {
-            appendToWriteBuilder(text.substring(chunkStart, pos));
+    function endChunk(overridePos) {
+        let localPos;
+        if (!overridePos && overridePos !== 0) {
+            localPos = pos;
+        }
+        else {
+            localPos = overridePos;
+        }
+
+        if (chunkStart < localPos) {
+            //// Anyone that isn't a line end which invokes endChunk (or downstream causes an invocation) needs to "clear" the 'lineEndRecent_posEnd'.
+            //lineEndRecent_posEnd = localPos;
+            appendToWriteBuilder(text.substring(chunkStart, localPos));
         }
         chunkStart = -1;
     }
@@ -279,6 +302,41 @@ function bundleFile(fileName) {
     function handleEmptyLineIfApplicable() {
         if (lineEndRecent_posEnd === pos) {
             emptyLineCount++;
+            if (chunkStart < lineEndRecent_posEnd)
+            {
+                endChunk(lineEndRecent_posEnd);
+                // bad code yikes: start chunk with an active chunk therefore isn't an equivalent operation as endChunk into startChunk... now that you've added lineEndRecent_posEnd override... ugh...
+                startChunk(); 
+            }
+            else
+            {
+                return true;
+            }
+            // else chunkstart = the new one the new end
+        }
+        return false;
+    }
+
+    /**
+     * If a comment ends with a lineEnd you have to write it because it at times might be a necessary whitespace that separates two identifiers.
+     * Without this the code sees an empty line.
+     */
+    function commentEndsInLineEndForceWrite() {
+        if (pos <= text.length - 1) {
+            if (text[pos] === '\r') {
+                pos++;
+                if (pos <= text.length - 1 && text[pos] === '\n') {
+                    pos++;
+                    appendToWriteBuilder('\r\n');
+                }
+                else {
+                    appendToWriteBuilder('\r');
+                }
+            }
+            else if (text[pos] === '\n') {
+                pos++;
+                appendToWriteBuilder('\n');
+            }
         }
     }
 
