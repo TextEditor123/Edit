@@ -8,14 +8,8 @@ The generated file named '__PREPROCESSEDbundle__.js'
 is then given to babel as the build step
 in order to apply the compiler configuration.
 
-====
-
-Notes:
+# Notes:
 - Perhaps I'll rename the file to bundler.cjs
-- I'd written the "note:" already but I guess I should be extra clear... bundlers exist and they work well... I write the code that I think is interesting for this project and would never do this in a job scenario unless for some weird reason it was necessary.
-- I think that's a big problem with a lot of what I do.
-    - it's easy to look at the code I write and say "well vite and such and such is this guy an idiot?" no I'm just having fun.
-    - at the same time there's somewhat of a responsibility on my end to ensure that someone who doesn't know that vite or some other weird thing I'm implementing already exists so that they don't foolishly do this in a job scenario. I should consider putting this at the top of the readme
 - Preprocessor text token (see "marker details comment" at end of this file) is used to strip out text from a javascript file.
     - in essence: I found that vscode wasn't showing me lsp cross file even if the files were in the same directory, and that directory was part of the workspace.
     - So, I needed to add an import to the top of each file that indicated to vscode what each file was dependent on.
@@ -25,29 +19,6 @@ Notes:
              than google for a package.json setting, in a job environment I'd never do most of the things you see me do)
     - But, you don't need the import statements after you've combined them all into a single file.
     - Thus the preprocessor text token wraps the imports so that I can remove them when I combine it all into a single file
-
-===
-
-"you're having fun? all you do is talk about anxiety and panic attacks"
-But that's the rush of it all. Is that it is difficult for me.
-
-I've manually re-indented 'main.cjs' from 2 spaces to 4 at one point.
-That file is 1,700 lines.
-I just now re-indented this entire file using vscode and it was trivial to achieve.
-Why?
-Because I frequently code to exhaustion and then keep going.
-It's a terrible idea and what I just mentioned is 1 example of the mental fatigue that comes from it.
-Nevertheless sometimes I do squeeze out something meaningful in a state of immense mental fatigue.
-And I'm always prepared to just walk away at any moment.
-
-I want the code to destroy me mentally.
-It is how I feel alive.
-
-Any low you can get the code to make you feel. You'll eventually overcome that low and swing the pendulum in the other direction
-and achieve the most insane natural high you've ever experienced.
-
-It is complete euphoria, there is nothing that compares. I don't need to get detailed we all know
-what comparisons people usually make here. It simply is the greatest feeling ever.
 */
 
 const fs = require('fs');
