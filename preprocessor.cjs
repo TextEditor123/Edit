@@ -1,4 +1,13 @@
-// Google AI Overview "javascript simple bundler that just moves all the files into one":
+/*
+This file takes all of the Electron app's renderer process javascript files
+and combines them into a single file named '__PREPROCESSEDbundle__.js'
+
+This file is ran as a prebuild step in package.json.
+
+The generated file named '__PREPROCESSEDbundle__.js'
+is then given to babel as the build step
+in order to apply the compiler configuration.
+*/
 
 const fs = require('fs');
 const path = require('path');
@@ -49,11 +58,11 @@ try {
     return;
   }
 
-  // 4. Combine the contents using the sorted paths
-  const combinedCode = files.map(fileName => aaa(fileName)).join('\n\n');
+  for (let i = 0; i < files.length; i++) {
+    bundleFile(files[i]);
+  }
 
   flushAppendToFile();
-
   console.log(`Successfully bundled ${files.length} files in prioritized order into ${outputFile}`);
 }
 catch (err) {
@@ -61,7 +70,7 @@ catch (err) {
   process.exitCode = 1;
 }
 
-function aaa(fileName) {
+function bundleFile(fileName) {
 
   appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
