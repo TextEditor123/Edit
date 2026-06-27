@@ -95,6 +95,9 @@ function bundleFile(fileName) {
     //     - [ ] Although I suppose a string would be using the escaped character.
     //     - [ ] Short of verbatim multiline strings...
     //     - [ ] TODO: I'm not sure, make a decision on this...
+    // 
+    // I'm trying to think about how I'd swap the line endings.
+    // I think the only sensible answer is to work with the bytes of the text directly.
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
 
