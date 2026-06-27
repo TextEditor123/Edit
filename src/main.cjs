@@ -1674,6 +1674,7 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 */
 
 /*
+i just feel like anxious, nostalgic, sad; and someone completely dull and numb all at the same time right now
 */
 
 /* sec0
