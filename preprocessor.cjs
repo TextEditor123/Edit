@@ -1,4 +1,6 @@
 /*
+(Perhaps I'll rename the file to bundler.cjs)
+
 This file takes all of the Electron app's renderer process javascript files
 and combines them into a single file named '__PREPROCESSEDbundle__.js'
 
