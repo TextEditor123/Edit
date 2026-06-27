@@ -1673,6 +1673,16 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 11:45?
 */
 
+/*
+I want to try and explain something for a moment.
+
+I need to go to sleep within 53 minutes so that I can get 9 hours of sleep
+because it is vitally important that I am ontop of my nutrition and sleep
+in order to achieve my goal in life.
+
+...more typing
+*/
+
 /* sec0
 //========
 /*
