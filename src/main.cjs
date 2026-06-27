@@ -1674,7 +1674,8 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 */
 
 /*
-i just feel like anxious, nostalgic, sad; and someone completely dull and numb all at the same time right now
+The ending of the movie dealt with topics of the characters being alone for the rest of their lives and I think it just
+set me off in a weird headspace.
 */
 
 /* sec0
