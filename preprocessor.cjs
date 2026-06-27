@@ -122,6 +122,9 @@ function bundleFile(fileName) {
     But I almost hope it's true.
     All this is is egotistical and living delusions
     Every day as of late I just feel extreme shame about my coding abilities
+
+    yesterday I failed to solve the indentation cause I wasn't taking the problem seriously enough.
+    I rushed through some of the starting logic and then ended up in a mess partway through trying to solve it that I had to just completely undo the file
     */
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
