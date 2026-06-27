@@ -44,6 +44,8 @@ let writeBuilderTotalLength = 0;
 /** this number is currently entirely arbitrary and has no understanding, measurements, or reasoning behind it. */
 const thresholdToFlushContentToFile_RelativeTo_WriteBuilderTotalLength = 1024;
 
+let emptyLineCount = 0;
+
 // TODO: Perhaps moving writeBuilder to a "string builder (per character) esque" implementation rather than the writeBuilder being an array of substrings would be more efficient...
 // ...especially given that as I add more features to this, the frequency of substrings will likely increase drastically.
 // - short term memory allocation indeed can sometimes be sufficient enough.
@@ -64,6 +66,7 @@ try {
 
     doAllBundleFiles(files);
 
+    console.log(`emptyLineCount: ${emptyLineCount}`);
     console.log(`Successfully bundled ${files.length} files in prioritized order into ${outputFile}`);
 }
 catch (err) {
@@ -137,7 +140,7 @@ function bundleFile(fileName) {
     // EOF
     // ```
     //
-    let lineEndRecent_posExclusive = 0;
+    let lineEndRecent_posEnd = 0;
 
     while (pos < text.length) {
         switch (text[pos]) {
@@ -162,6 +165,22 @@ function bundleFile(fileName) {
             case '"':
             case '`':
                 lexString();
+                continue;
+            case '\r':
+                handleEmptyLineIfApplicable();
+                
+                pos++;
+                if (pos <= text.length - 1 && text[pos] === '\n')
+                    pos++;
+
+                lineEndRecent_posEnd = pos;
+                continue;
+            case '\n':
+                handleEmptyLineIfApplicable();
+
+                pos++;
+
+                lineEndRecent_posEnd = pos;
                 continue;
         }
         pos++;
@@ -257,9 +276,16 @@ function bundleFile(fileName) {
         }
     }
 
+    function handleEmptyLineIfApplicable() {
+        if (lineEndRecent_posEnd === pos) {
+            emptyLineCount++;
+        }
+    }
+
     function lexPreprocessorMarker() {
         // 0 => None
         // 1 => StartFound
+        // 2 => EndFound
         let preprocessorMarkerContext = 0;
 
         markerWhileLoop: while (pos < text.length) {
@@ -296,7 +322,7 @@ function bundleFile(fileName) {
                         else {
                             if (meetsNewLineRequirement) {
                                 pos += 7;
-                                preprocessorMarkerContext = 0;
+                                preprocessorMarkerContext = 2; // EndFound
                                 break markerWhileLoop;
                             }
                             else {
@@ -333,7 +359,10 @@ function bundleFile(fileName) {
             }
         }
 
-        if (preprocessorMarkerContext === 1 /*StartFound*/) {
+        if (preprocessorMarkerContext === 0) {
+            pos = 0;
+        }
+        else if (preprocessorMarkerContext === 1 /*StartFound*/) {
             // Then the end was never found
             //
             // This is an Error because it is very specific, for some reason the file started with '//__#__'.
