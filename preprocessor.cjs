@@ -334,7 +334,9 @@ function bundleFile(fileName) {
             (text[pos] !== ' ' &&
              text[pos] !== '\t' &&
              text[pos] !== '\r' &&
-             text[pos] !== '\n')) {
+             text[pos] !== '\n' &&
+             text[pos] !== ')' &&
+             text[pos] !== ':')) {
                 // TODO: '/*y*//*x*/' becomes two spaces...
                 // ...most optimally this would be only 1 space.
                 appendToWriteBuilder(' ');
