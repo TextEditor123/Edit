@@ -103,6 +103,11 @@ function bundleFile(fileName) {
     in short:
     My arrogance is unbearable.
     I barely could figure this out.
+
+    If it does even work that is to say...
+    I think it does.
+
+    But my ego is dead
     */
 
     appendToWriteBuilder(`\n\n// ${fileName}\n\n`);
