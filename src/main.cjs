@@ -1706,6 +1706,9 @@ Everything you care about is just another delusion.
 
 I just got done watching an emotional movie prior to saying this I think it set me off a bit idk wtf I'm talking about I'm going to bed.
 It was a movie I'd seen just now for the first time I never saw it before but my mind was racing I think afterwards.
+
+Well I do know what I'm talking about but. Even when reading back that rambling.
+There's a mixture of "yeah that's true" but also "idk wtf I'm talking about" like I feel like it just goes in some weird way all of a sudden
 */
 
 /* sec0
