@@ -31,8 +31,13 @@ let outputFile;
 
 let filePriorityOrder;
 
+/** An array of substrings that ought to be appended to the result file */
 let writeBuilder = [];
+/** The sum of all substrings in writeBuilder */
 let writeBuilderTotalLength = 0;
+
+// TODO: Perhaps moving writeBuilder to a "string builder esque" implementation rather than the writeBuilder being an array of substrings would be more efficient...
+// ...especially given that as I add more features to this, the frequency of substrings will likely increase drastically.
 
 try {
     readyFileState();
