@@ -35,6 +35,8 @@ let filePriorityOrder;
 let writeBuilder = [];
 /** The sum of all substrings in writeBuilder */
 let writeBuilderTotalLength = 0;
+/** this number is currently entirely arbitrary and has no understanding, measurements, or reasoning behind it. */
+const thresholdToFlushContentToFile_RelativeTo_WriteBuilderTotalLength = 1024;
 
 // TODO: Perhaps moving writeBuilder to a "string builder (per character) esque" implementation rather than the writeBuilder being an array of substrings would be more efficient...
 // ...especially given that as I add more features to this, the frequency of substrings will likely increase drastically.
@@ -292,7 +294,7 @@ function bundleFile(fileName) {
 function appendToWriteBuilder(substring) {
     writeBuilder.push(substring);
     writeBuilderTotalLength += substring.length;
-    if (writeBuilderTotalLength > 1024) {
+    if (writeBuilderTotalLength > thresholdToFlushContentToFile_RelativeTo_WriteBuilderTotalLength) {
         flushAppendToFile();
     }
 }
