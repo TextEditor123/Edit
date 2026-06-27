@@ -42,6 +42,9 @@ And I'm always prepared to just walk away at any moment.
 
 I want the code to destroy me mentally.
 It is how I feel alive.
+
+Any low you can get the code to make you feel. You'll eventually overcome that low and swing the pendulum in the other direction
+and achieve the most insane natural high you've ever experienced.
 */
 
 const fs = require('fs');
