@@ -181,19 +181,37 @@ function bundleFile(fileName) {
                 lexString();
                 continue;
             case 13 /* \r */:
-                let aaaShouldSetChunkStart = handleEmptyLineIfApplicable();
+
+                let needsToStartChunk = false;
+                let aaaShouldSetChunkStart = false;
+
+                if (lineEndRecent_posEnd === pos) {
+                    aaaShouldSetChunkStart = handleEmptyLineIfApplicable();
+                }
+                else {
+                    endChunk();
+                    appendToWriteBuilder_string('\n');
+                    needsToStartChunk = true;
+                }
+
+                lineEndRecent_posStart = pos;
                 
                 pos++;
                 if (pos <= sourceBufferCount - 1 && sourceBuffer[pos] === 10 /* \n */)
                     pos++;
 
                 lineEndRecent_posEnd = pos;
-                if (aaaShouldSetChunkStart) {
+                if (needsToStartChunk) {
+                    startChunk();
+                }
+                else if (aaaShouldSetChunkStart) {
                     chunkStart = lineEndRecent_posEnd;
                 }
                 continue;
             case 10 /* \n */:
                 let bbbShouldSetChunkStart = handleEmptyLineIfApplicable();
+
+                lineEndRecent_posStart = pos;
 
                 pos++;
 
@@ -213,7 +231,8 @@ function bundleFile(fileName) {
         }
 
         chunkStart = pos;
-        // Anyone that isn't a line end which invokes endChunk (or downstream causes an invocation) needs to "clear" the 'lineEndRecent_posEnd'.
+        // Anyone that isn't a line end which invokes endChunk (or downstream causes an invocation) needs to "clear" the 'lineEndRecent_posStart' and 'lineEndRecent_posEnd'.
+        lineEndRecent_posStart = chunkStart;
         lineEndRecent_posEnd = chunkStart;
     }
 
@@ -248,19 +267,45 @@ function bundleFile(fileName) {
         let terminator = sourceBuffer[pos];
         pos++;
         stringWhile: while (pos < sourceBufferCount) {
-            warnPreprocessorTag(`warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
-            if (sourceBuffer[pos] === terminator) {
-                pos++;
-                break stringWhile;
-            }
-            else if (sourceBuffer[pos] === 92 /* \\ */) {
-                pos++;
-                if (pos <= sourceBufferCount - 1) {
+            switch (sourceBuffer[pos]) {
+                case 92 /* \\ */:
                     pos++;
-                }
-                continue;
+                    if (pos <= sourceBufferCount - 1) {
+                        pos++;
+                    }
+                    continue;
+                case 47 /* / */:
+                    warnPreprocessorTag(`warning: preprocessor mark was found after the first non-whitespace character within a string which has the terminator ${terminator}.`);
+                    pos++;
+                    continue;
+                case 13 /* \r */:
+                    endChunk();
+                    appendToWriteBuilder_string('\n');
+                    pos++;
+                    if (pos <= sourceBufferCount - 1 && sourceBuffer[pos + 1 === 10 /* \n */]) {
+                        pos++;
+                    }
+                    startChunk();
+                    continue;
+                case 10 /* \n */:
+                    pos++;
+                    continue;
+                case 39 /* \' */:
+                    pos++;
+                    if (39 /* \' */ === terminator) break stringWhile;
+                    else continue;
+                case 34 /*  " */:
+                    pos++;
+                    if (34 /*  " */ === terminator) break stringWhile;
+                    else continue;
+                case 96 /*  ` */:
+                    pos++;
+                    if (96 /*  ` */ === terminator) break stringWhile;
+                    else continue;
+                default:
+                    pos++;
+                    continue;
             }
-            pos++;
         }
     }
 
@@ -327,7 +372,8 @@ function bundleFile(fileName) {
             emptyLineCount++;
             if (chunkStart < lineEndRecent_posEnd)
             {
-                endChunk(lineEndRecent_posEnd);
+                endChunk(lineEndRecent_posStart);
+                appendToWriteBuilder_string('\n');
                 // bad code yikes: start chunk with an active chunk therefore isn't an equivalent operation as endChunk into startChunk... now that you've added lineEndRecent_posEnd override... ugh...
                 startChunk(); 
             }
@@ -350,10 +396,10 @@ function bundleFile(fileName) {
                 pos++;
                 if (pos <= sourceBufferCount - 1 && sourceBuffer[pos] === 10 /* \n */) {
                     pos++;
-                    appendToWriteBuilder_string('\r\n'); // 13 /* \r */ | 10 /* \n */
+                    appendToWriteBuilder_string('\n'); // 10 /* \n */
                 }
                 else {
-                    appendToWriteBuilder_string('\r'); // 13 /* \r */
+                    appendToWriteBuilder_string('\n'); // 10 /* \n */
                 }
             }
             else if (sourceBuffer[pos] === 10 /* \n */) {
