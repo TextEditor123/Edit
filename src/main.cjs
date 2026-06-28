@@ -1704,6 +1704,7 @@ And I still always get emotional during those kinds of movies.
 
 In relation to the movie I mentioned today. I'm actually not agressive in any way.
 I am what people would describe as "soft".
+I just like the movie because anything even remotely on the topic hits hard with me, not that I one to one relate with the scenes.
 
 */
 
