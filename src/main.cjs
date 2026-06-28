@@ -1670,7 +1670,9 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 
 I just watched "Te doy mis ojos (2003)", was a good movie.
 I watched a version that skipped at least one scene I'm not quite sure there was a massive cut from one scene to another at least once.
-
+I need to watch it again tomorrow so I can pinpoint any of the words that I didn't understand.
+But I like it a lot from the perspective of a movie that interests me so I wanna learn all the words that I missed
+I'm gonna comb through it tomorrow.
 */
 
 /* sec0
