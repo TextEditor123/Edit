@@ -147,6 +147,9 @@ function bundleFile(fileName) {
     // EOF
     // ```
     //
+
+    /** pos start lets me easily replace line endings by taking the text up until the start then just manually "inserting" '\n' specifically. */
+    let lineEndRecent_posStart = 0;
     /** This not only represents the recent line end. But also the last pos that was exclusively written out because comments need to "clear" the 'lineEndRecent_posEnd'. */
     let lineEndRecent_posEnd = 0;
     //let nonLineEnd_causedEndChunk = false;
