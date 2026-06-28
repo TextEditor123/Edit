@@ -148,11 +148,17 @@ function bundleFile(fileName) {
     // ```
     //
 
+    let seenMeaningfulByteSinceLastLineEnd = false;
+
     /** pos start lets me easily replace line endings by taking the text up until the start then just manually "inserting" '\n' specifically. */
     let lineEndRecent_posStart = 0;
     /** This not only represents the recent line end. But also the last pos that was exclusively written out because comments need to "clear" the 'lineEndRecent_posEnd'. */
     let lineEndRecent_posEnd = 0;
     //let nonLineEnd_causedEndChunk = false;
+
+    // most recent change undesirably removes indentation, but remains code semantics, if a multiline comment exists as the first instance of text on a line, and meaningful bytes appear on that same line after the multiline comments ends where both the start and end delimiters of the multiline comment were only spanning that single line.
+    // You should check whether the destination has a newline to the left of where you're gonna insert to remove the consecutive newlines of the resulting empty lines?
+
 
     while (pos < sourceBufferCount) {
         switch (sourceBuffer[pos]) {
@@ -160,7 +166,12 @@ function bundleFile(fileName) {
                 warnPreprocessorTag(" warning: preprocessor mark was found after the first non-whitespace character as a token itself.");
                 if (pos <= sourceBufferCount - 2) {
                     if (sourceBuffer[pos + 1] === 47 /* / */) {
-                        endChunk();
+                        if (seenMeaningfulByteSinceLastLineEnd) {
+                            endChunk();
+                        }
+                        else {
+                            endChunk(lineEndRecent_posStart);
+                        }
                         let leftCharacter;
                         if (pos === 0) {
                             leftCharacter = '\n';
@@ -174,7 +185,12 @@ function bundleFile(fileName) {
                         continue;
                     }
                     else if (sourceBuffer[pos + 1] === 42 /*  * */) {
-                        endChunk();
+                        if (seenMeaningfulByteSinceLastLineEnd) {
+                            endChunk();
+                        }
+                        else {
+                            endChunk(lineEndRecent_posStart);
+                        }
                         let leftCharacter;
                         if (pos === 0) {
                             leftCharacter = '\n';
@@ -192,6 +208,7 @@ function bundleFile(fileName) {
             case 39 /* \' */:
             case 34 /*  " */:
             case 96 /*  ` */:
+                seenMeaningfulByteSinceLastLineEnd = true;
                 lexString();
                 continue;
             case 13 /* \r */:
@@ -208,6 +225,7 @@ function bundleFile(fileName) {
                     needsToStartChunk = true;
                 }
 
+                seenMeaningfulByteSinceLastLineEnd = false;
                 lineEndRecent_posStart = pos;
                 
                 pos++;
@@ -225,6 +243,7 @@ function bundleFile(fileName) {
             case 10 /* \n */:
                 let bbbShouldSetChunkStart = handleEmptyLineIfApplicable();
 
+                seenMeaningfulByteSinceLastLineEnd = false;
                 lineEndRecent_posStart = pos;
 
                 pos++;
@@ -233,6 +252,14 @@ function bundleFile(fileName) {
                 if (bbbShouldSetChunkStart) {
                     chunkStart = lineEndRecent_posEnd;
                 }
+                continue;
+            case 32 /*    */:
+            case 9  /* \t */:
+                pos++;
+                continue;
+            default:
+                seenMeaningfulByteSinceLastLineEnd = true;
+                pos++;
                 continue;
         }
         pos++;
@@ -246,6 +273,7 @@ function bundleFile(fileName) {
 
         chunkStart = pos;
         // Anyone that isn't a line end which invokes endChunk (or downstream causes an invocation) needs to "clear" the 'lineEndRecent_posStart' and 'lineEndRecent_posEnd'.
+        seenMeaningfulByteSinceLastLineEnd = false;
         lineEndRecent_posStart = chunkStart;
         lineEndRecent_posEnd = chunkStart;
     }
