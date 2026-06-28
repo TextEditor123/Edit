@@ -1696,6 +1696,8 @@ It just made the time fly by so easily.
 I actually would just sit in my room playing Guild Wars 2 all night long and do the same trivial tasks over and over and over and over.
 The brain damage I might've incurred from it horrifies me.
 
+The worst I ever remember was 2 or 3 nights I don't think I ever went longer than that an thank goodness. I wanna say 2 nights in a row of no sleep was the worst I ever did.
+
 */
 
 /* sec0
