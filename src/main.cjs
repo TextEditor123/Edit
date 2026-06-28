@@ -1698,6 +1698,10 @@ The brain damage I might've incurred from it horrifies me.
 
 The worst I ever remember was 2 or 3 nights I don't think I ever went longer than that an thank goodness. I wanna say 2 nights in a row of no sleep was the worst I ever did.
 
+I like romance movies a lot.
+I am heart broken from experiences in high school, and experiences in college.
+And I still always get emotional during those kinds of movies.
+
 */
 
 /* sec0
