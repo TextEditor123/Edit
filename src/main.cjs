@@ -1688,6 +1688,12 @@ But they'd say how do you ace all these math classes.
 I would tell them "I don't have a job, my parents are paying my tuition. I have an easy life and make sure to not let it go to waste."
 And I always had a tinge of guilt in the back of my mind about it. But I just used that as drive not to waste the opportunity.
 
+I remember sleeping 18 hours a day during my 4 year schooling. It is just interesting to see the two sides of depression.
+Because when I talk about "not sleeping intentionally".
+That was a later point in my life.
+I was prescribed vyvanse so I'd take that and caffeine to stay up all night I think as a way to escape.
+It just made the time fly by so easily.
+
 */
 
 /* sec0
