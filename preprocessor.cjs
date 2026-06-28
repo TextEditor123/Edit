@@ -161,15 +161,29 @@ function bundleFile(fileName) {
                 if (pos <= sourceBufferCount - 2) {
                     if (sourceBuffer[pos + 1] === 47 /* / */) {
                         endChunk();
+                        let leftCharacter;
+                        if (pos === 0) {
+                            leftCharacter = '\n';
+                        }
+                        else {
+                            leftCharacter = sourceBuffer[pos - 1];
+                        }
                         lexSingleLineComment();
-                        commentEndsInLineEndForceWrite();
+                        commentEndsInLineEndForceWrite(leftCharacter);
                         startChunk();
                         continue;
                     }
                     else if (sourceBuffer[pos + 1] === 42 /*  * */) {
                         endChunk();
+                        let leftCharacter;
+                        if (pos === 0) {
+                            leftCharacter = '\n';
+                        }
+                        else {
+                            leftCharacter = sourceBuffer[pos - 1];
+                        }
                         lexMultiLineComment();
-                        commentEndsInLineEndForceWrite();
+                        commentEndsInLineEndForceWrite(leftCharacter);
                         startChunk();
                         continue;
                     }
@@ -390,21 +404,27 @@ function bundleFile(fileName) {
      * If a comment ends with a lineEnd you have to write it because it at times might be a necessary whitespace that separates two identifiers.
      * Without this the code sees an empty line.
      */
-    function commentEndsInLineEndForceWrite() {
+    function commentEndsInLineEndForceWrite(leftByte) {
         if (pos <= sourceBufferCount - 1) {
             if (sourceBuffer[pos] === 13 /* \r */) {
                 pos++;
                 if (pos <= sourceBufferCount - 1 && sourceBuffer[pos] === 10 /* \n */) {
                     pos++;
-                    appendToWriteBuilder_string('\n'); // 10 /* \n */
+                    if (leftByte !== 10 /* \n */ && leftByte !== 13 /* \r */) {
+                        appendToWriteBuilder_string('\n'); // 10 /* \n */
+                    }
                 }
                 else {
-                    appendToWriteBuilder_string('\n'); // 10 /* \n */
+                    if (leftByte !== 10 /* \n */ && leftByte !== 13 /* \r */) {
+                        appendToWriteBuilder_string('\n'); // 10 /* \n */
+                    }
                 }
             }
             else if (sourceBuffer[pos] === 10 /* \n */) {
                 pos++;
-                appendToWriteBuilder_string('\n'); // 10 /* \n */
+                if (leftByte !== 10 /* \n */ && leftByte !== 13 /* \r */) {
+                    appendToWriteBuilder_string('\n'); // 10 /* \n */
+                }
             }
         }
     }
