@@ -1710,6 +1710,7 @@ I need to go to bed but this has been bothering me so much lately.
 Sometimes I'll scroll through youtube and they'll recommend me brokencyde.
 The ironic "phase" of me liking that has been long gone and I feel a surge of cringe go through my body everytime I see it.
 Kandyland is alright though I guess.
+And then they gotta guilt me hard by putting the red line at the bottom of the thumbnail as a reminder "you used to listen to this"
 
 */
 
