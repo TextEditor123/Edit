@@ -1693,6 +1693,8 @@ Because when I talk about "not sleeping intentionally".
 That was a later point in my life.
 I was prescribed vyvanse so I'd take that and caffeine to stay up all night I think as a way to escape.
 It just made the time fly by so easily.
+I actually would just sit in my room playing Guild Wars 2 all night long and do the same trivial tasks over and over and over and over.
+The brain damage I might've incurred from it horifies me.
 
 */
 
