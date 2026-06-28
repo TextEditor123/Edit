@@ -1702,6 +1702,9 @@ I like romance movies a lot.
 I am heart broken from experiences in high school, and experiences in college.
 And I still always get emotional during those kinds of movies.
 
+In relation to the movie I mentioned today. I'm actually not agressive in any way.
+I am what people would describe as "soft".
+
 */
 
 /* sec0
