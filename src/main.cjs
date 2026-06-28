@@ -1682,6 +1682,12 @@ I say this because I believe any bit of good code I've written, is because I am 
 to get a good night of sleep.
 And so I am always actively grateful each night when I think about bed time.
 
+That's one of the things I'd tell people when I was in community college too.
+Well not that.
+But they'd say how do you ace all these math classes.
+I would tell them "I don't have a job, my parents are paying my tuition. I have an easy life and make sure to not let it go to waste."
+And I always had a tinge of guilt in the back of my mind about it. But I just used that as drive not to waste the opportunity.
+
 */
 
 /* sec0
