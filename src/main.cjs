@@ -1706,6 +1706,11 @@ In relation to the movie I mentioned today. I'm actually not agressive in any wa
 I am what people would describe as "soft".
 I just like the movie because anything even remotely on the topic hits hard with me, not that I one to one relate with the scenes.
 
+I need to go to bed but this has been bothering me so much lately.
+Sometimes I'll scroll through youtube and they'll recommend me brokencyde.
+The ironic "phase" of me liking that has been long gone and I feel a surge of cringe go through my body everytime I see it.
+Kandyland is alright though I guess.
+
 */
 
 /* sec0
