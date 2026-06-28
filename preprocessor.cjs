@@ -160,6 +160,9 @@ function bundleFile(fileName) {
     // You should check whether the destination has a newline to the left of where you're gonna insert to remove the consecutive newlines of the resulting empty lines?
 
 
+    // I'm scrolling through the entire diff of the previous output and the new output
+    // on line 9641 it says a line was added, (and there's more added after that 9642 has a line added, 9643 doesn't then 9644 does and other such changes that don't quite have a pattern) but all in all... why was a line added here?
+
     while (pos < sourceBufferCount) {
         switch (sourceBuffer[pos]) {
             case 47 /* / */:
