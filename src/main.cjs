@@ -1673,6 +1673,15 @@ I watched a version that skipped at least one scene I'm not quite sure there was
 I need to watch it again tomorrow so I can pinpoint any of the words that I didn't understand.
 But I like it a lot from the perspective of a movie that interests me so I wanna learn all the words that I missed
 I'm gonna comb through it tomorrow.
+
+====
+
+One of the things that I regret the most is a period in my life where I started not sleeping intentionally.
+
+I say this because I believe any bit of good code I've written, is because I am priviledged to be given the opportunity
+to get a good night of sleep.
+And so I am always actively grateful each night when I think about bed time.
+
 */
 
 /* sec0
