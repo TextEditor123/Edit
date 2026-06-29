@@ -7240,4 +7240,27 @@ function PLAINTEXT_line_lex(div, substart, lineEnd, childIndex) {
 1,109 kB Other JS objects
 1,570 kB Other non-JS objects (such as HTML and CSS)
 5,077 kB Total
+
+// scrolling and occassionally stopping to allow syntax throttle debounce then go back to scrolling again
+
+756 kB Code
+927 kB Strings
+21 kB JS arrays
+560 kB Typed arrays
+385 kB System objects
+1,214 kB Other JS objects
+5,339 kB Other non-JS objects (such as HTML and CSS)
+9,202 kB Total
+
+// scrolling and occassionally stopping to allow syntax throttle debounce then go back to scrolling again
+
+662 kB Code
+927 kB Strings
+21 kB JS arrays
+560 kB Typed arrays
+385 kB System objects
+1,216 kB Other JS objects
+15,593 kB Other non-JS objects (such as HTML and CSS)
+19,365 kB Total
+
 */
