@@ -7263,4 +7263,8 @@ function PLAINTEXT_line_lex(div, substart, lineEnd, childIndex) {
 15,593 kB Other non-JS objects (such as HTML and CSS)
 19,365 kB Total
 
+I gave the numbers to Google AI and from 2 to 3 it says:
+"Other JS Objects (1,216 kB vs 1,214 kB): A negligible increase of just 2 kB.".
+Always make sure you read clearly what the AI says lol
+
 */
