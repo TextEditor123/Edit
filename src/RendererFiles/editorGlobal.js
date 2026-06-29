@@ -7269,4 +7269,7 @@ Always make sure you read clearly what the AI says lol
 
 nvm I'm a clown
 
+I thought 1,216 was the older value.
+always double check the data or something to figure out if the before picture is the after picture or something*
+
 */
