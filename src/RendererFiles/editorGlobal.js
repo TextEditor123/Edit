@@ -5643,25 +5643,6 @@ function EDITOR_onScroll_timeoutFunc() {
 }
 
 /*
-TODO: You need 2 separate functions.
-- [ ] 1 creates the plain text
-- [ ] 2 syntax highlights any lines of plain text that were drawn by function 1 since the last invocation of function 2
-
-What you currently erroneously are doing is:
-- [ ] 1 creates the plain text
-- [ ] 2 creates the text with syntax highlighting
-
-The intermediate step that will make clear what needs to be done
-is the complete deletion of EDITOR_onScroll_bbb.
-|
-You then get the editor to work entirely in plain text.
-Once this is done the answer should be "obvious".
-
-You need to console log the count of lines being redrawn as you scroll.
-You changed a lot of code relating to the line drawing logic.
-And it needs to be ensured that all is working perfectly with plain text
-before you go about messing with syntax highlighting.
-
 TODO: for function 2, you need to determine whether you will lex the
 - [ ] textContent on the span,
 - [ ] or if you will decode from the bytes again.
@@ -5670,19 +5651,9 @@ I'm going to do
 - [ ] textContent on the span,
 
 but there is 0 reasoning, understanding, or measurements behind my decision.
-
-am I using the line in the sync scroll? if not make sure removed the code.
 */
 
 function EDITOR_syntaxHighlighting() {
-    // The steps:
-    // - [ ] As you scroll, write out the lines that are in view, that weren't previously.
-    // - [ ] As you scroll, remove the CSS class that is being used to signify 'not yet syntax highlighted'
-    // - [ ] Do "actual syntax highlighting"
-    //
-    //
-    // This might be a massive pain actually cause the zeroth index is gonna change constantly...
-
     // If I delay setting 'set_EDITOR_ONSCROLLvirtualIndexLine()' then I can just use that.
     // I can't bear to do that right now though. I'm just gonna make this variable.
     let prevVli = EDITOR_syntaxHighlighting_previousIndexVirtual;
@@ -5849,9 +5820,6 @@ function EDITOR_syntaxHighlighting() {
     I'm trying to think about whether the scroll function could leave behind data that indicates to this function
     whether it is a 'EDITOR_beltIndexZero', PREVIOUS('EDITOR_beltIndexZero'), or both case without checking the edge divs whether they have the not syntax highlighted css class.
     */
-
-
-   
 }
 
 function EDITOR_createViewport() {
