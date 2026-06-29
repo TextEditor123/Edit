@@ -854,18 +854,6 @@ function positiveNumbersOnly_countDigitsLoop(number) {
 }
 
 /**
- * The returned div contains a single span which is empty.
- * This div is NOT added to get_EDITOR_textElement().
- */
-function EDITOR_getNewAndEmptyLineElement() {
-    let div = document.createElement('div');
-    div.className = 'eT';
-    let span = document.createElement('span');
-    div.appendChild(span);
-    return div;
-}
-
-/**
  * This method will NOT "put a cursor on screen". You need to ensure
  * your cursor exists as a child by appendChild'ing to EDTIOR_cursorListElement.
  * This method instead only moves a cursor that ALREADY is being shown on screen.
