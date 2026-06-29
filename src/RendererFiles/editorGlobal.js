@@ -7283,4 +7283,12 @@ nvm I'm a clown
 I thought 1,216 was the older value.
 always double check the data or something to figure out if the before picture is the after picture or something*
 
+
+That's so weird it's like every dom element that I make NEVER gets cleaned up by GC.
+
+- The AI is recommending virtual scrolling so I don't render thousands of lines.
+- And that I re-use dom nodes
+
+So since or maybe I'm doing them wrong
+
 */
