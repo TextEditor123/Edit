@@ -7291,4 +7291,6 @@ That's so weird it's like every dom element that I make NEVER gets cleaned up by
 
 So since or maybe I'm doing them wrong
 
+I'll have to think this through while I eat a lb of 98% lean ground chicken real quick
+
 */
