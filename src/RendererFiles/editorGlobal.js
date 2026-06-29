@@ -7267,4 +7267,6 @@ I gave the numbers to Google AI and from 2 to 3 it says:
 "Other JS Objects (1,216 kB vs 1,214 kB): A negligible increase of just 2 kB.".
 Always make sure you read clearly what the AI says lol
 
+nvm I'm a clown
+
 */
