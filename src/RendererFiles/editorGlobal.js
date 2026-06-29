@@ -5829,7 +5829,6 @@ function EDITOR_createViewport() {
 
         let indexLine = i + get_EDITOR_virtualIndexLine();
 
-        // EDITOR_drawGutter_Content()
         let gutterLineElement = document.createElement('div');
         if (indexLine >= EDITOR_lineEndPositionList.count) {
             gutterLineElement.textContent = '~';
@@ -5841,7 +5840,6 @@ function EDITOR_createViewport() {
         get_EDITOR_gutter().appendChild(gutterLineElement);
         gutterLineElement.style.transform = transform;
 
-        // EDITOR_drawText()
         let line = EDITOR_getLineBoundaryPositions(indexLine);
         let div = document.createElement('div');
         div.className = 'eT';
