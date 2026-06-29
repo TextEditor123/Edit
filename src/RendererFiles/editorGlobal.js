@@ -5469,7 +5469,6 @@ function EDITOR_onScroll_WRAPIT() {
 
     let lowerBound;
     let upperBound;
-    let vertical;
     let beltIndexLine;
 
     if (diff > 0 && diff < get_EDITOR_virtualCount()) {
@@ -5507,15 +5506,10 @@ function EDITOR_onScroll_WRAPIT() {
         beltIndexLine = EDITOR_beltIndexZero;
     }
 
-    vertical = lowerBound * get_EDITOR_lineHeight();
+    let vertical = lowerBound * get_EDITOR_lineHeight();
 
     beltIndexLine--; // The 0th loop will increment somewhat awkwardly. This decrement avoids that.
 
-
-
-
-
-    
     // Not feelings great, just am grinding out some progress this is kinda messy but I think it is working.
     //
     /**
@@ -5541,9 +5535,6 @@ function EDITOR_onScroll_WRAPIT() {
     else {
         lineEnd = -1; // awkward 0th loop if lowerBound is 0
     }
-
-
-
 
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
         let transform = `translateY(${vertical}px)`;
