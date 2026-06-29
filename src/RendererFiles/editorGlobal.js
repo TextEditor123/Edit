@@ -7224,4 +7224,20 @@ function PLAINTEXT_line_lex(div, substart, lineEnd, childIndex) {
 /*
 10:50 AM
 11:50 PM?
+
+// ran app
+// Opened editorGlobal.js
+// I think I scrolled around or something
+//
+// Heap Snapshot 1 (5.1 MB)
+// 
+
+598 kB Code
+854 kB Strings
+9 kB JS arrays
+560 kB Typed arrays
+377 kB System objects
+1,109 kB Other JS objects
+1,570 kB Other non-JS objects (such as HTML and CSS)
+5,077 kB Total
 */
