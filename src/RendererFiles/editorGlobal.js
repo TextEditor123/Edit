@@ -7445,4 +7445,9 @@ I referenced:
     '2. Swap translateY for Grid Position or Absolute Top Layouts'
     and said "But how would I keep GPU accelaration?"
 
+You can maintain full hardware (GPU) acceleration while using absolute positioning by pairing top with the
+will-change: transform or transform: translateZ(0) CSS properties.
+This technique gives you the best of both worlds: it keeps your layout nodes isolated for smooth rendering,
+while forcing the browser to promote each line container to its own independent GPU layer.
+
 */
