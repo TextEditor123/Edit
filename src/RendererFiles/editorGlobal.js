@@ -7340,4 +7340,7 @@ AI recommends:
 - Protect It with a RequestAnimationFrame Throttle
 - a simple text caching layer
 
+"To determine if a scroll event is the leading edge (the very first movement) or the trailing edge (the final rest point)
+without using raw timeouts that block garbage collection, you can use a clean, flag-based debouncer."
+
 */
