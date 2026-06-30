@@ -7293,4 +7293,16 @@ So since or maybe I'm doing them wrong
 
 I'll have to think this through while I eat a lb of 98% lean ground chicken real quick
 
+====================================
+
+9:00 AM
+
+I need to determine more specifically where the issue is.
+It might be in the:
+- synchronous scrolling
+- debounced syntax highlighting
+- some mixture of both (determine the % contribution of each)s
+
+
+
 */
