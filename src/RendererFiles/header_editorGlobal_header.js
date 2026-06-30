@@ -7,13 +7,13 @@ const EDITOR_baseElement = document.getElementById('EDITOR');
 
 const get_EDITOR_virtualization_horizontal = () => EDITOR_baseElement.children[0];
 const get_EDITOR_virtualization_vertical = () => EDITOR_baseElement.children[1];
-const get_EDITOR_gutter = () => EDITOR_baseElement.children[3].children[1];
+const get_EDITOR_gutter = () => EDITOR_baseElement.children[4];
 const get_EDITOR_horizontal_scrollbar = () => EDITOR_baseElement.children[2].children[0];
 const get_EDITOR_horizontal_scrollbar_virtualization_boundary = () => EDITOR_baseElement.children[2].children[0].children[0];
-const get_EDITOR_body = () => EDITOR_baseElement.children[4];
-const get_EDITOR_presentation = () => EDITOR_baseElement.children[4].children[0];
-const get_EDITOR_cursorListElement = () => EDITOR_baseElement.children[4].children[1];
-const get_EDITOR_textElement = () => EDITOR_baseElement.children[4].children[2];
+const get_EDITOR_body = () => EDITOR_baseElement.children[5];
+const get_EDITOR_presentation = () => EDITOR_baseElement.children[5].children[0];
+const get_EDITOR_cursorListElement = () => EDITOR_baseElement.children[5].children[1];
+const get_EDITOR_textElement = () => EDITOR_baseElement.children[5].children[2];
 
 const EDITOR_tab_tabsbytes = new Uint8Array(4);
 EDITOR_tab_tabsbytes[0] = get_EDITOR_ASCII_TAB();

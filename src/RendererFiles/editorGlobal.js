@@ -313,6 +313,8 @@ let w_beltIndexLine = -1;
 let EDITOR_syntaxHighlighting_previousIndexVirtual = 0;
 let EDITOR_syntaxHighlighting_previousVirtualCount = 0;
 
+let gutterWidthTotal = 0;
+
 /**
  * TODO: It should be >= ?
  * 
@@ -366,7 +368,8 @@ function EDITOR_init() {
     let left = (get_EDITOR_gutterPaddingLeft() + get_EDITOR_gutterPaddingRight() + EDITOR_characterWidth) + 'px';
     let width = 'calc(100% - ' + left + ')';
 
-    get_EDITOR_body().style.marginLeft = left;
+    //get_EDITOR_body().style.marginLeft = left;
+    gutterWidthTotal = left;
 
     get_EDITOR_body().style.width = width;
 
@@ -628,11 +631,11 @@ function update_verticalVirtualizationBoundary(lineCount) {
 function update_VirtualIndexLine() {
     // TODO: This floor logic seems very odd. Because given the previous and the current you can determine it without dividing maybe I think?
     set_EDITOR_virtualIndexLine(Math.floor(EDITOR_baseElement.scrollTop / get_EDITOR_lineHeight()));
-    let transform = `translateY(${get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight()}px)`;
+    //let transform = `translateY(${get_EDITOR_virtualIndexLine() * get_EDITOR_lineHeight()}px)`;
     //if (transform === EDITOR_gutterBackgroundColor.style.transform) {
     //    console.log('if (transform === EDITOR_gutterBackgroundColor.style.transform)');
     //}
-    EDITOR_gutterBackgroundColor.style.transform = transform;
+    //EDITOR_gutterBackgroundColor.style.transform = transform;
 }
 
 function update_virtualCount() {
@@ -663,7 +666,8 @@ function EDITOR_drawGutter_Width() {
     
     let left = get_EDITOR_gutterWidthTotal() + 'px';
     let width = 'calc(100% - ' + left + ')';
-    get_EDITOR_body().style.marginLeft = left;
+    //get_EDITOR_body().style.marginLeft = left;
+    gutterWidthTotal = left;
     get_EDITOR_body().style.width = width;
 
     EDITOR_drawHorizontalScrollbar();
@@ -5382,8 +5386,8 @@ function EDITOR_onResize() {
  * then at that point you redraw this.
  */
 function EDITOR_drawHorizontalScrollbar() {
-    if (get_EDITOR_horizontal_scrollbar().style.left !== get_EDITOR_body().style.marginLeft) {
-        get_EDITOR_horizontal_scrollbar().style.left = get_EDITOR_body().style.marginLeft;
+    if (get_EDITOR_horizontal_scrollbar().style.left !== gutterWidthTotal) {
+        get_EDITOR_horizontal_scrollbar().style.left = gutterWidthTotal;
     }
 
     if (EDITOR_horizontal_scrollbar_widthValue !== (EDITOR_baseElement.clientWidth - get_EDITOR_gutterWidthTotal())) {
@@ -5571,6 +5575,8 @@ function EDITOR_performLayoutUpdate() {
         lineEnd = -1; // awkward 0th loop if lowerBound is 0
     }
 
+    //let left = `${gutterWidthTotal}px`;
+
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
         let top = `${vertical}px`;
 
@@ -5587,6 +5593,7 @@ function EDITOR_performLayoutUpdate() {
         //     - [ ] TODO: there exists an HTML syntax that will group your changes. I'm not talking about animation frame, I think it is something like the name "fragment". Is this useful here?
         gutter.style.top = top;
         div.style.top = top;
+        //div.style.left = left;
 
         lineStart = lineEnd + 1;
         if (indexLine < EDITOR_lineEndPositionList.count) {
@@ -5876,6 +5883,7 @@ function EDITOR_createViewport() {
 
     EDITOR_beltIndexZero = 0;
     let top = `0px`;
+    //let left = `${gutterWidthTotal}px`;
 
     for (var i = 0; i < get_EDITOR_virtualCount(); i++) {
 
@@ -5897,6 +5905,7 @@ function EDITOR_createViewport() {
         div.className = 'eT';
         get_EDITOR_textElement().appendChild(div);
         div.style.top = top;
+        //div.style.left = left;
 
         div.appendChild(document.createElement('span'));
     }
@@ -7501,4 +7510,10 @@ The container becomes visually "invisible" to the rendering engine, while still 
 The Alternative: Absolute Layer Isolation
 If display: contents disrupts your absolute positioning hierarchy (since absolute children look for the nearest parent with position: relative/absolute),
 the alternative is to leave the parent container as a standard block but completely isolate its rendering footprint using CSS containment.
+
+
+"When using translateY is the 'top' issue still a thing?":
+No, the "top" issue is completely gone when you use translateY.When you mutate the CSS top property,
+the browser is forced to run a full CPU layout calculation because top affects the actual geometry of the document.
+Conversely, translateY is treated as a visual-only paint effect handled by the GPU compositor.
 */
