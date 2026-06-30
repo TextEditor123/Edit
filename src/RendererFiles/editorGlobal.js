@@ -7410,5 +7410,31 @@ without using raw timeouts that block garbage collection, you can use a clean, f
   Position your line container elements using standard CSS absolute top values tied directly to their absolute virtual index positions,
   or leverage a fixed layout grid.
 
+I referenced:
+    '1. Implement Strict Text Caching (Stop Unnecessary Decoding)'
+    and said "The text editor only generates text for the lines that newly came into view. Would this be quite as effective given this information?"
+
+No, adding that check will not be effective if you are already isolating your logic to only touch lines that newly came into view.
+If your code already filters out the rows currently resting inside the viewport and only fires for the raw "new additions,"
+the text content is guaranteed to be different anyway. That means your code is already doing the heavy lifting of avoiding redundant DOM writes.
+
+The Real Cause: Why 11,169 Records Exist:
+Since you already optimized the row generation, those 11,169 PerformanceEventTiming entries are being triggered by Browser Layout Thrashing
+within those newly added rows.
+
+Even though you are only appending or updating a small handful of rows per scroll tick,
+your loop does two things simultaneously that force the browser to log a performance event record every single time:
+
+```javascript
+// 1. You write a dynamic structural style change
+gutter.style.transform = transform;
+div.style.transform = transform;
+
+// 2. You immediately write a layout-changing text string right next to it
+gutter.textContent = indexLine + 1;
+span.textContent = textContent;
+```
+
+
 
 */
