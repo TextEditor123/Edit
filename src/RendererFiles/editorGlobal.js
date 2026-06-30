@@ -1116,6 +1116,8 @@ function EDITOR_createStyleForSelection(cursor) {
             }
         }
 
+        // some kind of a timing issue when changing because I'm animation frame but then innerHTML = '' on clear.
+
         let lineSelectionDiv;
         let childDivIndex = 0;
 
