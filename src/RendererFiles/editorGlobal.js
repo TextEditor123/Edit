@@ -7533,4 +7533,8 @@ the alternative is to leave the parent container as a standard block but complet
 No, the "top" issue is completely gone when you use translateY.When you mutate the CSS top property,
 the browser is forced to run a full CPU layout calculation because top affects the actual geometry of the document.
 Conversely, translateY is treated as a visual-only paint effect handled by the GPU compositor.
+
+// oh it still has a timing issue actually
+// it seems if I make my window larger the timing of everything happens to be perfect for it to crash.
+// but with a small screen it finishes without the race condition.
 */
