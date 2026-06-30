@@ -518,6 +518,13 @@ function EDITOR_getFinalizedEditsAndRawSaveFileData(NOTfinalizePendingEdits) {
  * @param {string} lineEndString pass null (or do not include the parameter) to have line endings set to the first encountered kind in the text. Otherwise specify here. The string is used EXACTLY AS PROVIDED if non-falsey.
  */
 function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED_textSourceIdentifier, extensionKind, lineEndString) {
+
+    EDITOR_baseElement.style.scrollTop = 0;
+
+    if (scroll_tickingId) {
+        window.cancelAnimationFrame(scroll_tickingId);
+    }
+
     EDITOR_clear();
 
     set_EDITOR_fileStartsWithBom(fileStartsWithBom);
@@ -5498,19 +5505,18 @@ function EDITOR_onScroll_LeadingEdge() {
     return 0;
 }
 
-let ticking = false;
+let scroll_tickingId = null;
 
 function EDITOR_requestTick() {
     //set_EDITOR_onScroll_bool(true);
     set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
 
-    if (!ticking) {
-        window.requestAnimationFrame(() => {
+    if (scroll_tickingId === null) {
+        scroll_tickingId = window.requestAnimationFrame(() => {
             // Put your actual layout rendering logic cleanly in here
             EDITOR_performLayoutUpdate(); 
-            ticking = false;
+            scroll_tickingId = null;
         });
-        ticking = true;
     }
 }
 
