@@ -7483,4 +7483,6 @@ scrollTop inside the scroll event, you are mixing two completely different layou
 
 hmm
 
+"Modulo Ring Buffer Placement pattern"
+
 */
