@@ -7320,7 +7320,11 @@ Only then can you feel that comfort. It is a necessity it is a good thing.
 I can see the 'Other non-JS object (such as HTML and CSS)' is growing even when I comment out the debounced syntax highlighting function invocation.
 Scroll wheel seems more problematic at than clicking and dragging the scrollbar.
 
-
+It isn't about being in constant panic it is about feeling the consequences of your inaction prior to the moment where it becomes mandatory for you to act.
+Thus you have no choice but to stay ahead of things because you have some degree of a "I have an assignment due tomorrow and I haven't even started it yet" type panic every morning.
+And so you get it done, then you're free to do whatever you want for the rest of the day. If you wanna sit there and watch paint dry after you learned something for the day then umm... idk that sounds like a bad idea
+because every experience you engage in has some lesson involved that you can then go on to apply in places that have some career value.
+Like if Billy went fishing with his dad when he was very young and had to count up the fish he caught then he was in math class and getting A's on all the addition tests.
 
 
 
