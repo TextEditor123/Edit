@@ -7497,4 +7497,8 @@ Yes, you can achieve this by using the CSS property display: contents on your pa
 |
 This tells the browser's layout engine to completely ignore the parent container’s visual bounding box, margins, padding, and size constraints.
 The container becomes visually "invisible" to the rendering engine, while still acting as a clean grouping mechanism in your JavaScript code.
+
+The Alternative: Absolute Layer Isolation
+If display: contents disrupts your absolute positioning hierarchy (since absolute children look for the nearest parent with position: relative/absolute),
+the alternative is to leave the parent container as a standard block but completely isolate its rendering footprint using CSS containment.
 */
