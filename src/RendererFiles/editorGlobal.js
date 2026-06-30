@@ -7485,4 +7485,16 @@ hmm
 
 "Modulo Ring Buffer Placement pattern"
 
+Wait what? I had no idea 'display: contents' had so much value
+
+I asked:
+If I wanted to have a simple parent container that solely grouped the individual children (which is the intent of what I'm currently doing).
+Is there a way I achieve this without worrying about the parent container's visual bounding box?
+I don't need the parent to do anything other than group the elements.
+
+It said:
+Yes, you can achieve this by using the CSS property display: contents on your parent container.
+|
+This tells the browser's layout engine to completely ignore the parent container’s visual bounding box, margins, padding, and size constraints.
+The container becomes visually "invisible" to the rendering engine, while still acting as a clean grouping mechanism in your JavaScript code.
 */
