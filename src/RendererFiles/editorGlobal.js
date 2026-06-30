@@ -1059,6 +1059,7 @@ function EDITOR_createStyleForSelection(cursor) {
         else if (shouldExistSelectionDiv) {
             textSelectionDiv = document.createElement('div')
             textSelectionDiv.id = cursor.htmlId;
+            textSelectionDiv.style.display = 'contents';
             get_EDITOR_presentation().appendChild(textSelectionDiv);
             cursor.selectionDivExists = true;
         }
@@ -1118,9 +1119,13 @@ function EDITOR_createStyleForSelection(cursor) {
         let lineSelectionDiv;
         let childDivIndex = 0;
 
+        // everything static-ly will "fall at a left of `${get_EDITOR_gutterWidthTotal()}px`"...
+        // ...but you cannot rely on that as it causes layout shifting, you need to make it clear to the renderering engine.
+
         if (startLine == INCLUSIVEendLine) {
             lineSelectionDiv = textSelectionDiv.children[childDivIndex++];
             lineSelectionDiv.className = 'EDITOR_selection';
+            lineSelectionDiv.style.left = `${get_EDITOR_gutterWidthTotal()}px`;
             lineSelectionDiv.style.transform = `translate(${startColumn * EDITOR_characterWidth}px, ${get_EDITOR_lineHeight() * startLine}px)`;
             lineSelectionDiv.style.width = (INCLUSIVEendColumn - startColumn) * EDITOR_characterWidth + 'px';
         }
@@ -1128,6 +1133,7 @@ function EDITOR_createStyleForSelection(cursor) {
             // start line
             lineSelectionDiv = textSelectionDiv.children[childDivIndex++];
             lineSelectionDiv.className = 'EDITOR_selection';
+            lineSelectionDiv.style.left = `${get_EDITOR_gutterWidthTotal()}px`;
             lineSelectionDiv.style.transform = `translate(${startColumn * EDITOR_characterWidth}px, ${get_EDITOR_lineHeight() * startLine}px)`;
             let line = EDITOR_getLineBoundaryPositions(startLine);
             let lineLength = line.end - line.start;
@@ -1137,6 +1143,7 @@ function EDITOR_createStyleForSelection(cursor) {
             for (var lineI = startLine + 1; lineI < INCLUSIVEendLine; lineI++) {
                 lineSelectionDiv = textSelectionDiv.children[childDivIndex++];
                 lineSelectionDiv.className = 'EDITOR_selection';
+                lineSelectionDiv.style.left = `${get_EDITOR_gutterWidthTotal()}px`;
                 lineSelectionDiv.style.transform = `translateY(${get_EDITOR_lineHeight() * lineI}px)`;
                 let line = EDITOR_getLineBoundaryPositions(lineI);
                 let lineLength = line.end - line.start;
@@ -1146,6 +1153,7 @@ function EDITOR_createStyleForSelection(cursor) {
             // end line
             lineSelectionDiv = textSelectionDiv.children[childDivIndex++];
             lineSelectionDiv.className = 'EDITOR_selection';
+            lineSelectionDiv.style.left = `${get_EDITOR_gutterWidthTotal()}px`;
             lineSelectionDiv.style.transform = `translateY(${get_EDITOR_lineHeight() * INCLUSIVEendLine}px)`;
             lineSelectionDiv.style.width = INCLUSIVEendColumn * EDITOR_characterWidth + 'px';
         }
