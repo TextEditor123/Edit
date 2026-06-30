@@ -7462,4 +7462,25 @@ and text child nodes at the exact same index (beltIndexLine).I have read and not
 
 GASP I cannot believe they said that
 
+I said:
+"
+The gutter has a different background color than the lines of text.
+I worried that applying a background color to multiple elements would be less optimized than if I were to apply that background color to a single element.
+Thus, the gutter elements do not actually create the gutter background color.
+I have a separate div entirely from the dual-column layout,
+this separate div draws the background color of the gutter by having its height equal to the editor,
+the width equal to the longest line number's width,
+and the top equal to the scrollTop.
+"
+
+"
+That background element approach is highly creative,
+but it is actually the direct cause of your remaining PerformanceEventTiming allocations and the virtual scroll ghosting!By setting the background element's top equal to
+scrollTop inside the scroll event, you are mixing two completely different layout systems: GPU composite rendering (the translated lines) and CPU layout thrashing
+(the absolute top background).
+"
+
+
+hmm
+
 */
