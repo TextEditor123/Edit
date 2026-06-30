@@ -511,6 +511,8 @@ function EDITOR_getFinalizedEditsAndRawSaveFileData(NOTfinalizePendingEdits) {
     };
 }
 
+// oof still timing issue just slightly different I got it to fail eventually
+// probably need to animation frame idk...
 let EDITOR_isClearing = false;
 
 /**
