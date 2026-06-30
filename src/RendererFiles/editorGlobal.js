@@ -5572,7 +5572,7 @@ function EDITOR_performLayoutUpdate() {
     }
 
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
-        let transform = `translateY(${vertical}px)`;
+        let top = `${vertical}px`;
 
         vertical += get_EDITOR_lineHeight();
 
@@ -5585,8 +5585,8 @@ function EDITOR_performLayoutUpdate() {
 
         // - [ ] TODO: order of setting 'transform' vs 'textContent' vs 'className'; you need to understand the differences, if any.
         //     - [ ] TODO: there exists an HTML syntax that will group your changes. I'm not talking about animation frame, I think it is something like the name "fragment". Is this useful here?
-        gutter.style.transform = transform;
-        div.style.transform = transform;
+        gutter.style.top = top;
+        div.style.top = top;
 
         lineStart = lineEnd + 1;
         if (indexLine < EDITOR_lineEndPositionList.count) {
@@ -5875,9 +5875,9 @@ function EDITOR_createViewport() {
     let trackedSyntax_I = trackedSyntax_StartingIndex;
 
     EDITOR_beltIndexZero = 0;
+    let top = `0px`;
 
     for (var i = 0; i < get_EDITOR_virtualCount(); i++) {
-        let transform = `translateY(0px)`;
 
         let indexLine = i + get_EDITOR_virtualIndexLine();
 
@@ -5890,13 +5890,13 @@ function EDITOR_createViewport() {
         }
         gutterLineElement.className = 'eG';
         get_EDITOR_gutter().appendChild(gutterLineElement);
-        gutterLineElement.style.transform = transform;
+        gutterLineElement.style.top = top;
 
         let line = EDITOR_getLineBoundaryPositions(indexLine);
         let div = document.createElement('div');
         div.className = 'eT';
         get_EDITOR_textElement().appendChild(div);
-        div.style.transform = transform;
+        div.style.top = top;
 
         div.appendChild(document.createElement('span'));
     }
@@ -7449,5 +7449,17 @@ You can maintain full hardware (GPU) acceleration while using absolute positioni
 will-change: transform or transform: translateZ(0) CSS properties.
 This technique gives you the best of both worlds: it keeps your layout nodes isolated for smooth rendering,
 while forcing the browser to promote each line container to its own independent GPU layer.
+
+So anyways I was like:
+"The gutter is made up of a div which contains all of the line numbers, where each line number is a div of its own within that parent... I have more information after you read this"
+
+And then they said:
+"
+Got it. That means your text editor uses a dual-column layout: one parent container for the line number gutter, and a separate parallel container for the text lines.
+Each row inside the gutter is an individual child div.When scrolling, your loop syncs these columns by updating the transform and textContent of the gutter child nodes
+and text child nodes at the exact same index (beltIndexLine).I have read and noted this structure. Please share the rest of the information!
+"
+
+GASP I cannot believe they said that
 
 */
