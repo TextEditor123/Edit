@@ -7303,6 +7303,18 @@ It might be in the:
 - debounced syntax highlighting
 - some mixture of both (determine the % contribution of each)s
 
-
+There will come a day where you lose everything.
+And you need to prepared for it.
+Short term comfort, feeling cozy...
+Mix this with, but how do I enjoy life with that mindset.
+But the best way to learn is through daily purposeful fatigue.
+Because your rate of learning is time gated via various factors such as sleep and energy.
+If you practice daily with intent to be better.
+You will be ready for whatever comes.
+If you live with your parents, at any moment they can die.
+And you should absolutely have this in the back of your mind.
+Everything in your life can be turned upside down at any moment.
+That's why you must feel an immense sense of daily anxiety and panic until you've sufficiently fatigued yourself.
+Only then can you feel that comfort. It is a necessity it is a good thing.
 
 */
