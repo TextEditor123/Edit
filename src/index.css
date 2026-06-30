@@ -369,12 +369,12 @@ TODO: Is it better to have one virtualization element that has both the width an
 
   left: 0;
 
-  transform: translateZ(0);
+  /*transform: translateZ(0);*/
   
 
   /* 3. Prevents layout changes inside the row from leaking out */
-  /*contain: layout style; */
-  contain: strict; /* 👈 Tells the browser layout engine to stop tracking internal shifts globally */
+  contain: layout style;
+  /*contain: strict; /* 👈 Tells the browser layout engine to stop tracking internal shifts globally */
 }
 
 /* .EDITOR_line is being renamed to .eT (i.e.: Editor Text line) */
@@ -385,11 +385,11 @@ TODO: Is it better to have one virtualization element that has both the width an
 
   left: 0;
 
-  transform: translateZ(0);
+  /*transform: translateZ(0);*/
 
   /* 3. Prevents layout changes inside the row from leaking out */
-  /*contain: layout style;*/
-  contain: strict; /* 👈 Tells the browser layout engine to stop tracking internal shifts globally */
+  contain: layout style;
+  /*contain: strict; /* 👈 Tells the browser layout engine to stop tracking internal shifts globally */
   
   /*font-variant-ligatures: none;
   letter-spacing: 0;*/
