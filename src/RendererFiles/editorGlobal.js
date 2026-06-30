@@ -7336,4 +7336,8 @@ PerformanceEventTiming causing extremely skewed heap snapshots?
 - "material-node-height"
 - 8,131 PerformanceEventTiming...
 
+AI recommends:
+- Protect It with a RequestAnimationFrame Throttle
+- a simple text caching layer
+
 */
