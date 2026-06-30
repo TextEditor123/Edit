@@ -5620,7 +5620,7 @@ function EDITOR_onScroll_timeoutFunc() {
         //EDITOR_syntaxHighlighting(); // unless you desire to go the way of debounce in which case you wouldn't include this invocation.
         EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 1000);
     } else {
-        EDITOR_syntaxHighlighting();
+        //EDITOR_syntaxHighlighting();
 
         EDITOR_timer = null;
         // Code Duplication: # Redraw cursor selection virtualization... TODO: This is using 'EDITOR_primaryCursor' rather than 'EDITOR_cursorList[i]' so it is surely incorrect?
@@ -7316,5 +7316,12 @@ And you should absolutely have this in the back of your mind.
 Everything in your life can be turned upside down at any moment.
 That's why you must feel an immense sense of daily anxiety and panic until you've sufficiently fatigued yourself.
 Only then can you feel that comfort. It is a necessity it is a good thing.
+
+I can see the 'Other non-JS object (such as HTML and CSS)' is growing even when I comment out the debounced syntax highlighting function invocation.
+Scroll wheel seems more problematic at than clicking and dragging the scrollbar.
+
+
+
+
 
 */
