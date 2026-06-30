@@ -525,10 +525,12 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
 
     EDITOR_isClearing = true;
 
-    EDITOR_baseElement.style.scrollTop = 0;
+    EDITOR_baseElement.scrollTop = 0;
+    EDITOR_baseElement.scrollLeft = 0;
 
     if (scroll_tickingId) {
         window.cancelAnimationFrame(scroll_tickingId);
+        scroll_tickingId = null;
     }
 
     EDITOR_clear();
@@ -5901,6 +5903,20 @@ function EDITOR_syntaxHighlighting() {
 }
 
 function EDITOR_createViewport() {
+
+    EDITOR_isClearing = true;
+
+    let remember_scrollTop = EDITOR_baseElement.scrollTop;
+    let remember_scrollLeft = EDITOR_baseElement.scrollLeft;
+
+    EDITOR_baseElement.scrollTop = 0;
+    EDITOR_baseElement.scrollLeft = 0;
+
+    if (scroll_tickingId) {
+        window.cancelAnimationFrame(scroll_tickingId);
+        scroll_tickingId = null;
+    }
+
     set_EDITOR_ONSCROLLvirtualCount(get_EDITOR_virtualCount());
 
     get_EDITOR_gutter().innerHTML = '';
@@ -5941,6 +5957,11 @@ function EDITOR_createViewport() {
         div.appendChild(document.createElement('span'));
     }
     EDITOR_drawHorizontalScrollbar();
+
+    EDITOR_isClearing = false;
+
+    EDITOR_baseElement.scrollTop = remember_scrollTop;
+    EDITOR_baseElement.scrollLeft = remember_scrollLeft;
 }
 
 /**
