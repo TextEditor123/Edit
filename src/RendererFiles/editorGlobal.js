@@ -7328,4 +7328,6 @@ Like if Billy went fishing with his dad when he was very young and had to count 
 
 PerformanceEventTiming causing extremely skewed heap snapshots?
 
+// { once: true } is massive for the events that I make in order to remove UI
+
 */
