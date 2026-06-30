@@ -511,6 +511,8 @@ function EDITOR_getFinalizedEditsAndRawSaveFileData(NOTfinalizePendingEdits) {
     };
 }
 
+let EDITOR_isClearing = false;
+
 /**
  * 
  * @param {string} text 
@@ -518,6 +520,8 @@ function EDITOR_getFinalizedEditsAndRawSaveFileData(NOTfinalizePendingEdits) {
  * @param {string} lineEndString pass null (or do not include the parameter) to have line endings set to the first encountered kind in the text. Otherwise specify here. The string is used EXACTLY AS PROVIDED if non-falsey.
  */
 function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED_textSourceIdentifier, extensionKind, lineEndString) {
+
+    EDITOR_isClearing = true;
 
     EDITOR_baseElement.style.scrollTop = 0;
 
@@ -622,6 +626,9 @@ function EDITOR_setText(text, fileStartsWithBom, textSourceIdentifier, FORMATTED
     // ...thus 'get_EDITOR_virtualCount()' amount of lines get redrawn...
     // ...i.e.: the entire viewport is redrawn with the new file's text.
     set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualCount());
+
+    EDITOR_isClearing = false;
+
     EDITOR_onScroll_WRAPIT();
 }
 
@@ -5434,6 +5441,11 @@ let isScrolling = false; // Tracks if we are actively in a scroll cycle
 let scrollTimeoutId = null;
 
 function EDITOR_onScroll_WRAPIT() {
+
+    if (EDITOR_isClearing) {
+        return;
+    }
+    
     // TODO: These will run when scrolling horizontally at the moment, this is unfortunate, I am moving code around.
     update_VirtualIndexLine();
     //
