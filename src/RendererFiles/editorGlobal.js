@@ -7441,4 +7441,8 @@ set their style to visibility: hidden. Once all properties are updated, turn the
 This tells the engine to skip intermediate layout tracking metrics while the row is being modified.
 "
 
+I referenced:
+    '2. Swap translateY for Grid Position or Absolute Top Layouts'
+    and said "But how would I keep GPU accelaration?"
+
 */
