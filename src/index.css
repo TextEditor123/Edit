@@ -340,6 +340,7 @@ TODO: Is it better to have one virtualization element that has both the width an
 
 #EDITOR_gutter_container {
   position: absolute;
+  display: contents;
   /*left: 0;*/
   /*cursor: default;*/
   /*min-height: 100%;*/
@@ -406,11 +407,12 @@ TODO: Is it better to have one virtualization element that has both the width an
 
 #EDITOR_presentation {
   position: absolute;
+  display: contents;
 }
 
 #EDITOR_cursorList {
   position: absolute;
-  width: 100%;
+  display: contents;
 }
 
 .EDITOR_caretRow {

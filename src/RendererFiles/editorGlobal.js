@@ -313,7 +313,7 @@ let w_beltIndexLine = -1;
 let EDITOR_syntaxHighlighting_previousIndexVirtual = 0;
 let EDITOR_syntaxHighlighting_previousVirtualCount = 0;
 
-let gutterWidthTotal = 0;
+//let gutterWidthTotal = 0;
 
 /**
  * TODO: It should be >= ?
@@ -369,7 +369,7 @@ function EDITOR_init() {
     let width = 'calc(100% - ' + left + ')';
 
     //get_EDITOR_body().style.marginLeft = left;
-    gutterWidthTotal = left;
+    //gutterWidthTotal = left;
 
     get_EDITOR_body().style.width = width;
 
@@ -667,7 +667,7 @@ function EDITOR_drawGutter_Width() {
     let left = get_EDITOR_gutterWidthTotal() + 'px';
     let width = 'calc(100% - ' + left + ')';
     //get_EDITOR_body().style.marginLeft = left;
-    gutterWidthTotal = left;
+    //gutterWidthTotal = left;
     get_EDITOR_body().style.width = width;
 
     EDITOR_drawHorizontalScrollbar();
@@ -872,6 +872,7 @@ function EDITOR_drawCursor(cursor, NOTscrollCursorIntoView) {
     cursor.cursorTranslateYValue = (cursor.indexLine + get_EDITOR_offsetLine()) * get_EDITOR_lineHeight();
     cursor.cursorTranslateXValue = (cursor.indexColumn + get_EDITOR_offsetColumn()) * EDITOR_characterWidth;
 
+    cursor.caretRow.style.left = `${get_EDITOR_gutterWidthTotal()}px`;
     cursor.caretRow.style.transform = `translateY(${cursor.cursorTranslateYValue}px)`;
     cursor.cursorElement.style.transform = `translateX(${cursor.cursorTranslateXValue}px)`;
 
@@ -5386,8 +5387,8 @@ function EDITOR_onResize() {
  * then at that point you redraw this.
  */
 function EDITOR_drawHorizontalScrollbar() {
-    if (get_EDITOR_horizontal_scrollbar().style.left !== gutterWidthTotal) {
-        get_EDITOR_horizontal_scrollbar().style.left = gutterWidthTotal;
+    if (get_EDITOR_horizontal_scrollbar().style.left !== get_EDITOR_gutterWidthTotal()) {
+        get_EDITOR_horizontal_scrollbar().style.left = get_EDITOR_gutterWidthTotal();
     }
 
     if (EDITOR_horizontal_scrollbar_widthValue !== (EDITOR_baseElement.clientWidth - get_EDITOR_gutterWidthTotal())) {
@@ -5402,7 +5403,7 @@ function EDITOR_drawHorizontalScrollbar() {
         get_EDITOR_virtualization_horizontal().style.width = get_EDITOR_contentWidth() + get_EDITOR_gutterWidthTotal() + 'px';
 
         get_EDITOR_textElement().style.width = get_EDITOR_horizontal_scrollbar_virtualization_boundary().style.width;
-        get_EDITOR_cursorListElement().style.width = get_EDITOR_horizontal_scrollbar_virtualization_boundary().style.width;
+        //get_EDITOR_cursorListElement().style.width = get_EDITOR_horizontal_scrollbar_virtualization_boundary().style.width;
     }
     
     // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
@@ -5575,7 +5576,7 @@ function EDITOR_performLayoutUpdate() {
         lineEnd = -1; // awkward 0th loop if lowerBound is 0
     }
 
-    //let left = `${gutterWidthTotal}px`;
+    let left = `${get_EDITOR_gutterWidthTotal()}px`;
 
     for (var indexLine = lowerBound; indexLine < upperBound; indexLine++) {
         let top = `${vertical}px`;
@@ -5593,7 +5594,7 @@ function EDITOR_performLayoutUpdate() {
         //     - [ ] TODO: there exists an HTML syntax that will group your changes. I'm not talking about animation frame, I think it is something like the name "fragment". Is this useful here?
         gutter.style.top = top;
         div.style.top = top;
-        //div.style.left = left;
+        div.style.left = left;
 
         lineStart = lineEnd + 1;
         if (indexLine < EDITOR_lineEndPositionList.count) {
@@ -5883,7 +5884,7 @@ function EDITOR_createViewport() {
 
     EDITOR_beltIndexZero = 0;
     let top = `0px`;
-    //let left = `${gutterWidthTotal}px`;
+    let left = `${get_EDITOR_gutterWidthTotal()}px`;
 
     for (var i = 0; i < get_EDITOR_virtualCount(); i++) {
 
@@ -5905,7 +5906,7 @@ function EDITOR_createViewport() {
         div.className = 'eT';
         get_EDITOR_textElement().appendChild(div);
         div.style.top = top;
-        //div.style.left = left;
+        div.style.left = left;
 
         div.appendChild(document.createElement('span'));
     }
