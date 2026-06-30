@@ -7435,6 +7435,10 @@ gutter.textContent = indexLine + 1;
 span.textContent = textContent;
 ```
 
-
+"
+Use visibility: hidden during updates: Before altering the transform and textContent of your recycled row elements,
+set their style to visibility: hidden. Once all properties are updated, turn them back to visibility: visible.
+This tells the engine to skip intermediate layout tracking metrics while the row is being modified.
+"
 
 */
