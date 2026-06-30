@@ -5408,9 +5408,10 @@ function EDITOR_drawHorizontalScrollbar() {
     }
 }
 
-function EDITOR_onScroll_WRAPIT() {
-	set_EDITOR_onScroll_bool(true);
+let isScrolling = false; // Tracks if we are actively in a scroll cycle
+let scrollTimeoutId = null;
 
+function EDITOR_onScroll_WRAPIT() {
     // TODO: These will run when scrolling horizontally at the moment, this is unfortunate, I am moving code around.
     update_VirtualIndexLine();
     //
@@ -5421,38 +5422,84 @@ function EDITOR_onScroll_WRAPIT() {
     //
     set_EDITOR_ONSCROLLvirtualIndexLine(get_EDITOR_virtualIndexLine());
 
-    if (!EDITOR_timer) {
-        // options.leading
-        EDITOR_finalizeAllCursors();
-        if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
-            prevVli === get_EDITOR_virtualIndexLine() &&
-            get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount()) {
-                // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
-                // TODO: this code is duplicated inside EDITOR_drawHorizontalScrollbar, reduce duplication?
-                if (get_EDITOR_horizontal_scrollbar().scrollLeft !== EDITOR_baseElement.scrollLeft) {
-                    get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
-                }
-                return;
-        }
+    let zeroNoAction_oneForceEntireViewportDrawThroughPrevVliAndCurrVli_twoReturn = 0;
 
-        EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 1000);
-
-        if (get_EDITOR_ONSCROLLvirtualCount() !== get_EDITOR_virtualCount() ||
-            get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
-            get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount()) {
-                // Force case 3
-                prevVli = 0;
-                currVli = get_EDITOR_virtualCount();
-
-                // TODO: Duplicated setting of scrolltop; this case and just baseline everytime vertical scrolls it is done in this method elsewhere
-                set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
-                EDITOR_createViewport();
-        }
+    // 1. LEADING EDGE (Runs only once at the absolute start of scrolling)
+    if (!isScrolling) {
+        isScrolling = true;
+        zeroNoAction_oneForceEntireViewportDrawThroughPrevVliAndCurrVli_twoReturn = EDITOR_onScroll_LeadingEdge();
     }
 
-    // TODO: Duplicated setting of scrolltop; this case and just baseline everytime vertical scrolls it is done in this method elsewhere;; THIS IS THE BASELINE
+    if (zeroNoAction_oneForceEntireViewportDrawThroughPrevVliAndCurrVli_twoReturn === 1) {
+        prevVli = 0;
+        currVli = get_EDITOR_virtualCount();
+    }
+    else if (zeroNoAction_oneForceEntireViewportDrawThroughPrevVliAndCurrVli_twoReturn === 2) {
+        return;
+    }
+
+    // 2. ACTIVE SCROLLING (Runs smoothly on every frame using requestAnimationFrame)
+    EDITOR_requestTick();
+
+    // 3. TRAILING EDGE (Clears and resets, running exactly 150ms after the last movement)
+    clearTimeout(scrollTimeoutId);
+    scrollTimeoutId = setTimeout(() => {
+        isScrolling = false; // Reset the state flag
+        EDITOR_onScroll_TrailingEdge();
+    }, 150); // 150ms is standard for catching a user's natural scroll pause
+}
+
+/**
+ * @returns zeroNoAction_oneForceEntireViewportDrawThroughPrevVliAndCurrVli_twoReturn
+ */
+function EDITOR_onScroll_LeadingEdge() {
+    EDITOR_finalizeAllCursors();
+    if (get_EDITOR_ONSCROLLscrollTop() === EDITOR_baseElement.scrollTop &&
+        prevVli === get_EDITOR_virtualIndexLine() &&
+        get_EDITOR_ONSCROLLvirtualCount() === get_EDITOR_virtualCount()) {
+            // TODO: this is directly tied to a scroll event on EDITOR_baseElement so handle it from there perhaps?
+            // TODO: this code is duplicated inside EDITOR_drawHorizontalScrollbar, reduce duplication?
+            if (get_EDITOR_horizontal_scrollbar().scrollLeft !== EDITOR_baseElement.scrollLeft) {
+                get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
+            }
+            return 2;
+    }
+
+    EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 1000);
+
+    if (get_EDITOR_ONSCROLLvirtualCount() !== get_EDITOR_virtualCount() ||
+        get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
+        get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount()) {
+            // Force case 3
+            prevVli = 0;
+            currVli = get_EDITOR_virtualCount();
+
+            // TODO: Duplicated setting of scrolltop; this case and just baseline everytime vertical scrolls it is done in this method elsewhere
+            set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
+            EDITOR_createViewport();
+            return 1;
+    }
+
+    return 0;
+}
+
+let ticking = false;
+
+function EDITOR_requestTick() {
+    //set_EDITOR_onScroll_bool(true);
     set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
 
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            // Put your actual layout rendering logic cleanly in here
+            EDITOR_performLayoutUpdate(); 
+            ticking = false;
+        });
+        ticking = true;
+    }
+}
+
+function EDITOR_performLayoutUpdate() {
     let diff = currVli - prevVli;
 
     let lowerBound;
@@ -5612,6 +5659,11 @@ function EDITOR_onScroll_WRAPIT() {
             div.removeChild(div.children[i]);
         }
     }
+}
+
+function EDITOR_onScroll_TrailingEdge() {
+    // Put code here that should ONLY execute when scrolling stops completely
+    //EDITOR_onScroll_timeoutFunc();
 }
 
 function EDITOR_onScroll_timeoutFunc() {
@@ -7342,5 +7394,7 @@ AI recommends:
 
 "To determine if a scroll event is the leading edge (the very first movement) or the trailing edge (the final rest point)
 without using raw timeouts that block garbage collection, you can use a clean, flag-based debouncer."
+
+// 11,169 PerformanceEventTiming allocations :3
 
 */
