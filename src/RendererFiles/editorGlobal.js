@@ -7332,4 +7332,8 @@ PerformanceEventTiming causing extremely skewed heap snapshots?
 
 // That being said I'm allocating 307 {once, capture} objects seemingly from scrolling?
 
+- {once, capture} 
+- "material-node-height"
+- 8,131 PerformanceEventTiming...
+
 */
