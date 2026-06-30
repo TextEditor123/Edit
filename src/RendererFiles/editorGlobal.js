@@ -7398,7 +7398,17 @@ without using raw timeouts that block garbage collection, you can use a clean, f
 // 11,169 PerformanceEventTiming allocations :3
 
 1. Implement Strict Text Caching (Stop Unnecessary Decoding)
+- In your loop, you execute EDITOR_decoder.decode(EDITOR_textByteList.bytes.subarray(lineStart, lineEnd))
+  and immediately apply it to the span.textContent.Even if you scroll by a single pixel and the text line content remains completely unchanged,
+  updating textContent with a freshly decoded string causes the browser to clear the text sub-tree, compute the content bounds, and register a layout shift event timing record.
+  You can eliminate over 90% of these allocations by checking if the content has actually changed before touching the DOM:
 2. Swap translateY for Grid Position or Absolute Top Layouts
+- Your code alters element coordinates via transform = 'translateY(' + vertical + 'px)'.
+  While transforms bypass browser reflow operations,
+  shifting thousands of translated layers across a large virtual viewport forces the compositing engine to continuously append individual
+  performance marker frames.Because this is a virtual scroller for an editor, you can completely sidestep dynamic transform calculations.
+  Position your line container elements using standard CSS absolute top values tied directly to their absolute virtual index positions,
+  or leverage a fixed layout grid.
 
 
 */
