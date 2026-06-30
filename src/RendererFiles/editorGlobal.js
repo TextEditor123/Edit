@@ -7330,4 +7330,6 @@ PerformanceEventTiming causing extremely skewed heap snapshots?
 
 // { once: true } is massive for the events that I make in order to remove UI
 
+// That being said I'm allocating 307 {once, capture} objects seemingly from scrolling?
+
 */
