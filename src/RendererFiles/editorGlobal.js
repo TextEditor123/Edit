@@ -7608,4 +7608,11 @@ so it evens out the total breakfast sodium to potassium ratio.
 
 I'm feeling anxious and paranoid... I'm hoping if I make progress that these feelings with settle
 
+In my mind I can tell that github is looking through my older repos that are private / deleted
+and reading through everything I've ever said and everything I've ever linked
+because I get recommended on my youtube home page things that I've linked a long time ago but
+I haven't been interested in for a long time now.
+So the only thought I have is that they must be looking at it and now youtube is pushing this content
+because it sees a surge in interactions and knows I used to so it says hey this is big again.
+
 */
