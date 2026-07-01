@@ -5495,10 +5495,8 @@ function EDITOR_onScroll_WRAPIT() {
 
     // 3. TRAILING EDGE (Clears and resets, running exactly 150ms after the last movement)
     clearTimeout(scrollTimeoutId);
-    scrollTimeoutId = setTimeout(() => {
-        isScrolling = false; // Reset the state flag
-        EDITOR_onScroll_TrailingEdge();
-    }, 150); // 150ms is standard for catching a user's natural scroll pause
+    // NOTE: 'EDITOR_onScroll_TrailingEdge' MUST set 'isScrolling = false; // Reset the state flag'
+    scrollTimeoutId = setTimeout(EDITOR_onScroll_TrailingEdge, 150); // 150ms is standard for catching a user's natural scroll pause
 }
 
 /**
@@ -5714,6 +5712,7 @@ function EDITOR_performLayoutUpdate() {
 }
 
 function EDITOR_onScroll_TrailingEdge() {
+    isScrolling = false;
     // Put code here that should ONLY execute when scrolling stops completely
     //EDITOR_onScroll_timeoutFunc();
 }
