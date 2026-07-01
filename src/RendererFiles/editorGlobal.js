@@ -2027,6 +2027,44 @@ async function EDITOR_didChangeTextDocumentNotification(absolutePath, version, s
 }
 
 /**
+ * This queueing is currently a complete copy and paste of what Google AI generated.
+ * I looked it over and it appears correct.
+ */
+const lspQueue = [];
+let isProcessingLspQueue = false;
+
+function enqueueLSPNotification(payload) {
+    lspQueue.push(payload);
+    processLspQueue(); // Fire-and-forget processing loop
+}
+
+async function processLspQueue() {
+    if (isProcessingLspQueue) return;
+    isProcessingLspQueue = true;
+
+    while (lspQueue.length > 0) {
+        const item = lspQueue.shift(); // Guarantees strict FIFO order
+        
+        try {
+            // Await the Electron IPC and LSP stdin write
+            await window.myAPI.didChangeTextDocumentNotification(
+                item.absolutePath,
+                item.version,
+                item.startLine,
+                item.startCharacter,
+                item.endLine,
+                item.endCharacter,
+                item.text
+            );
+        } catch (error) {
+            console.error("LSP IPC notification failed:", error);
+        }
+    }
+
+    isProcessingLspQueue = false;
+}
+
+/**
  * TODO: Exception during finalize softlocks the editor because you can't even clear to reset the state: 'Uncaught (in promise) Error: removeAt(...): index > this.count'
  * 
  * @param {EDITOR_Cursor} cursor 
@@ -2084,7 +2122,20 @@ function EDITOR_finalizeEdit(cursor) {
                 let text = EDITOR_decoder.decode(cursor.gapBuffer.subarray(0, cursor.gapBufferCount));
                 set_didChangeTextDocument_version(get_didChangeTextDocument_version() + 1);
                 let version = get_didChangeTextDocument_version();
-                if (didChangeTextDocumentNotificationPromise) {
+
+                // --- CLEAN INTEGRATION ---
+                enqueueLSPNotification({
+                    absolutePath: textSourceIdentifier,
+                    version: version,
+                    startLine: lineAndColumnIndices.indexLine,
+                    startCharacter: lineAndColumnIndices.indexColumn,
+                    endLine: lineAndColumnIndices.indexLine,
+                    endCharacter: lineAndColumnIndices.indexColumn,
+                    text: text
+                });
+                // -------------------------
+                
+                /*if (didChangeTextDocumentNotificationPromise) {
                     // TODO: If this is capturing the lexical scope context, it is extremely bad, the surrounding function is massive.
                     didChangeTextDocumentNotificationPromise = didChangeTextDocumentNotificationPromise.then(async () => {
                         await EDITOR_didChangeTextDocumentNotification(
@@ -2108,7 +2159,7 @@ function EDITOR_finalizeEdit(cursor) {
                         lineAndColumnIndices.indexColumn,
                         text,
                         ticket);
-                }
+                }*/
 
                 if (indexLine_editOccurredOn === get_EDITOR_longestLine_indexLine()) {
                     set_EDITOR_longestLine_length(get_EDITOR_longestLine_length() + cursor.editLength);
@@ -2466,7 +2517,20 @@ function EDITOR_finalizeEdit(cursor) {
                 let text = '';
                 set_didChangeTextDocument_version(get_didChangeTextDocument_version() + 1);
                 let version = get_didChangeTextDocument_version();
-                if (didChangeTextDocumentNotificationPromise) {
+
+                // --- CLEAN INTEGRATION ---
+                enqueueLSPNotification({
+                    absolutePath: textSourceIdentifier,
+                    version: version,
+                    startLine: startLineAndColumnIndices.indexLine,
+                    startCharacter: startLineAndColumnIndices.indexColumn,
+                    endLine: endLineAndColumnIndices.indexLine,
+                    endCharacter: endLineAndColumnIndices.indexColumn,
+                    text: text
+                });
+                // -------------------------
+
+                /*if (didChangeTextDocumentNotificationPromise) {
                     // TODO: If this is capturing the lexical scope context, it is extremely bad, the surrounding function is massive.
                     didChangeTextDocumentNotificationPromise = didChangeTextDocumentNotificationPromise.then(async () => {
                         await EDITOR_didChangeTextDocumentNotification(
@@ -2490,7 +2554,7 @@ function EDITOR_finalizeEdit(cursor) {
                         endLineAndColumnIndices.indexColumn,
                         text,
                         ticket);
-                }
+                }*/
 
                 if (indexLine_editOccurredOn === get_EDITOR_longestLine_indexLine()) {
                     set_EDITOR_longestLine_length(get_EDITOR_longestLine_length() - cursor.editLength);
