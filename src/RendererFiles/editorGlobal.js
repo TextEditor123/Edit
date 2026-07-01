@@ -7580,65 +7580,6 @@ Conversely, translateY is treated as a visual-only paint effect handled by the G
 
 7:40 AM
 
-Breakfast:
-- 1 elite fairlife 42g of protein
-- 1 chocolate chip cliff bar 10g of protein
-- 1 peanut butter cliff bar 11g of protein
-- 1 daves plain bagel 10g of protein
-total 73g of protein
-
-later on is:
-- 1lb of 98% fat free ground chicken
-- with sriracha sauce
-
-====
-
-These 3 items of the breakfast:
-- 1 elite fairlife 42g of protein
-- 1 chocolate chip cliff bar 10g of protein
-- 1 peanut butter cliff bar 11g of protein
-
-are pretty potassium heavy
-
-and then
-- 1 daves plain bagel 10g of protein
-
-this also has potassium but it has a bit more sodium than potassium ratio
-so it evens out the total breakfast sodium to potassium ratio.
-
-I'm feeling anxious and paranoid... I'm hoping if I make progress that these feelings with settle
-
-In my mind I can tell that github is looking through my older repos that are private / deleted
-and reading through everything I've ever said and everything I've ever linked
-because I get recommended on my youtube home page things that I've linked a long time ago but
-I haven't been interested in for a long time now.
-So the only thought I have is that they must be looking at it and now youtube is pushing this content
-because it sees a surge in interactions and knows I used to so it says hey this is big again.
-
-And so these last few days I've been obsessively refreshing my youtube home page
-to see what old links I've linked show up to determine what the github admins are looking at in my history.
-
-I'm driving myself insane I have like constant panic anxiety and paranoia over this I sit here doing this all day
-trying to figure out what the github admins are doing
-
-I also have an incognito mode of this repo and I refresh it to see if I'm banned over and over and over all day
-
-I believe they track my IP and track when I visit my own repo both through my own account and when I do from my IP not signed in.
-And that they're using this data for something.
-
-When I get especially paranoid about all of this my heart races and I sweat profusely.
-
-I then channel the anxiety into energy to make progress on the repo
-
-They don't want me to make progress on this repo because they know it will surpass their own editors.
-So they're looking through everything I've ever said and linked
-in order to sue me and quiet me and stop me from making further progress.
-
-I feel like I'm having a constant panic attack over this thought
-
-But that's why I think I need to work quickly I need to get this done before they have time to quiet me.
-
-Because how else would someone be so consistent and code for such long hours without drugs?
-Cause I'm fueled on pure panic and adrenaline at all hours of the day because I Think Microsoft is trying to silence me or something I cannot explain it.
+Had to just get that off my chest
 
 */
