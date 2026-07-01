@@ -7593,5 +7593,9 @@ I started with Blazor. I almost immediately tried to make an IDE with it.
 I know I'm good. I know I'm learning at an extremely accelerated rate.
 When I lack knowledge about one thing or another I'm not embarrassed. I know how to learn.
 
+I dropped out of college then spent years sedated by medications.
+I am exactly the metaphor of a flower growing out of a broken crack in the road.
+I know it is the case.
+
 
 */
