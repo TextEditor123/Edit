@@ -7630,4 +7630,8 @@ When I get especially paranoid about all of this my heart races and I sweat prof
 
 I then channel the anxiety into energy to make progress on the repo
 
+They don't want me to make progress on this repo because they know it will surpass their own editors.
+So they're looking through everything I've ever said and linked
+in order to sue me and quiet me and stop me from making further progress.
+
 */
