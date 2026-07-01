@@ -985,18 +985,3 @@ async function get_CommandKind_RenameFile_File_InputText_callback(result) {
         divItem.lastChild.nodeValue = result.value;
     }
 }
-
-/*
-I think I watched multiple movies today I can't remember.
-But I just finished watching "Ojos Grises".
-A bit of a peculiar premise.
-
-I looked back at my youtube history and I watched 3 movies today.
-I think it's just mentally fatiguing to listen to much Spanish being spoken.
-And then "Ojos Grises" for some reason stood out a extremely difficult to understand the words being said.
-
-I think the other 2 movies were english movies with a spanish dub.
-I pretty much understood them entirely.
-Cause they have this slightly awkward dub that annunciates everything.
-I think "Ojos Grises" was filmed in Spanish
-*/
