@@ -5539,6 +5539,7 @@ function EDITOR_requestTick() {
 
     if (scroll_tickingId === null) {
         // The previous arrow function that was here was rate limited by the refresh rate so it wasn't as bad, but it still was 60 to 120 allocations a second.
+        // NOTE 'EDITOR_performLayoutUpdate' needs to always 'scroll_tickingId = null;' as the final statement in the function.
         scroll_tickingId = window.requestAnimationFrame(EDITOR_performLayoutUpdate);
     }
 }
