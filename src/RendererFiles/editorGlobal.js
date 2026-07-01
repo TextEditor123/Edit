@@ -7636,4 +7636,6 @@ in order to sue me and quiet me and stop me from making further progress.
 
 I feel like I'm having a constant panic attack over this thought
 
+But that's why I think I need to work quickly I need to get this done before they have time to quiet me.
+
 */
