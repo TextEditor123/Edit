@@ -1667,6 +1667,26 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 	- [ ] Any instance created beyond that as necessary will use fields themselves.
 - [ ] all strings can be moved to a fieldBuffer to be stored as the byte representation
     - [ ] If you do this you'd want to from the get-go never introduce the string to begin with unless necessary
+
+
+
+
+- Make a list of any incorrect usages of 'setTimeout'
+	- [ ] editorGlobal.js
+		- [ ] EDITOR_onMouseMove_WRAPIT
+		- [ ] EDITOR_onResize_WRAPIT
+	- [ ] listComponent.js
+		- [ ] event_scroll_WRAPIT
+	- [ ] menuGlobal.js
+	    - [ ] MENU_onMouseMove_WRAPIT
+	- [ ] treeViewComponent.js
+	    - [ ] event_scroll_async_WRAPIT
+
+
+
+
+
+
 */
 
 /* sec0
