@@ -1059,8 +1059,12 @@ EDITOR_finalizeEdit_ClearEditState(cursor);
 > While this successfully guarantees the execution order of EDITOR_didChangeTextDocumentNotification, your hunch in the TODO comment is 100% correct and a critical issue.
 
 > (it outlines these 3 points:)
-> Lexical Scope Retention
-> The Chain Link
-> Delayed Garbage Collection
+> ...
+> Lexical Scope Retention...
+> The Chain Link...
+> Delayed Garbage Collection...
+
+> The Clean Fix: De-coupled Array Queue
+
 
 */
