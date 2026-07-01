@@ -1728,67 +1728,6 @@ function onAaa_performLayoutUpdate() {
 
 }
 
-// I want to put "correct" in quotes only because there might be an even more correct answer than this.
-// But that would be annoying to read so I'll just call this the correct answer but without quote.
-//
-// The correct answer has a lot of code broken out into functions.
-//
-// I believe this is because the timeOut will capture the surrounding context, and result in all the variables not being garbage collected
-// until the timeout is resolved.
-//
-// Thus the overhead of any function invocation is far less than the cost of massive context capturing of the timeout.
-//
-// This conflicts with my current understanding of lambdas.
-// Because I always believed that lambdas only captured what you referenced from within the lambda.
-// So I need to verify one way or another what the truth is around this.
-//
-// I believe the confusion is demonstrated furthermore by me using the word 'lambda'.
-// If there is confusion, consider grouping the two concepts.
-// C# lambdas perhaps are what I describe them to be but that JavaScript is capturing the entire lexical scope regardless of references?
-
-Google AI:
-{
-	In C#, the compiler looks at a lambda, identifies the specific variables used, and generates a hidden class to hoist only those variables.
-
-	JavaScript does not do this.
-	- In JavaScript, whenever a function is created, it holds a hidden reference to its parent Lexical Environment
-	    (an internal specification object that houses all variables in that scope).
-	- If a inner function (like your setTimeout callback) survives, the entire environment record survives in memory.
-	- As long as that setTimeout is pending, nothing in that parent scope can be garbage collected,
-	    even if the lambda doesn't explicitly type out the variable name.
-
-	The Modern Exception: V8 "Context Trimming"
-	- Modern JavaScript engines (like V8 in Chrome and Node.js) try to optimize this through a process called Context Trimming.
-	- If a variable inside a function is completely unreferenced by any inner closure, V8's parser will attempt to optimize it out of the heap-allocated lexical environment.
-	- However, this optimization easily breaks. If any closure in the same scope references a variable, that variable is retained for all closures in that scope.
-
-	 Why Breaking Code into Functions is "More Correct"
-	 - Your instinct to break code out into smaller functions is mathematically and architecturally the superior choice for memory management.
-	 - When you move logic into a separate, isolated function:
-	     - You create a brand new, tiny lexical environment.
-		 - The setTimeout created inside that isolated function only closes over that tiny environment.
-		 - The massive variables from the outer layout engine or component lifecycle are cleanly detached and can be instantly garbage collected.
-	 - The CPU overhead of a function invocation in modern JavaScript is fractions of a nanosecond.
-	     The memory overhead of a leaked large object graph held by a stale setTimeout can cause noticeable UI stutter and memory leaks.
-}
-
-Question: "Does this imply that an event listener could be more expensive if using an arrow function than a declared function that exists at a higher scope."
-
-Google AI:
-{
-    Yes, absolutely. Using an inline arrow function as an event listener is structurally more expensive than referencing a declared function from a higher scope.
-	This performance penalty comes from two distinct issues: allocation frequency and memory retention (closures).
-
-	- The Allocation Penalty (CPU & GC Pressure)
-	    ...
-		The Arrow Function: If setupButton runs 1,000 times, you allocate 1,000 separate function objects. The garbage collector (GC) must constantly wake up to clean up the dead functions.
-		...
-	- The Scope Capture Penalty (Memory Leaks)
-	    ...
-}
-
-
-
 }
 
 
