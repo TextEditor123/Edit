@@ -3071,504 +3071,499 @@ function EDITOR_editEvent(editKind, event, clipboardContent) {
 }
 
 function EDITOR_registerHandlers() {
-    EDITOR_baseElement.addEventListener('keydown', async event => {
-        // Explicitly inlining 'clearMulticursorState()' because it currently is and I just don't want to make a decision about this right now.
-        // So what I can do is mark the code paragraph for later decision making.
-        set_EDITOR_indexCursor(0);
-        set_EDITOR_offsetLine(0);
-        set_EDITOR_offsetColumn_withRespectToThisIndexLine(0);
-        set_EDITOR_offsetColumn(0);
-        set_EDITOR_totalShift(0);
-        EDITOR_offsetWithinSpan_withRespectToThisSpan = null;
-        set_EDITOR_offsetWithinSpan(0);
+    EDITOR_baseElement.addEventListener('keydown', EDITOR_onKeyDown);
+    EDITOR_baseElement.addEventListener('mousedown', EDITOR_onMouseDown);
+    EDITOR_baseElement.addEventListener('mousemove', EDITOR_onMouseMove_WRAPIT);
+    EDITOR_baseElement.addEventListener('scroll', EDITOR_onScroll_WRAPIT);
+    EDITOR_baseElement.addEventListener('wheel', EDITOR_onWheel);
+    EDITOR_baseElement.addEventListener('contextmenu', EDITOR_onContextMenu);
+    window.addEventListener('resize', EDITOR_onResize_WRAPIT);
+    get_EDITOR_horizontal_scrollbar().addEventListener('scroll', EDITOR_horizontal_scrollbar_onScroll);
+}
 
-        switch (event.key) {
-            case 'ArrowLeft':
-            {
-                event.preventDefault();
-                
-                for (var i = 0; i < EDITOR_cursorList.length; i++) {
-                    let cursor = EDITOR_cursorList[i];
-                    set_EDITOR_indexCursor(i);
-                    EDITOR_movementBasedCacheInvalidation(cursor);
-                    if (get_EDITOR_offsetColumn_withRespectToThisIndexLine() !== cursor.indexLine) {
-                        set_EDITOR_offsetColumn_withRespectToThisIndexLine(cursor.indexLine);
-                        set_EDITOR_offsetColumn(0);
-                    }
+async function EDITOR_onKeyDown(event) {
+    // Explicitly inlining 'clearMulticursorState()' because it currently is and I just don't want to make a decision about this right now.
+    // So what I can do is mark the code paragraph for later decision making.
+    set_EDITOR_indexCursor(0);
+    set_EDITOR_offsetLine(0);
+    set_EDITOR_offsetColumn_withRespectToThisIndexLine(0);
+    set_EDITOR_offsetColumn(0);
+    set_EDITOR_totalShift(0);
+    EDITOR_offsetWithinSpan_withRespectToThisSpan = null;
+    set_EDITOR_offsetWithinSpan(0);
 
-                    if (cursor.hasSelection() && !event.shiftKey) {
-                        let small;
-                        if (cursor.selectionAnchor < cursor.selectionEnd) {
-                            small = cursor.selectionAnchor;
-                        }
-                        else {
-                            small = cursor.selectionEnd;
-                        }
-                        let lineAndColumnIndices = EDITOR_getLineAndColumnIndices(small);
-                        cursor.indexLine = lineAndColumnIndices.indexLine;
-                        cursor.indexColumn = lineAndColumnIndices.indexColumn;
-                        cursor.selectionAnchor = cursor.selectionEnd;
-                        cursor.selectionIndexAnchorLine = cursor.selectionIndexEndLine;
-                        cursor.selectionIndexAnchorColumn = cursor.selectionIndexEndColumn;
+    switch (event.key) {
+        case 'ArrowLeft':
+        {
+            event.preventDefault();
+            
+            for (var i = 0; i < EDITOR_cursorList.length; i++) {
+                let cursor = EDITOR_cursorList[i];
+                set_EDITOR_indexCursor(i);
+                EDITOR_movementBasedCacheInvalidation(cursor);
+                if (get_EDITOR_offsetColumn_withRespectToThisIndexLine() !== cursor.indexLine) {
+                    set_EDITOR_offsetColumn_withRespectToThisIndexLine(cursor.indexLine);
+                    set_EDITOR_offsetColumn(0);
+                }
+
+                if (cursor.hasSelection() && !event.shiftKey) {
+                    let small;
+                    if (cursor.selectionAnchor < cursor.selectionEnd) {
+                        small = cursor.selectionAnchor;
                     }
                     else {
-                        EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                        if (event.ctrlKey & cursor.indexColumn > 0) {
-                            let line = EDITOR_getLineBoundaryPositions(cursor.indexLine);
-                            let indexPosition = line.start + cursor.indexColumn;
-                            let originalCharacterKind = EDITOR_getCharacterPrevious_KIND(cursor.indexColumn, indexPosition);
-                            cursor.indexColumn--;
-                            indexPosition--;
-    
-                            while (cursor.indexColumn > 0) {
-                                if (EDITOR_getCharacterPrevious_KIND(cursor.indexColumn, indexPosition) === originalCharacterKind) {
-                                    cursor.indexColumn--;
-                                    indexPosition--;
-                                }
-                                else {
-                                    break;
-                                }
-                            }
-                        }
-                        else {
-                            if (cursor.indexColumn > 0) {
+                        small = cursor.selectionEnd;
+                    }
+                    let lineAndColumnIndices = EDITOR_getLineAndColumnIndices(small);
+                    cursor.indexLine = lineAndColumnIndices.indexLine;
+                    cursor.indexColumn = lineAndColumnIndices.indexColumn;
+                    cursor.selectionAnchor = cursor.selectionEnd;
+                    cursor.selectionIndexAnchorLine = cursor.selectionIndexEndLine;
+                    cursor.selectionIndexAnchorColumn = cursor.selectionIndexEndColumn;
+                }
+                else {
+                    EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                    if (event.ctrlKey & cursor.indexColumn > 0) {
+                        let line = EDITOR_getLineBoundaryPositions(cursor.indexLine);
+                        let indexPosition = line.start + cursor.indexColumn;
+                        let originalCharacterKind = EDITOR_getCharacterPrevious_KIND(cursor.indexColumn, indexPosition);
+                        cursor.indexColumn--;
+                        indexPosition--;
+
+                        while (cursor.indexColumn > 0) {
+                            if (EDITOR_getCharacterPrevious_KIND(cursor.indexColumn, indexPosition) === originalCharacterKind) {
                                 cursor.indexColumn--;
-                            }
-                            else if (cursor.indexLine > 0) {
-                                cursor.indexLine--;
-                                cursor.indexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
-                            }
-                        }
-                        EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                    }
-                    cursor.STORED_indexColumn = cursor.indexColumn;
-                    EDITOR_drawCursor(cursor);
-                    set_EDITOR_offsetColumn(get_EDITOR_offsetColumn() + cursor.editLength);
-                    set_EDITOR_totalShift(get_EDITOR_totalShift() + cursor.editLength);
-                }
-                break;
-            }
-            case 'ArrowDown':
-            {
-                event.preventDefault();
-                if (event.ctrlKey) {
-                    EDITOR_baseElement.scrollBy(0, get_EDITOR_lineHeight());
-                }
-                else if (event.altKey) {
-                    if (event.shiftKey) {
-                        EDITOR_createCursorLineBelow(event);
-                    }
-                }
-                else {
-                    let lastCursor = EDITOR_cursorList[EDITOR_cursorList.length - 1];
-                    if (lastCursor.indexLine === EDITOR_lineEndPositionList.count - 1) {
-                        if (EDITOR_cursorList.length - 1 > 0 && EDITOR_cursorList[EDITOR_cursorList.length - 2].indexLine === lastCursor.indexLine - 1) {
-                            alert("ArrowDown: this would cause two cursors to exist on the same line, for the initial simpler implementation two cursors being on the same line is not permitted.");
-                            return;
-                        }
-                    }
-                    for (var i = EDITOR_cursorList.length - 1; i >= 0; i--) {
-                        EDITOR_arrowDown(EDITOR_cursorList[i], /*shiftKey*/ event.shiftKey);
-                    }
-                }
-                break;
-            }
-            case 'ArrowUp':
-            {
-                event.preventDefault();
-                if (event.ctrlKey) {
-                    EDITOR_baseElement.scrollBy(0, -1 * get_EDITOR_lineHeight());
-                }
-                else {
-                    let firstCursor = EDITOR_cursorList[0];
-                    if (firstCursor.indexLine === 0) {
-                        if (EDITOR_cursorList.length - 1 > 0 && EDITOR_cursorList[1].indexLine === firstCursor.indexLine + 1) {
-                            alert("ArrowUp: this would cause two cursors to exist on the same line, for the initial simpler implementation two cursors being on the same line is not permitted.");
-                            return;
-                        }
-                    }
-                    for (var i = EDITOR_cursorList.length - 1; i >= 0; i--) {
-                        let cursor = EDITOR_cursorList[i];
-                        EDITOR_movementBasedCacheInvalidation(cursor);
-                        EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                        if (cursor.indexLine > 0) {
-                            cursor.indexLine--;
-                            let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
-                            if (cursor.STORED_indexColumn > lastValidIndexColumn) {
-                                cursor.indexColumn = lastValidIndexColumn;
+                                indexPosition--;
                             }
                             else {
-                                cursor.indexColumn = cursor.STORED_indexColumn;
+                                break;
                             }
                         }
-                        EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                        EDITOR_drawCursor(cursor);
-                    }
-                }
-                break;
-            }
-            case 'ArrowRight':
-            {
-                event.preventDefault();
-
-                for (var i = 0; i < EDITOR_cursorList.length; i++) {
-                    let cursor = EDITOR_cursorList[i];
-                    set_EDITOR_indexCursor(i);
-                    EDITOR_movementBasedCacheInvalidation(cursor);
-                    if (get_EDITOR_offsetColumn_withRespectToThisIndexLine() !== cursor.indexLine) {
-                        set_EDITOR_offsetColumn_withRespectToThisIndexLine(cursor.indexLine);
-                        set_EDITOR_offsetColumn(0);
-                    }
-
-                    if (cursor.hasSelection() && !event.shiftKey) {
-                        let large;
-                        if (cursor.selectionAnchor < cursor.selectionEnd) {
-                            large = cursor.selectionEnd;
-                        }
-                        else {
-                            large = cursor.selectionAnchor;
-                        }
-                        let lineAndColumnIndices = EDITOR_getLineAndColumnIndices(large);
-                        cursor.indexLine = lineAndColumnIndices.indexLine;
-                        cursor.indexColumn = lineAndColumnIndices.indexColumn;
-                        cursor.selectionAnchor = cursor.selectionEnd;
-                        cursor.selectionIndexAnchorLine = cursor.selectionIndexEndLine;
-                        cursor.selectionIndexAnchorColumn = cursor.selectionIndexEndColumn;
                     }
                     else {
-                        EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                        let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
-                        if (event.ctrlKey & cursor.indexColumn < lastValidIndexColumn) {
-                            let line = EDITOR_getLineBoundaryPositions(cursor.indexLine);
-                            let indexPosition = line.start + cursor.indexColumn;
-                            let originalCharacterKind = EDITOR_getCharacterCurrent_KIND(cursor.indexColumn, indexPosition, line.end);
-                            cursor.indexColumn++;
-                            indexPosition++;
-        
-                            while (cursor.indexColumn < lastValidIndexColumn) {
-                                if (EDITOR_getCharacterCurrent_KIND(cursor.indexColumn, indexPosition, line.end) === originalCharacterKind) {
-                                    cursor.indexColumn++;
-                                    indexPosition++;
-                                }
-                                else {
-                                    break;
-                                }
-                            }
+                        if (cursor.indexColumn > 0) {
+                            cursor.indexColumn--;
                         }
-                        else {
-                            if (cursor.indexColumn < lastValidIndexColumn) {
-                                cursor.indexColumn++;
-                            }
-                            else if (cursor.indexLine < EDITOR_lineEndPositionList.count - 1) {
-                                cursor.indexColumn = 0;
-                                cursor.indexLine++;
-                            }
-                        }
-                        EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                    }
-                    cursor.STORED_indexColumn = cursor.indexColumn;
-                    EDITOR_drawCursor(cursor);
-                    set_EDITOR_offsetColumn(get_EDITOR_offsetColumn() + cursor.editLength);
-                    set_EDITOR_totalShift(get_EDITOR_totalShift() + cursor.editLength);
-                }
-                break;
-            }
-            case 'Home':
-            {
-                event.preventDefault();
-                if (event.ctrlKey && EDITOR_cursorList.length > 1) {
-                    alert("Home: this would cause two cursors to exist on the same line, for the initial simpler implementation two cursors being on the same line is not permitted.");
-                    return;
-                }
-                for (var i = EDITOR_cursorList.length - 1; i >= 0; i--) {
-                    let cursor = EDITOR_cursorList[i];
-                    EDITOR_movementBasedCacheInvalidation(cursor);
-                    EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                    if (event.ctrlKey) {
-                        cursor.indexLine = 0;
-                        cursor.indexColumn = 0;
-                    }
-                    else {
-                        let endExclusiveIndentationIndexColumn = EDITOR_findEndExclusiveIndentationIndexColumn(cursor);
-                        if (cursor.indexColumn == endExclusiveIndentationIndexColumn) {
-                            cursor.indexColumn = 0;
-                        }
-                        else {
-                            cursor.indexColumn = endExclusiveIndentationIndexColumn;
+                        else if (cursor.indexLine > 0) {
+                            cursor.indexLine--;
+                            cursor.indexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
                         }
                     }
                     EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                    cursor.STORED_indexColumn = cursor.indexColumn;
-                    EDITOR_drawCursor(cursor);
                 }
-                break;
+                cursor.STORED_indexColumn = cursor.indexColumn;
+                EDITOR_drawCursor(cursor);
+                set_EDITOR_offsetColumn(get_EDITOR_offsetColumn() + cursor.editLength);
+                set_EDITOR_totalShift(get_EDITOR_totalShift() + cursor.editLength);
             }
-            case 'End':
-            {
-                event.preventDefault();
-                if (event.ctrlKey && EDITOR_cursorList.length > 1) {
-                    alert("End: this would cause two cursors to exist on the same line, for the initial simpler implementation two cursors being on the same line is not permitted.");
-                    return;
-                }
-                for (var i = EDITOR_cursorList.length - 1; i >= 0; i--) {
-                    let cursor = EDITOR_cursorList[i];
-                    EDITOR_movementBasedCacheInvalidation(cursor);
-                    EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                    if (event.ctrlKey) {
-                        cursor.indexLine = EDITOR_lineEndPositionList.count - 1;
-                    }
-                    cursor.indexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
-                    EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
-                    cursor.STORED_indexColumn = cursor.indexColumn;
-                    EDITOR_drawCursor(cursor);
-                }
-                break;
-            }
-            case 'PageDown':
-            {
-                if (event.ctrlKey) {
-                    // This doesn't seem to make a difference for me but I feel like I should have this line regardless...
-                    // ...in case someone's computer for some reason would end up having default behavior even though mine seems to not.
-                    event.preventDefault();
-                    EDITOR_primaryCursor.indexLine = get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount();
-                    if (get_EDITOR_virtualCount() > 1) {
-                        // this seems to more commonly have the cursor staying within the viewport rather than overlapping outside.
-                        EDITOR_primaryCursor.indexLine--;
-                    }
-                    if (EDITOR_primaryCursor.indexLine >= EDITOR_lineEndPositionList.count) {
-                        // TODO: You can't delete EOF can you? i.e.: cursor final position of file then delete?
-                        EDITOR_primaryCursor.indexLine = EDITOR_lineEndPositionList.count - 1;
-                    }
-                    EDITOR_primaryCursor.indexColumn = 0;
-                    // TODO: allow someone to select via this keybind, but for now it causes a bad selection if you { 'Ctrl' + 'a' } then use it so I'm clearing any active selection here for now.
-                    EDITOR_primaryCursor.selectionAnchor = EDITOR_primaryCursor.selectionEnd;
-                    EDITOR_drawCursor(EDITOR_primaryCursor);
-                }
-                break;
-            }
-			case 'PageUp':
-            {
-                if (event.ctrlKey) {
-                    // This doesn't seem to make a difference for me but I feel like I should have this line regardless...
-                    // ...in case someone's computer for some reason would end up having default behavior even though mine seems to not.
-                    event.preventDefault();
-                    EDITOR_primaryCursor.indexLine = get_EDITOR_virtualIndexLine();
-                    if (get_EDITOR_virtualCount() > 1) {
-                        // this seems to more commonly have the cursor staying within the viewport rather than overlapping outside.
-                        EDITOR_primaryCursor.indexLine++;
-                    }
-                    if (EDITOR_primaryCursor.indexLine >= EDITOR_lineEndPositionList.count) {
-                        // TODO: You can't delete EOF can you? i.e.: cursor final position of file then delete?
-                        EDITOR_primaryCursor.indexLine = EDITOR_lineEndPositionList.count - 1;
-                    }
-                    EDITOR_primaryCursor.indexColumn = 0;
-                    // TODO: allow someone to select via this keybind, but for now it causes a bad selection if you { 'Ctrl' + 'a' } then use it so I'm clearing any active selection here for now.
-                    EDITOR_primaryCursor.selectionAnchor = EDITOR_primaryCursor.selectionEnd;
-                    EDITOR_drawCursor(EDITOR_primaryCursor);
-                }
-                break;
-            }
-            case 'Delete':
-            {
-                EDITOR_editEvent(get_EditKind_DeleteLtr(), event);
-                break;
-            }
-            case 'Backspace':
-            {
-                EDITOR_editEvent(get_EditKind_BackspaceRtl(), event);
-                break;
-            }
-            case 'Escape':
-            {
-                EDITOR_finalizeAllCursors_andClearNonPrimaryCursors();
-                break;
-            }
-            case ' ':
-            {
-                event.preventDefault();
-                // len is 1 of this case, pattern doesn't match on purpose
-                break;
-            }
-            case 'Tab':
-            {
-                event.preventDefault();
-                EDITOR_editEvent(get_EditKind_Tab(), event);
-                break;
-            }
-            case 'Enter':
-            {
-                // Enter key relies on cached data that would be cleared, pattern doesn't match on purpose
-                EDITOR_editEvent(get_EditKind_Enter(), event);
-                break;
-            }
-            case 'F12':
-            {
-                //await window.myAPI.editorDocumentSymbolsRequest();
-                break;
-            }
+            break;
         }
-
-        // TODO: Checking for a length of 1 is probably wrong but it'll let me start writing some code
-        if (event.key.length === 1) {
+        case 'ArrowDown':
+        {
+            event.preventDefault();
             if (event.ctrlKey) {
-                EDITOR_movementBasedCacheInvalidation(EDITOR_primaryCursor);
-                switch (event.key) {
-                    case 'c':
-                        EDITOR_finalizeAllCursors();
-                        await EDITOR_copySelection(EDITOR_primaryCursor);
-                        break;
-                    case 'x':
-                        EDITOR_finalizeAllCursors();
-                        await EDITOR_copySelection(EDITOR_primaryCursor);
-                        EDITOR_removeSelection(EDITOR_primaryCursor); // TODO: Multicursor bad
-                        EDITOR_drawCursor(EDITOR_primaryCursor);
-                        break;
-                    case 'v':
-                        let clipboard = await window.myAPI.readClipboard();
-                        EDITOR_editEvent(get_EditKind_Paste(), event, clipboard);
-                        break;
-                    case 'd':
-                        EDITOR_editEvent(get_EditKind_Duplicate(), event);
-                        break;
-                    case 'a':
-                        event.preventDefault();
-                        EDITOR_finalizeAllCursors(); // TODO: Multicursor bad
-                        EDITOR_primaryCursor.selectionAnchor = 0;
-                        EDITOR_primaryCursor.selectionEnd = EDITOR_textByteList.count;
-                        let selectionEndLineAndColumnIndices = EDITOR_getLineAndColumnIndices(EDITOR_primaryCursor.selectionEnd);
-                        EDITOR_primaryCursor.indexLine = selectionEndLineAndColumnIndices.indexLine;
-                        EDITOR_primaryCursor.indexColumn = selectionEndLineAndColumnIndices.indexColumn;
-                        EDITOR_drawCursor(EDITOR_primaryCursor, /*NOTscrollCursorIntoView*/ true);
-                        break;
-                    case 'f':
-                        EDITOR_findOverlay_showSetter(!get_EDITOR_findOverlay_show());
-                        break;
-                    case 'z':
-                        //alert('undo');
-                        break;
-                    case 'y':
-                        //alert('redo');
-                        break;
-                }
+                EDITOR_baseElement.scrollBy(0, get_EDITOR_lineHeight());
             }
             else if (event.altKey) {
-            	switch (event.key) {
-                    case '>':
-                        if (event.shiftKey) {
-                            let local_findOverlay_isBeingShownDueToMultiCursorMatching = get_EDITOR_findOverlay_isBeingShownDueToMultiCursorMatching();
-                            EDITOR_movementBasedCacheInvalidation(EDITOR_primaryCursor);
-                            set_EDITOR_findOverlay_isBeingShownDueToMultiCursorMatching(local_findOverlay_isBeingShownDueToMultiCursorMatching);
-                            EDITOR_createCursorAtNextMatchSelection(event);
-                        }
-                        break;
+                if (event.shiftKey) {
+                    EDITOR_createCursorLineBelow(event);
                 }
             }
             else {
-                EDITOR_editEvent(get_EditKind_InsertLtr(), event);
+                let lastCursor = EDITOR_cursorList[EDITOR_cursorList.length - 1];
+                if (lastCursor.indexLine === EDITOR_lineEndPositionList.count - 1) {
+                    if (EDITOR_cursorList.length - 1 > 0 && EDITOR_cursorList[EDITOR_cursorList.length - 2].indexLine === lastCursor.indexLine - 1) {
+                        alert("ArrowDown: this would cause two cursors to exist on the same line, for the initial simpler implementation two cursors being on the same line is not permitted.");
+                        return;
+                    }
+                }
+                for (var i = EDITOR_cursorList.length - 1; i >= 0; i--) {
+                    EDITOR_arrowDown(EDITOR_cursorList[i], /*shiftKey*/ event.shiftKey);
+                }
             }
-
-            return;
+            break;
         }
-    });
+        case 'ArrowUp':
+        {
+            event.preventDefault();
+            if (event.ctrlKey) {
+                EDITOR_baseElement.scrollBy(0, -1 * get_EDITOR_lineHeight());
+            }
+            else {
+                let firstCursor = EDITOR_cursorList[0];
+                if (firstCursor.indexLine === 0) {
+                    if (EDITOR_cursorList.length - 1 > 0 && EDITOR_cursorList[1].indexLine === firstCursor.indexLine + 1) {
+                        alert("ArrowUp: this would cause two cursors to exist on the same line, for the initial simpler implementation two cursors being on the same line is not permitted.");
+                        return;
+                    }
+                }
+                for (var i = EDITOR_cursorList.length - 1; i >= 0; i--) {
+                    let cursor = EDITOR_cursorList[i];
+                    EDITOR_movementBasedCacheInvalidation(cursor);
+                    EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                    if (cursor.indexLine > 0) {
+                        cursor.indexLine--;
+                        let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
+                        if (cursor.STORED_indexColumn > lastValidIndexColumn) {
+                            cursor.indexColumn = lastValidIndexColumn;
+                        }
+                        else {
+                            cursor.indexColumn = cursor.STORED_indexColumn;
+                        }
+                    }
+                    EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                    EDITOR_drawCursor(cursor);
+                }
+            }
+            break;
+        }
+        case 'ArrowRight':
+        {
+            event.preventDefault();
 
-    EDITOR_baseElement.addEventListener('mousedown', event => {
-        EDITOR_movementBasedCacheInvalidation(EDITOR_primaryCursor);
-        
-        if (EDITOR_cursorList.length > 1) {
+            for (var i = 0; i < EDITOR_cursorList.length; i++) {
+                let cursor = EDITOR_cursorList[i];
+                set_EDITOR_indexCursor(i);
+                EDITOR_movementBasedCacheInvalidation(cursor);
+                if (get_EDITOR_offsetColumn_withRespectToThisIndexLine() !== cursor.indexLine) {
+                    set_EDITOR_offsetColumn_withRespectToThisIndexLine(cursor.indexLine);
+                    set_EDITOR_offsetColumn(0);
+                }
+
+                if (cursor.hasSelection() && !event.shiftKey) {
+                    let large;
+                    if (cursor.selectionAnchor < cursor.selectionEnd) {
+                        large = cursor.selectionEnd;
+                    }
+                    else {
+                        large = cursor.selectionAnchor;
+                    }
+                    let lineAndColumnIndices = EDITOR_getLineAndColumnIndices(large);
+                    cursor.indexLine = lineAndColumnIndices.indexLine;
+                    cursor.indexColumn = lineAndColumnIndices.indexColumn;
+                    cursor.selectionAnchor = cursor.selectionEnd;
+                    cursor.selectionIndexAnchorLine = cursor.selectionIndexEndLine;
+                    cursor.selectionIndexAnchorColumn = cursor.selectionIndexEndColumn;
+                }
+                else {
+                    EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                    let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
+                    if (event.ctrlKey & cursor.indexColumn < lastValidIndexColumn) {
+                        let line = EDITOR_getLineBoundaryPositions(cursor.indexLine);
+                        let indexPosition = line.start + cursor.indexColumn;
+                        let originalCharacterKind = EDITOR_getCharacterCurrent_KIND(cursor.indexColumn, indexPosition, line.end);
+                        cursor.indexColumn++;
+                        indexPosition++;
+    
+                        while (cursor.indexColumn < lastValidIndexColumn) {
+                            if (EDITOR_getCharacterCurrent_KIND(cursor.indexColumn, indexPosition, line.end) === originalCharacterKind) {
+                                cursor.indexColumn++;
+                                indexPosition++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        if (cursor.indexColumn < lastValidIndexColumn) {
+                            cursor.indexColumn++;
+                        }
+                        else if (cursor.indexLine < EDITOR_lineEndPositionList.count - 1) {
+                            cursor.indexColumn = 0;
+                            cursor.indexLine++;
+                        }
+                    }
+                    EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                }
+                cursor.STORED_indexColumn = cursor.indexColumn;
+                EDITOR_drawCursor(cursor);
+                set_EDITOR_offsetColumn(get_EDITOR_offsetColumn() + cursor.editLength);
+                set_EDITOR_totalShift(get_EDITOR_totalShift() + cursor.editLength);
+            }
+            break;
+        }
+        case 'Home':
+        {
+            event.preventDefault();
+            if (event.ctrlKey && EDITOR_cursorList.length > 1) {
+                alert("Home: this would cause two cursors to exist on the same line, for the initial simpler implementation two cursors being on the same line is not permitted.");
+                return;
+            }
+            for (var i = EDITOR_cursorList.length - 1; i >= 0; i--) {
+                let cursor = EDITOR_cursorList[i];
+                EDITOR_movementBasedCacheInvalidation(cursor);
+                EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                if (event.ctrlKey) {
+                    cursor.indexLine = 0;
+                    cursor.indexColumn = 0;
+                }
+                else {
+                    let endExclusiveIndentationIndexColumn = EDITOR_findEndExclusiveIndentationIndexColumn(cursor);
+                    if (cursor.indexColumn == endExclusiveIndentationIndexColumn) {
+                        cursor.indexColumn = 0;
+                    }
+                    else {
+                        cursor.indexColumn = endExclusiveIndentationIndexColumn;
+                    }
+                }
+                EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                cursor.STORED_indexColumn = cursor.indexColumn;
+                EDITOR_drawCursor(cursor);
+            }
+            break;
+        }
+        case 'End':
+        {
+            event.preventDefault();
+            if (event.ctrlKey && EDITOR_cursorList.length > 1) {
+                alert("End: this would cause two cursors to exist on the same line, for the initial simpler implementation two cursors being on the same line is not permitted.");
+                return;
+            }
+            for (var i = EDITOR_cursorList.length - 1; i >= 0; i--) {
+                let cursor = EDITOR_cursorList[i];
+                EDITOR_movementBasedCacheInvalidation(cursor);
+                EDITOR_preKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                if (event.ctrlKey) {
+                    cursor.indexLine = EDITOR_lineEndPositionList.count - 1;
+                }
+                cursor.indexColumn = EDITOR_getLastValidIndexColumn(cursor.indexLine);
+                EDITOR_postKeyboardMovementSelectionLogic(cursor, event.shiftKey);
+                cursor.STORED_indexColumn = cursor.indexColumn;
+                EDITOR_drawCursor(cursor);
+            }
+            break;
+        }
+        case 'PageDown':
+        {
+            if (event.ctrlKey) {
+                // This doesn't seem to make a difference for me but I feel like I should have this line regardless...
+                // ...in case someone's computer for some reason would end up having default behavior even though mine seems to not.
+                event.preventDefault();
+                EDITOR_primaryCursor.indexLine = get_EDITOR_virtualIndexLine() + get_EDITOR_virtualCount();
+                if (get_EDITOR_virtualCount() > 1) {
+                    // this seems to more commonly have the cursor staying within the viewport rather than overlapping outside.
+                    EDITOR_primaryCursor.indexLine--;
+                }
+                if (EDITOR_primaryCursor.indexLine >= EDITOR_lineEndPositionList.count) {
+                    // TODO: You can't delete EOF can you? i.e.: cursor final position of file then delete?
+                    EDITOR_primaryCursor.indexLine = EDITOR_lineEndPositionList.count - 1;
+                }
+                EDITOR_primaryCursor.indexColumn = 0;
+                // TODO: allow someone to select via this keybind, but for now it causes a bad selection if you { 'Ctrl' + 'a' } then use it so I'm clearing any active selection here for now.
+                EDITOR_primaryCursor.selectionAnchor = EDITOR_primaryCursor.selectionEnd;
+                EDITOR_drawCursor(EDITOR_primaryCursor);
+            }
+            break;
+        }
+        case 'PageUp':
+        {
+            if (event.ctrlKey) {
+                // This doesn't seem to make a difference for me but I feel like I should have this line regardless...
+                // ...in case someone's computer for some reason would end up having default behavior even though mine seems to not.
+                event.preventDefault();
+                EDITOR_primaryCursor.indexLine = get_EDITOR_virtualIndexLine();
+                if (get_EDITOR_virtualCount() > 1) {
+                    // this seems to more commonly have the cursor staying within the viewport rather than overlapping outside.
+                    EDITOR_primaryCursor.indexLine++;
+                }
+                if (EDITOR_primaryCursor.indexLine >= EDITOR_lineEndPositionList.count) {
+                    // TODO: You can't delete EOF can you? i.e.: cursor final position of file then delete?
+                    EDITOR_primaryCursor.indexLine = EDITOR_lineEndPositionList.count - 1;
+                }
+                EDITOR_primaryCursor.indexColumn = 0;
+                // TODO: allow someone to select via this keybind, but for now it causes a bad selection if you { 'Ctrl' + 'a' } then use it so I'm clearing any active selection here for now.
+                EDITOR_primaryCursor.selectionAnchor = EDITOR_primaryCursor.selectionEnd;
+                EDITOR_drawCursor(EDITOR_primaryCursor);
+            }
+            break;
+        }
+        case 'Delete':
+        {
+            EDITOR_editEvent(get_EditKind_DeleteLtr(), event);
+            break;
+        }
+        case 'Backspace':
+        {
+            EDITOR_editEvent(get_EditKind_BackspaceRtl(), event);
+            break;
+        }
+        case 'Escape':
+        {
             EDITOR_finalizeAllCursors_andClearNonPrimaryCursors();
+            break;
         }
-        
-        // TODO: You might want to do this inside 'EDITOR_finalizeAllCursors_andClearNonPrimaryCursors();' at the end... I'm not sure.
-        set_EDITOR_indexCursor(0);
-        set_EDITOR_offsetColumn(0);
-        set_EDITOR_offsetLine(0);
-
-        if (get_EDITOR_recentBoundingClientRect_isNull_intFalsey()) {
-            let boundingClientRect = EDITOR_baseElement.getBoundingClientRect();
-            set_EDITOR_recentBoundingClientRect_left(boundingClientRect.left);
-            set_EDITOR_recentBoundingClientRect_top(boundingClientRect.top);
-            set_EDITOR_recentBoundingClientRect_isNull_intFalsey(0);
+        case ' ':
+        {
+            event.preventDefault();
+            // len is 1 of this case, pattern doesn't match on purpose
+            break;
         }
-
-        if (event.button === 0) {
-            set_EDITOR_isSourceOfLeftMouseButton(true);
-            EDITOR_onMouseMove_timer = null;
+        case 'Tab':
+        {
+            event.preventDefault();
+            EDITOR_editEvent(get_EditKind_Tab(), event);
+            break;
         }
-
-        let rY = event.clientY - get_EDITOR_recentBoundingClientRect_top() + EDITOR_baseElement.scrollTop;
-        let rX = event.clientX - get_EDITOR_recentBoundingClientRect_left() - get_EDITOR_gutterWidthTotal() + EDITOR_baseElement.scrollLeft;
-        
-        let indexLine = Math.floor(rY / get_EDITOR_lineHeight());
-        let indexColumn = Math.round(rX / EDITOR_characterWidth);
-
-        if (indexLine < 0) {
-            indexLine = 0;
+        case 'Enter':
+        {
+            // Enter key relies on cached data that would be cleared, pattern doesn't match on purpose
+            EDITOR_editEvent(get_EditKind_Enter(), event);
+            break;
         }
-
-        if (indexColumn < 0) {
-            indexColumn = 0;
+        case 'F12':
+        {
+            //await window.myAPI.editorDocumentSymbolsRequest();
+            break;
         }
+    }
 
-        if (indexLine >= EDITOR_lineEndPositionList.count) {
-            indexLine = EDITOR_lineEndPositionList.count - 1;
+    // TODO: Checking for a length of 1 is probably wrong but it'll let me start writing some code
+    if (event.key.length === 1) {
+        if (event.ctrlKey) {
+            EDITOR_movementBasedCacheInvalidation(EDITOR_primaryCursor);
+            switch (event.key) {
+                case 'c':
+                    EDITOR_finalizeAllCursors();
+                    await EDITOR_copySelection(EDITOR_primaryCursor);
+                    break;
+                case 'x':
+                    EDITOR_finalizeAllCursors();
+                    await EDITOR_copySelection(EDITOR_primaryCursor);
+                    EDITOR_removeSelection(EDITOR_primaryCursor); // TODO: Multicursor bad
+                    EDITOR_drawCursor(EDITOR_primaryCursor);
+                    break;
+                case 'v':
+                    let clipboard = await window.myAPI.readClipboard();
+                    EDITOR_editEvent(get_EditKind_Paste(), event, clipboard);
+                    break;
+                case 'd':
+                    EDITOR_editEvent(get_EditKind_Duplicate(), event);
+                    break;
+                case 'a':
+                    event.preventDefault();
+                    EDITOR_finalizeAllCursors(); // TODO: Multicursor bad
+                    EDITOR_primaryCursor.selectionAnchor = 0;
+                    EDITOR_primaryCursor.selectionEnd = EDITOR_textByteList.count;
+                    let selectionEndLineAndColumnIndices = EDITOR_getLineAndColumnIndices(EDITOR_primaryCursor.selectionEnd);
+                    EDITOR_primaryCursor.indexLine = selectionEndLineAndColumnIndices.indexLine;
+                    EDITOR_primaryCursor.indexColumn = selectionEndLineAndColumnIndices.indexColumn;
+                    EDITOR_drawCursor(EDITOR_primaryCursor, /*NOTscrollCursorIntoView*/ true);
+                    break;
+                case 'f':
+                    EDITOR_findOverlay_showSetter(!get_EDITOR_findOverlay_show());
+                    break;
+                case 'z':
+                    //alert('undo');
+                    break;
+                case 'y':
+                    //alert('redo');
+                    break;
+            }
         }
-
-        let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(indexLine);
-        if (indexColumn > lastValidIndexColumn) {
-            indexColumn = lastValidIndexColumn;
-        }
-
-        if (rX < -1 * get_EDITOR_gutterPaddingRight()) {
-            set_EDITOR_detailRank(3);
-            EDITOR_onMouseDownDetailRankThree(event, indexLine, indexColumn);
-            return;
-        }
-
-        if (event.detail % 3 === 0) {
-            set_EDITOR_detailRank(3);
-            EDITOR_onMouseDownDetailRankThree(event, indexLine, indexColumn);
-        }
-        else if (event.detail % 2 === 0) {
-            set_EDITOR_detailRank(2);
-            EDITOR_onMouseDownDetailRankTwo(event, indexLine, indexColumn);
+        else if (event.altKey) {
+            switch (event.key) {
+                case '>':
+                    if (event.shiftKey) {
+                        let local_findOverlay_isBeingShownDueToMultiCursorMatching = get_EDITOR_findOverlay_isBeingShownDueToMultiCursorMatching();
+                        EDITOR_movementBasedCacheInvalidation(EDITOR_primaryCursor);
+                        set_EDITOR_findOverlay_isBeingShownDueToMultiCursorMatching(local_findOverlay_isBeingShownDueToMultiCursorMatching);
+                        EDITOR_createCursorAtNextMatchSelection(event);
+                    }
+                    break;
+            }
         }
         else {
-            set_EDITOR_detailRank(1);
-            EDITOR_onMouseDownDetailRankOne(event, indexLine, indexColumn);
+            EDITOR_editEvent(get_EditKind_InsertLtr(), event);
         }
-    });
 
-    EDITOR_baseElement.addEventListener('mousemove', EDITOR_onMouseMove_WRAPIT.bind(this));
+        return;
+    }
+}
 
-    EDITOR_baseElement.addEventListener('scroll', EDITOR_onScroll_WRAPIT.bind(this));
-
-    EDITOR_baseElement.addEventListener('wheel', EDITOR_onWheel);
-
-    EDITOR_baseElement.addEventListener('contextmenu', async event => {
-        let optionList = [
-            new MenuOption(get_CommandKind_Cut(), 'Cut', null),
-            new MenuOption(get_CommandKind_Copy(), 'Copy', null),
-            new MenuOption(get_CommandKind_Paste(), 'Paste', null),
-            new MenuOption(get_CommandKind_Find(), 'Find', null),
-        ];
-
-        let menuLeft = get_EDITOR_recentBoundingClientRect_left() + get_EDITOR_gutterWidthTotal() + EDITOR_primaryCursor.cursorTranslateXValue - EDITOR_baseElement.scrollLeft;
-        let menuTop = get_EDITOR_recentBoundingClientRect_top() + EDITOR_primaryCursor.cursorTranslateYValue + get_EDITOR_lineHeight() - EDITOR_baseElement.scrollTop;
-
-        if (event.button === 2) {
-            menuSet('EDITOR', null, optionList, menuLeft, menuTop);
-        } else {
-            menuSet('EDITOR', null, optionList, menuLeft, menuTop);
-        }
-    });
-
-    // You have '.bind(this)'... why???
+function EDITOR_onMouseDown(event) {
+    EDITOR_movementBasedCacheInvalidation(EDITOR_primaryCursor);
     
-    window.addEventListener('resize', EDITOR_onResize_WRAPIT.bind(this));
+    if (EDITOR_cursorList.length > 1) {
+        EDITOR_finalizeAllCursors_andClearNonPrimaryCursors();
+    }
+    
+    // TODO: You might want to do this inside 'EDITOR_finalizeAllCursors_andClearNonPrimaryCursors();' at the end... I'm not sure.
+    set_EDITOR_indexCursor(0);
+    set_EDITOR_offsetColumn(0);
+    set_EDITOR_offsetLine(0);
 
-    get_EDITOR_horizontal_scrollbar().addEventListener('scroll', () => {
-        EDITOR_baseElement.scrollLeft = get_EDITOR_horizontal_scrollbar().scrollLeft;
-    });
+    if (get_EDITOR_recentBoundingClientRect_isNull_intFalsey()) {
+        let boundingClientRect = EDITOR_baseElement.getBoundingClientRect();
+        set_EDITOR_recentBoundingClientRect_left(boundingClientRect.left);
+        set_EDITOR_recentBoundingClientRect_top(boundingClientRect.top);
+        set_EDITOR_recentBoundingClientRect_isNull_intFalsey(0);
+    }
+
+    if (event.button === 0) {
+        set_EDITOR_isSourceOfLeftMouseButton(true);
+        EDITOR_onMouseMove_timer = null;
+    }
+
+    let rY = event.clientY - get_EDITOR_recentBoundingClientRect_top() + EDITOR_baseElement.scrollTop;
+    let rX = event.clientX - get_EDITOR_recentBoundingClientRect_left() - get_EDITOR_gutterWidthTotal() + EDITOR_baseElement.scrollLeft;
+    
+    let indexLine = Math.floor(rY / get_EDITOR_lineHeight());
+    let indexColumn = Math.round(rX / EDITOR_characterWidth);
+
+    if (indexLine < 0) {
+        indexLine = 0;
+    }
+
+    if (indexColumn < 0) {
+        indexColumn = 0;
+    }
+
+    if (indexLine >= EDITOR_lineEndPositionList.count) {
+        indexLine = EDITOR_lineEndPositionList.count - 1;
+    }
+
+    let lastValidIndexColumn = EDITOR_getLastValidIndexColumn(indexLine);
+    if (indexColumn > lastValidIndexColumn) {
+        indexColumn = lastValidIndexColumn;
+    }
+
+    if (rX < -1 * get_EDITOR_gutterPaddingRight()) {
+        set_EDITOR_detailRank(3);
+        EDITOR_onMouseDownDetailRankThree(event, indexLine, indexColumn);
+        return;
+    }
+
+    if (event.detail % 3 === 0) {
+        set_EDITOR_detailRank(3);
+        EDITOR_onMouseDownDetailRankThree(event, indexLine, indexColumn);
+    }
+    else if (event.detail % 2 === 0) {
+        set_EDITOR_detailRank(2);
+        EDITOR_onMouseDownDetailRankTwo(event, indexLine, indexColumn);
+    }
+    else {
+        set_EDITOR_detailRank(1);
+        EDITOR_onMouseDownDetailRankOne(event, indexLine, indexColumn);
+    }
+}
+
+async function EDITOR_onContextMenu(event) {
+    let optionList = [
+        new MenuOption(get_CommandKind_Cut(), 'Cut', null),
+        new MenuOption(get_CommandKind_Copy(), 'Copy', null),
+        new MenuOption(get_CommandKind_Paste(), 'Paste', null),
+        new MenuOption(get_CommandKind_Find(), 'Find', null),
+    ];
+
+    let menuLeft = get_EDITOR_recentBoundingClientRect_left() + get_EDITOR_gutterWidthTotal() + EDITOR_primaryCursor.cursorTranslateXValue - EDITOR_baseElement.scrollLeft;
+    let menuTop = get_EDITOR_recentBoundingClientRect_top() + EDITOR_primaryCursor.cursorTranslateYValue + get_EDITOR_lineHeight() - EDITOR_baseElement.scrollTop;
+
+    if (event.button === 2) {
+        menuSet('EDITOR', null, optionList, menuLeft, menuTop);
+    } else {
+        menuSet('EDITOR', null, optionList, menuLeft, menuTop);
+    }
 }
 
 /**
@@ -3583,6 +3578,10 @@ function EDITOR_onWheel(event) {
         EDITOR_baseElement.scrollBy(event.deltaY, 0);
         get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
     }
+}
+
+function EDITOR_horizontal_scrollbar_onScroll() {
+    EDITOR_baseElement.scrollLeft = get_EDITOR_horizontal_scrollbar().scrollLeft;
 }
 
 function EDITOR_findOverlay_doSearch() {
