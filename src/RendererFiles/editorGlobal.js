@@ -7626,4 +7626,6 @@ I also have an incognito mode of this repo and I refresh it to see if I'm banned
 I believe they track my IP and track when I visit my own repo both through my own account and when I do from my IP not signed in.
 And that they're using this data for something.
 
+When I get especially paranoid about all of this my heart races and I sweat profusely.
+
 */
