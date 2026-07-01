@@ -5538,11 +5538,8 @@ function EDITOR_requestTick() {
     set_EDITOR_ONSCROLLscrollTop(EDITOR_baseElement.scrollTop);
 
     if (scroll_tickingId === null) {
-        scroll_tickingId = window.requestAnimationFrame(() => {
-            // Put your actual layout rendering logic cleanly in here
-            EDITOR_performLayoutUpdate(); 
-            scroll_tickingId = null;
-        });
+        // The previous arrow function that was here was rate limited by the refresh rate so it wasn't as bad, but it still was 60 to 120 allocations a second.
+        scroll_tickingId = window.requestAnimationFrame(EDITOR_performLayoutUpdate);
     }
 }
 
@@ -5709,6 +5706,8 @@ function EDITOR_performLayoutUpdate() {
             div.removeChild(div.children[i]);
         }
     }
+
+    scroll_tickingId = null;
 }
 
 function EDITOR_onScroll_TrailingEdge() {
