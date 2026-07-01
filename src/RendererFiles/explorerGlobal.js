@@ -746,44 +746,7 @@ async function EXPLORER_MenuOnClick(indexClicked, elementClicked) {
                 const entry = await window.myAPI.getFilesystemEntryById(MENU_target.id);
                 if (!entry) return;
                 WIDGET_target = MENU_target;
-                WIDGET_show(get_WidgetKind_InputText(), menuOptionX, menuOptionY, 'filename', async result => {
-                    if (result.isCancelled) return;
-                    let newFileResult = await window.myAPI.newFile(entry.absolutePath, result.value, /*isDirectory*/ true);
-                    if (newFileResult.success) {
-                        /*
-                        // TODO: I saw the result was success but the indexOf was -1 when adding a file with the same name twice that seems erroneous.
-
-                        // TODO: I added 3 files total while testing various words that would alphabetically be placed at the start, end, or somewhere in the middle...
-                        // ...I think the middle case for some reason ended up in the parent? I'm not quite sure what happened.
-                        */
-
-                        // TODO: I belive this final new directory logic that comes after this comment and within this scope is 1 to 1 an exact duplication of the new file logic...
-                        
-                        let nodeKind = get_TreeViewNodeKind_isExpandable_NOTisExpanded();
-                        let newIndexItem = WIDGET_target.indexItem + 1 + newFileResult.indexOf;
-                        EXPLORER_director.nodeList.insert(newIndexItem, nodeKind, newFileResult.pathId, WIDGET_target.depth + 1);
-
-                        if (EXPLORER_director.component.virtualCount > 0) {
-                            let largestIndexItemBeingShown = EXPLORER_director.component.virtualIndex + (EXPLORER_director.component.virtualCount - 1);
-                            if (newIndexItem >= EXPLORER_director.component.virtualIndex && newIndexItem <= largestIndexItemBeingShown) {
-                                //let finalDiv = EXPLORER_director.component.itemListElement.children[EXPLORER_director.component.itemListElement.children.length - 1];
-
-                                EXPLORER_director.component.itemHeightTotal = EXPLORER_director.tvd_getTotalCount() * EXPLORER_director.component.itemHeightNumber;
-                                EXPLORER_director.component.virtualizationElement.style.height = EXPLORER_director.component.itemHeightTotal + 'px';
-
-                                //await EXPLORER_director.tvd_drawItem_async(finalDiv, newIndexItem, /*isNull*/ false);
-                                if (newIndexItem !== largestIndexItemBeingShown) {
-                                    //EXPLORER_director.component.itemListElement.insertBefore(finalDiv, EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex + 1 + newFileResult.indexOf]);
-                                }
-                            }
-                        }
-
-                        // TODO: fine grained redrawing of only the nodes that are:
-                        // - part of the virtualization result
-                        // - and have changed in some way that necessitates their UI be redrawn
-                        await EXPLORER_director.tvd_drawItem_BATCH_async(EXPLORER_director.component.virtualIndex, EXPLORER_director.component.virtualCount, 3);
-                    }
-                });
+                WIDGET_show(get_WidgetKind_InputText(), menuOptionX, menuOptionY, 'filename', get_CommandKind_NewFile_Directory_WIDGET_InputText_callback);
                 break;
             }
         case get_CommandKind_NewFile_File():
@@ -793,42 +756,7 @@ async function EXPLORER_MenuOnClick(indexClicked, elementClicked) {
                 const entry = await window.myAPI.getFilesystemEntryById(MENU_target.id);
                 if (!entry) return;
                 WIDGET_target = MENU_target;
-                WIDGET_show(get_WidgetKind_InputText(), menuOptionX, menuOptionY, 'filename', async result => {
-                    if (result.isCancelled) return;
-                    let newFileResult = await window.myAPI.newFile(entry.absolutePath, result.value, /*isDirectory*/ false);
-                    if (newFileResult.success) {
-                        /*
-                        // TODO: I saw the result was success but the indexOf was -1 when adding a file with the same name twice that seems erroneous.
-
-                        // TODO: I added 3 files total while testing various words that would alphabetically be placed at the start, end, or somewhere in the middle...
-                        // ...I think the middle case for some reason ended up in the parent? I'm not quite sure what happened.
-                        */
-
-                        let nodeKind = get_TreeViewNodeKind_NOTisExpandable_NOTisExpanded();
-                        let newIndexItem = WIDGET_target.indexItem + 1 + newFileResult.indexOf;
-                        EXPLORER_director.nodeList.insert(newIndexItem, nodeKind, newFileResult.pathId, WIDGET_target.depth + 1);
-
-                        if (EXPLORER_director.component.virtualCount > 0) {
-                            let largestIndexItemBeingShown = EXPLORER_director.component.virtualIndex + (EXPLORER_director.component.virtualCount - 1);
-                            if (newIndexItem >= EXPLORER_director.component.virtualIndex && newIndexItem <= largestIndexItemBeingShown) {
-                                //let finalDiv = EXPLORER_director.component.itemListElement.children[EXPLORER_director.component.itemListElement.children.length - 1];
-
-                                EXPLORER_director.component.itemHeightTotal = EXPLORER_director.tvd_getTotalCount() * EXPLORER_director.component.itemHeightNumber;
-                                EXPLORER_director.component.virtualizationElement.style.height = EXPLORER_director.component.itemHeightTotal + 'px';
-
-                                //await EXPLORER_director.tvd_drawItem_async(finalDiv, newIndexItem, /*isNull*/ false);
-                                if (newIndexItem !== largestIndexItemBeingShown) {
-                                    //EXPLORER_director.component.itemListElement.insertBefore(finalDiv, EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex + 1 + newFileResult.indexOf]);
-                                }
-                            }
-                        }
-
-                        // TODO: fine grained redrawing of only the nodes that are:
-                        // - part of the virtualization result
-                        // - and have changed in some way that necessitates their UI be redrawn
-                        await EXPLORER_director.tvd_drawItem_BATCH_async(EXPLORER_director.component.virtualIndex, EXPLORER_director.component.virtualCount, 3);
-                    }
-                });
+                WIDGET_show(get_WidgetKind_InputText(), menuOptionX, menuOptionY, 'filename', get_CommandKind_NewFile_File_WIDGET_InputText_callback);
                 break;
             }
         case get_CommandKind_DeleteFile_Directory():
@@ -839,44 +767,7 @@ async function EXPLORER_MenuOnClick(indexClicked, elementClicked) {
                 if (!entry) return;
                 let filename = entry.basename;
                 WIDGET_target = MENU_target;
-                WIDGET_show(get_WidgetKind_YesCancel(), menuOptionX, menuOptionY, 'delete ' + filename, async result => {
-                    if (result.isCancelled) return;
-                    let deleteFileResult = await window.myAPI.deleteFile(entry.absolutePath, /*isDirectory*/ true);
-                    if (deleteFileResult) {
-                        let countOfMoreEntriesToShow = EXPLORER_director.tvd_getTotalCount() - (EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount);
-
-                        let countChanges = await EXPLORER_director.removeFromNodeList_async(WIDGET_target.indexItem);
-
-                        EXPLORER_director.component.itemHeightTotal = EXPLORER_director.tvd_getTotalCount() * EXPLORER_director.component.itemHeightNumber;
-                        EXPLORER_director.component.virtualizationElement.style.height = EXPLORER_director.component.itemHeightTotal + 'px';
-
-                        let remainingChangesToRender = countChanges < EXPLORER_director.component.virtualCount ? countChanges : EXPLORER_director.component.virtualCount - WIDGET_target.divRelativeIndex;
-
-                        if (countOfMoreEntriesToShow > remainingChangesToRender) {
-                            countOfMoreEntriesToShow = remainingChangesToRender;
-                        }
-
-                        for (let i = 0; i < remainingChangesToRender; i++) {
-                            //let divItem = EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex];
-    
-                            // TODO: if you remove including the eventual final div in the itemListElement then this moving of the div isn't accomplishing anything and could be skipped.
-                            //EXPLORER_director.component.itemListElement.insertBefore(divItem, undefined);
-
-                            if (countOfMoreEntriesToShow <= 0) {
-                                //await EXPLORER_director.tvd_drawItem_async(divItem, EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount - 1, /*isNull*/ true);
-                            }
-                            else {
-                                //await EXPLORER_director.tvd_drawItem_async(divItem, EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount - (remainingChangesToRender - i), /*isNull*/ false);
-                                countOfMoreEntriesToShow--;
-                            }
-                        }
-
-                        // TODO: fine grained redrawing of only the nodes that are:
-                        // - part of the virtualization result
-                        // - and have changed in some way that necessitates their UI be redrawn
-                        await EXPLORER_director.tvd_drawItem_BATCH_async(EXPLORER_director.component.virtualIndex, EXPLORER_director.component.virtualCount, 3);
-                    }
-                });
+                WIDGET_show(get_WidgetKind_YesCancel(), menuOptionX, menuOptionY, 'delete ' + filename, get_CommandKind_DeleteFile_Directory_YesCancel_callback);
                 break;
             }
         case get_CommandKind_DeleteFile_File():
@@ -887,35 +778,7 @@ async function EXPLORER_MenuOnClick(indexClicked, elementClicked) {
                 if (!entry) return;
                 let filename = entry.basename;
                 WIDGET_target = MENU_target;
-                WIDGET_show(get_WidgetKind_YesCancel(), menuOptionX, menuOptionY, 'delete ' + filename, async result => {
-                    if (result.isCancelled) return;
-                    let deleteFileResult = await window.myAPI.deleteFile(entry.absolutePath, /*isDirectory*/ false);
-                    if (deleteFileResult) {
-                        let noMoreEntriesToShow = EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount >= EXPLORER_director.tvd_getTotalCount();
-
-                        EXPLORER_director.nodeList.removeAt(WIDGET_target.indexItem, 1);
-
-                        if (EXPLORER_director.component.virtualCount > 0) {
-                            //let divItem = EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex];
-
-                            EXPLORER_director.component.itemHeightTotal = EXPLORER_director.tvd_getTotalCount() * EXPLORER_director.component.itemHeightNumber;
-                            EXPLORER_director.component.virtualizationElement.style.height = EXPLORER_director.component.itemHeightTotal + 'px';
-
-                            //EXPLORER_director.component.itemListElement.insertBefore(divItem, undefined);
-                            if (noMoreEntriesToShow) {
-                                //await EXPLORER_director.tvd_drawItem_async(divItem, EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount - 1, /*isNull*/ true);
-                            }
-                            else {
-                                //await EXPLORER_director.tvd_drawItem_async(divItem, EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount - 1, /*isNull*/ false);
-                            }
-                        }
-
-                        // TODO: fine grained redrawing of only the nodes that are:
-                        // - part of the virtualization result
-                        // - and have changed in some way that necessitates their UI be redrawn
-                        await EXPLORER_director.tvd_drawItem_BATCH_async(EXPLORER_director.component.virtualIndex, EXPLORER_director.component.virtualCount, 3);
-                    }
-                });
+                WIDGET_show(get_WidgetKind_YesCancel(), menuOptionX, menuOptionY, 'delete ' + filename, get_CommandKind_DeleteFile_File_YesCancel_callback);
                 break;
             }
         case get_CommandKind_RenameFile_Directory():
@@ -926,15 +789,7 @@ async function EXPLORER_MenuOnClick(indexClicked, elementClicked) {
                 if (!entry) return;
                 let filename = entry.basename;
                 WIDGET_target = MENU_target;
-                WIDGET_show(get_WidgetKind_InputText(), menuOptionX, menuOptionY, 'rename', async result => {
-                    if (result.isCancelled) return;
-                    let renameFileResult = await window.myAPI.renameFile(entry.absolutePath, result.value, /*isDirectory*/ true);
-                    if (renameFileResult.success) {
-                        await EXPLORER_director.setNodeListEntryId_async(WIDGET_target.indexItem, renameFileResult.pathId);
-                        let divItem = EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex];
-                        divItem.lastChild.nodeValue = result.value;
-                    }
-                });
+                WIDGET_show(get_WidgetKind_InputText(), menuOptionX, menuOptionY, 'rename', get_CommandKind_RenameFile_Directory_InputText_callback);
                 let input = document.getElementById('WIDGET_inputText');
                 if (input) {
                     input.value = filename;
@@ -956,20 +811,177 @@ async function EXPLORER_MenuOnClick(indexClicked, elementClicked) {
                 if (!entry) return;
                 let filename = entry.basename;
                 WIDGET_target = MENU_target;
-                WIDGET_show(get_WidgetKind_InputText(), menuOptionX, menuOptionY, 'rename', async result => {
-                    if (result.isCancelled) return;
-                    let renameFileResult = await window.myAPI.renameFile(entry.absolutePath, result.value, /*isDirectory*/ false);
-                    if (renameFileResult.success) {
-                        await EXPLORER_director.setNodeListEntryId_async(WIDGET_target.indexItem, renameFileResult.pathId);
-                        let divItem = EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex];
-                        divItem.lastChild.nodeValue = result.value;
-                    }
-                });
+                WIDGET_show(get_WidgetKind_InputText(), menuOptionX, menuOptionY, 'rename', get_CommandKind_RenameFile_File_InputText_callback);
                 let input = document.getElementById('WIDGET_inputText');
                 if (input) {
                     input.value = filename;
                 }
                 break;
             }
+    }
+}
+
+async function get_CommandKind_NewFile_Directory_WIDGET_InputText_callback(result) {
+    if (result.isCancelled) return;
+    let newFileResult = await window.myAPI.newFile(entry.absolutePath, result.value, /*isDirectory*/ true);
+    if (newFileResult.success) {
+        /*
+        // TODO: I saw the result was success but the indexOf was -1 when adding a file with the same name twice that seems erroneous.
+
+        // TODO: I added 3 files total while testing various words that would alphabetically be placed at the start, end, or somewhere in the middle...
+        // ...I think the middle case for some reason ended up in the parent? I'm not quite sure what happened.
+        */
+
+        // TODO: I belive this final new directory logic that comes after this comment and within this scope is 1 to 1 an exact duplication of the new file logic...
+        
+        let nodeKind = get_TreeViewNodeKind_isExpandable_NOTisExpanded();
+        let newIndexItem = WIDGET_target.indexItem + 1 + newFileResult.indexOf;
+        EXPLORER_director.nodeList.insert(newIndexItem, nodeKind, newFileResult.pathId, WIDGET_target.depth + 1);
+
+        if (EXPLORER_director.component.virtualCount > 0) {
+            let largestIndexItemBeingShown = EXPLORER_director.component.virtualIndex + (EXPLORER_director.component.virtualCount - 1);
+            if (newIndexItem >= EXPLORER_director.component.virtualIndex && newIndexItem <= largestIndexItemBeingShown) {
+                //let finalDiv = EXPLORER_director.component.itemListElement.children[EXPLORER_director.component.itemListElement.children.length - 1];
+
+                EXPLORER_director.component.itemHeightTotal = EXPLORER_director.tvd_getTotalCount() * EXPLORER_director.component.itemHeightNumber;
+                EXPLORER_director.component.virtualizationElement.style.height = EXPLORER_director.component.itemHeightTotal + 'px';
+
+                //await EXPLORER_director.tvd_drawItem_async(finalDiv, newIndexItem, /*isNull*/ false);
+                if (newIndexItem !== largestIndexItemBeingShown) {
+                    //EXPLORER_director.component.itemListElement.insertBefore(finalDiv, EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex + 1 + newFileResult.indexOf]);
+                }
+            }
+        }
+
+        // TODO: fine grained redrawing of only the nodes that are:
+        // - part of the virtualization result
+        // - and have changed in some way that necessitates their UI be redrawn
+        await EXPLORER_director.tvd_drawItem_BATCH_async(EXPLORER_director.component.virtualIndex, EXPLORER_director.component.virtualCount, 3);
+    }
+}
+
+async function get_CommandKind_NewFile_File_WIDGET_InputText_callback(result) {
+    if (result.isCancelled) return;
+    let newFileResult = await window.myAPI.newFile(entry.absolutePath, result.value, /*isDirectory*/ false);
+    if (newFileResult.success) {
+        /*
+        // TODO: I saw the result was success but the indexOf was -1 when adding a file with the same name twice that seems erroneous.
+
+        // TODO: I added 3 files total while testing various words that would alphabetically be placed at the start, end, or somewhere in the middle...
+        // ...I think the middle case for some reason ended up in the parent? I'm not quite sure what happened.
+        */
+
+        let nodeKind = get_TreeViewNodeKind_NOTisExpandable_NOTisExpanded();
+        let newIndexItem = WIDGET_target.indexItem + 1 + newFileResult.indexOf;
+        EXPLORER_director.nodeList.insert(newIndexItem, nodeKind, newFileResult.pathId, WIDGET_target.depth + 1);
+
+        if (EXPLORER_director.component.virtualCount > 0) {
+            let largestIndexItemBeingShown = EXPLORER_director.component.virtualIndex + (EXPLORER_director.component.virtualCount - 1);
+            if (newIndexItem >= EXPLORER_director.component.virtualIndex && newIndexItem <= largestIndexItemBeingShown) {
+                //let finalDiv = EXPLORER_director.component.itemListElement.children[EXPLORER_director.component.itemListElement.children.length - 1];
+
+                EXPLORER_director.component.itemHeightTotal = EXPLORER_director.tvd_getTotalCount() * EXPLORER_director.component.itemHeightNumber;
+                EXPLORER_director.component.virtualizationElement.style.height = EXPLORER_director.component.itemHeightTotal + 'px';
+
+                //await EXPLORER_director.tvd_drawItem_async(finalDiv, newIndexItem, /*isNull*/ false);
+                if (newIndexItem !== largestIndexItemBeingShown) {
+                    //EXPLORER_director.component.itemListElement.insertBefore(finalDiv, EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex + 1 + newFileResult.indexOf]);
+                }
+            }
+        }
+
+        // TODO: fine grained redrawing of only the nodes that are:
+        // - part of the virtualization result
+        // - and have changed in some way that necessitates their UI be redrawn
+        await EXPLORER_director.tvd_drawItem_BATCH_async(EXPLORER_director.component.virtualIndex, EXPLORER_director.component.virtualCount, 3);
+    }
+}
+
+async function get_CommandKind_DeleteFile_Directory_YesCancel_callback(result) {
+    if (result.isCancelled) return;
+    let deleteFileResult = await window.myAPI.deleteFile(entry.absolutePath, /*isDirectory*/ true);
+    if (deleteFileResult) {
+        let countOfMoreEntriesToShow = EXPLORER_director.tvd_getTotalCount() - (EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount);
+
+        let countChanges = await EXPLORER_director.removeFromNodeList_async(WIDGET_target.indexItem);
+
+        EXPLORER_director.component.itemHeightTotal = EXPLORER_director.tvd_getTotalCount() * EXPLORER_director.component.itemHeightNumber;
+        EXPLORER_director.component.virtualizationElement.style.height = EXPLORER_director.component.itemHeightTotal + 'px';
+
+        let remainingChangesToRender = countChanges < EXPLORER_director.component.virtualCount ? countChanges : EXPLORER_director.component.virtualCount - WIDGET_target.divRelativeIndex;
+
+        if (countOfMoreEntriesToShow > remainingChangesToRender) {
+            countOfMoreEntriesToShow = remainingChangesToRender;
+        }
+
+        for (let i = 0; i < remainingChangesToRender; i++) {
+            //let divItem = EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex];
+
+            // TODO: if you remove including the eventual final div in the itemListElement then this moving of the div isn't accomplishing anything and could be skipped.
+            //EXPLORER_director.component.itemListElement.insertBefore(divItem, undefined);
+
+            if (countOfMoreEntriesToShow <= 0) {
+                //await EXPLORER_director.tvd_drawItem_async(divItem, EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount - 1, /*isNull*/ true);
+            }
+            else {
+                //await EXPLORER_director.tvd_drawItem_async(divItem, EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount - (remainingChangesToRender - i), /*isNull*/ false);
+                countOfMoreEntriesToShow--;
+            }
+        }
+
+        // TODO: fine grained redrawing of only the nodes that are:
+        // - part of the virtualization result
+        // - and have changed in some way that necessitates their UI be redrawn
+        await EXPLORER_director.tvd_drawItem_BATCH_async(EXPLORER_director.component.virtualIndex, EXPLORER_director.component.virtualCount, 3);
+    }
+}
+
+async function get_CommandKind_DeleteFile_File_YesCancel_callback(result) {
+    if (result.isCancelled) return;
+    let deleteFileResult = await window.myAPI.deleteFile(entry.absolutePath, /*isDirectory*/ false);
+    if (deleteFileResult) {
+        let noMoreEntriesToShow = EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount >= EXPLORER_director.tvd_getTotalCount();
+
+        EXPLORER_director.nodeList.removeAt(WIDGET_target.indexItem, 1);
+
+        if (EXPLORER_director.component.virtualCount > 0) {
+            //let divItem = EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex];
+
+            EXPLORER_director.component.itemHeightTotal = EXPLORER_director.tvd_getTotalCount() * EXPLORER_director.component.itemHeightNumber;
+            EXPLORER_director.component.virtualizationElement.style.height = EXPLORER_director.component.itemHeightTotal + 'px';
+
+            //EXPLORER_director.component.itemListElement.insertBefore(divItem, undefined);
+            if (noMoreEntriesToShow) {
+                //await EXPLORER_director.tvd_drawItem_async(divItem, EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount - 1, /*isNull*/ true);
+            }
+            else {
+                //await EXPLORER_director.tvd_drawItem_async(divItem, EXPLORER_director.component.virtualIndex + EXPLORER_director.component.virtualCount - 1, /*isNull*/ false);
+            }
+        }
+
+        // TODO: fine grained redrawing of only the nodes that are:
+        // - part of the virtualization result
+        // - and have changed in some way that necessitates their UI be redrawn
+        await EXPLORER_director.tvd_drawItem_BATCH_async(EXPLORER_director.component.virtualIndex, EXPLORER_director.component.virtualCount, 3);
+    }
+}
+
+async function get_CommandKind_RenameFile_Directory_InputText_callback(result) {
+    if (result.isCancelled) return;
+    let renameFileResult = await window.myAPI.renameFile(entry.absolutePath, result.value, /*isDirectory*/ true);
+    if (renameFileResult.success) {
+        await EXPLORER_director.setNodeListEntryId_async(WIDGET_target.indexItem, renameFileResult.pathId);
+        let divItem = EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex];
+        divItem.lastChild.nodeValue = result.value;
+    }
+}
+
+async function get_CommandKind_RenameFile_File_InputText_callback(result) {
+    if (result.isCancelled) return;
+    let renameFileResult = await window.myAPI.renameFile(entry.absolutePath, result.value, /*isDirectory*/ false);
+    if (renameFileResult.success) {
+        await EXPLORER_director.setNodeListEntryId_async(WIDGET_target.indexItem, renameFileResult.pathId);
+        let divItem = EXPLORER_director.component.itemListElement.children[WIDGET_target.divRelativeIndex];
+        divItem.lastChild.nodeValue = result.value;
     }
 }
