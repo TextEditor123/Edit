@@ -7580,5 +7580,10 @@ Conversely, translateY is treated as a visual-only paint effect handled by the G
 
 7:40 AM
 
+"one of us tells the truth and one of us always lies"
+
+It is crazy how much overlap there is from my life to this movie
+this is a discrete math question they propose
+
 
 */
