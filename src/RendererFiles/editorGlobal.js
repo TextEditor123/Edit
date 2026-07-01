@@ -3562,6 +3562,8 @@ function EDITOR_registerHandlers() {
         }
     });
 
+    // You have '.bind(this)'... why???
+    
     window.addEventListener('resize', EDITOR_onResize_WRAPIT.bind(this));
 
     get_EDITOR_horizontal_scrollbar().addEventListener('scroll', () => {
