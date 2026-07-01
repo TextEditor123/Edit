@@ -1682,8 +1682,54 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 	- [ ] treeViewComponent.js
 	    - [ ] event_scroll_async_WRAPIT
 
+- Describe the incorrect case
 
 
+- Describe the correct case
+{
+
+let onAaa_active = false;
+let onAaa_idTimeout = null;
+let onAaa_idTicking = null;
+
+function onAaa() {
+    if (!onAaa_active) {
+        onAaa_active = true;
+        onAaa_LeadingEdge();
+    }
+
+    onAaa_requestTick();
+
+    clearTimeout(onAaa_idTimeout);
+    onAaa_idTimeout = setTimeout(() => {
+        onAaa_active = false; // Reset the state flag
+        onAaa_TrailingEdge();
+    }, 150); // 150ms is standard for catching a user's natural aaa pause
+}
+
+function onAaa_LeadingEdge() {
+
+}
+
+function onAaa_TrailingEdge() {
+
+}
+
+function onAaa_requestTick() {
+    if (onAaa_idTicking === null) {
+        onAaa_idTicking = window.requestAnimationFrame(() => {
+            onAaa_performLayoutUpdate(); 
+            onAaa_idTicking = null;
+        });
+    }
+}
+
+function onAaa_performLayoutUpdate() {
+
+}
+
+}
+    
 
 
 

@@ -5507,8 +5507,6 @@ function EDITOR_onScroll_LeadingEdge() {
             return 2;
     }
 
-    //EDITOR_timer = setTimeout(EDITOR_onScroll_timeoutFunc, 1000);
-
     if (get_EDITOR_ONSCROLLvirtualCount() !== get_EDITOR_virtualCount() ||
         get_EDITOR_gutter().children.length !== get_EDITOR_virtualCount() ||
         get_EDITOR_textElement().children.length !== get_EDITOR_virtualCount()) {
