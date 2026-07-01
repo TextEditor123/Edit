@@ -7585,5 +7585,13 @@ Conversely, translateY is treated as a visual-only paint effect handled by the G
 It is crazy how much overlap there is from my life to this movie
 this is a discrete math question they propose
 
+One of the things I think about a lot is that,
+I make a lot of mistakes and anyone with experience would look at what I'm doing and perhaps forget what
+the process of learning looks like and think I'm an idiot because they're looking at me as though I have 20 years of experience and am doing these things.
+
+I started with Blazor. I almost immediately tried to make an IDE with it.
+I know I'm good. I know I'm learning at an extremely accelerated rate.
+When I lack knowledge about one thing or another I'm not embarrassed. I know how to learn.
+
 
 */
