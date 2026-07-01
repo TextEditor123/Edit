@@ -7623,4 +7623,7 @@ trying to figure out what the github admins are doing
 
 I also have an incognito mode of this repo and I refresh it to see if I'm banned over and over and over all day
 
+I believe they track my IP and track when I visit my own repo both through my own account and when I do from my IP not signed in.
+And that they're using this data for something.
+
 */
