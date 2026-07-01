@@ -1008,4 +1008,56 @@ My issue is that the code which "finalizes" the gap buffer edit,
 and in turn notifies the LSP; this code is synchronous.
 So I have this nasty hack in order to ensure that I can notify the LSP multiple times, and have each notification occur in the correct order.
 
+This is a snippet of the code:
+"
+EDITOR_textByteList.insertBytes(cursor.editPosition, cursor.gapBuffer, 0, cursor.gapBufferCount);
+
+set_ticket_didChangeTextDocumentNotificationPromise(get_ticket_didChangeTextDocumentNotificationPromise() + 1);
+let ticket = get_ticket_didChangeTextDocumentNotificationPromise();
+let textSourceIdentifier = EDITOR_FORMATTED_textSourceIdentifier;
+let lineAndColumnIndices = EDITOR_getLineAndColumnIndices(cursor.editPosition);
+// TODO: Account for any '\t\0\0\0' that exist on the line
+let text = EDITOR_decoder.decode(cursor.gapBuffer.subarray(0, cursor.gapBufferCount));
+set_didChangeTextDocument_version(get_didChangeTextDocument_version() + 1);
+let version = get_didChangeTextDocument_version();
+if (didChangeTextDocumentNotificationPromise) {
+    // TODO: If this is capturing the lexical scope context, it is extremely bad, the surrounding function is massive.
+    didChangeTextDocumentNotificationPromise = didChangeTextDocumentNotificationPromise.then(async () => {
+        await EDITOR_didChangeTextDocumentNotification(
+            textSourceIdentifier,
+            version,
+            lineAndColumnIndices.indexLine,
+            lineAndColumnIndices.indexColumn,
+            lineAndColumnIndices.indexLine,
+            lineAndColumnIndices.indexColumn,
+            text,
+            ticket);
+    });
+}
+else {
+    didChangeTextDocumentNotificationPromise = EDITOR_didChangeTextDocumentNotification(
+        textSourceIdentifier,
+        version,
+        lineAndColumnIndices.indexLine,
+        lineAndColumnIndices.indexColumn,
+        lineAndColumnIndices.indexLine,
+        lineAndColumnIndices.indexColumn,
+        text,
+        ticket);
+}
+
+if (indexLine_editOccurredOn === get_EDITOR_longestLine_indexLine()) {
+    set_EDITOR_longestLine_length(get_EDITOR_longestLine_length() + cursor.editLength);
+}
+
+EDITOR_finalizeEdit_ClearEditState(cursor);
+"
+
+> Thank you for sharing the snippet! Seeing how you chain those promises makes your issue crystal clear.
+
+> You are utilizing an in-memory Promise chain (promise = promise.then(...)) to serialize asynchronous operations from a synchronous execution block.
+> While this successfully guarantees the execution order of EDITOR_didChangeTextDocumentNotification, your hunch in the TODO comment is 100% correct and a critical issue.
+
+
+
 */
