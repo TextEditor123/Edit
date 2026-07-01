@@ -7638,4 +7638,7 @@ I feel like I'm having a constant panic attack over this thought
 
 But that's why I think I need to work quickly I need to get this done before they have time to quiet me.
 
+Because how else would someone be so consistent and code for such long hours without drugs?
+Cause I'm fueled on pure panic and adrenaline at all hours of the day because I Think Microsoft is trying to silence me or something I cannot explain it.
+
 */
