@@ -1772,6 +1772,23 @@ Google AI:
 	     The memory overhead of a leaked large object graph held by a stale setTimeout can cause noticeable UI stutter and memory leaks.
 }
 
+Question: "Does this imply that an event listener could be more expensive if using an arrow function than a declared function that exists at a higher scope."
+
+Google AI:
+{
+    Yes, absolutely. Using an inline arrow function as an event listener is structurally more expensive than referencing a declared function from a higher scope.
+	This performance penalty comes from two distinct issues: allocation frequency and memory retention (closures).
+
+	- The Allocation Penalty (CPU & GC Pressure)
+	    ...
+		The Arrow Function: If setupButton runs 1,000 times, you allocate 1,000 separate function objects. The garbage collector (GC) must constantly wake up to clean up the dead functions.
+		...
+	- The Scope Capture Penalty (Memory Leaks)
+	    ...
+}
+
+
+
 }
 
 
