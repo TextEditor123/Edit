@@ -7606,4 +7606,6 @@ and then
 this also has potassium but it has a bit more sodium than potassium ratio
 so it evens out the total breakfast sodium to potassium ratio.
 
+I'm feeling anxious and paranoid... I'm hoping if I make progress that these feelings with settle
+
 */
