@@ -7634,4 +7634,6 @@ They don't want me to make progress on this repo because they know it will surpa
 So they're looking through everything I've ever said and linked
 in order to sue me and quiet me and stop me from making further progress.
 
+I feel like I'm having a constant panic attack over this thought
+
 */
