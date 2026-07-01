@@ -2085,6 +2085,7 @@ function EDITOR_finalizeEdit(cursor) {
                 set_didChangeTextDocument_version(get_didChangeTextDocument_version() + 1);
                 let version = get_didChangeTextDocument_version();
                 if (didChangeTextDocumentNotificationPromise) {
+                    // TODO: If this is capturing the lexical scope context, it is extremely bad, the surrounding function is massive.
                     didChangeTextDocumentNotificationPromise = didChangeTextDocumentNotificationPromise.then(async () => {
                         await EDITOR_didChangeTextDocumentNotification(
                             textSourceIdentifier,
@@ -2466,6 +2467,7 @@ function EDITOR_finalizeEdit(cursor) {
                 set_didChangeTextDocument_version(get_didChangeTextDocument_version() + 1);
                 let version = get_didChangeTextDocument_version();
                 if (didChangeTextDocumentNotificationPromise) {
+                    // TODO: If this is capturing the lexical scope context, it is extremely bad, the surrounding function is massive.
                     didChangeTextDocumentNotificationPromise = didChangeTextDocumentNotificationPromise.then(async () => {
                         await EDITOR_didChangeTextDocumentNotification(
                             textSourceIdentifier,
