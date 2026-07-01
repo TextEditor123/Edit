@@ -1741,6 +1741,10 @@ function onAaa_performLayoutUpdate() {
 // This conflicts with my current understanding of lambdas.
 // Because I always believed that lambdas only captured what you referenced from within the lambda.
 // So I need to verify one way or another what the truth is around this.
+//
+// I believe the confusion is demonstrated furthermore by me using the word 'lambda'.
+// If there is confusion, consider grouping the two concepts.
+// C# lambdas perhaps are what I describe them to be but that JavaScript is capturing the entire lexical scope regardless of references?
 
 }
 
