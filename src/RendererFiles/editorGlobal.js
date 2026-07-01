@@ -7576,4 +7576,34 @@ Conversely, translateY is treated as a visual-only paint effect handled by the G
 // oh it still has a timing issue actually
 // it seems if I make my window larger the timing of everything happens to be perfect for it to crash.
 // but with a small screen it finishes without the race condition.
+
+
+7:40 AM
+
+Breakfast:
+- 1 elite fairlife 42g of protein
+- 1 chocolate chip cliff bar 10g of protein
+- 1 peanut butter cliff bar 11g of protein
+- 1 daves plain bagel 10g of protein
+total 73g of protein
+
+later on is:
+- 1lb of 98% fat free ground chicken
+- with sriracha sauce
+
+====
+
+These 3 items of the breakfast:
+- 1 elite fairlife 42g of protein
+- 1 chocolate chip cliff bar 10g of protein
+- 1 peanut butter cliff bar 11g of protein
+
+are pretty potassium heavy
+
+and then
+- 1 daves plain bagel 10g of protein
+
+this also has potassium but it has a bit more sodium than potassium ratio
+so it evens out the total breakfast sodium to potassium ratio.
+
 */
