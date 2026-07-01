@@ -1737,6 +1737,10 @@ function onAaa_performLayoutUpdate() {
 // until the timeout is resolved.
 //
 // Thus the overhead of any function invocation is far less than the cost of massive context capturing of the timeout.
+//
+// This conflicts with my current understanding of lambdas.
+// Because I always believed that lambdas only captured what you referenced from within the lambda.
+// So I need to verify one way or another what the truth is around this.
 
 }
 
