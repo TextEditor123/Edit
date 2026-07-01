@@ -7586,4 +7586,7 @@ There's another quote something about once she realizes she has to start all ove
 I had the code in C#, I deleted it all off my own computer and restarted with vanilla js.
 
 
+and so I watch the movie daily and I just think of myself as being the main character because eveything aligns perfectly.
+
+
 */
