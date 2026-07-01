@@ -1058,6 +1058,9 @@ EDITOR_finalizeEdit_ClearEditState(cursor);
 > You are utilizing an in-memory Promise chain (promise = promise.then(...)) to serialize asynchronous operations from a synchronous execution block.
 > While this successfully guarantees the execution order of EDITOR_didChangeTextDocumentNotification, your hunch in the TODO comment is 100% correct and a critical issue.
 
-
+> (it outlines these 3 points:)
+> Lexical Scope Retention
+> The Chain Link
+> Delayed Garbage Collection
 
 */
