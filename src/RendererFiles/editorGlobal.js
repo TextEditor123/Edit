@@ -3542,12 +3542,7 @@ function EDITOR_registerHandlers() {
 
     EDITOR_baseElement.addEventListener('scroll', EDITOR_onScroll_WRAPIT.bind(this));
 
-    EDITOR_baseElement.addEventListener('wheel', event => {
-        if (event.shiftKey) {
-            EDITOR_baseElement.scrollBy(event.deltaY, 0);
-            get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
-        }
-    });
+    EDITOR_baseElement.addEventListener('wheel', EDITOR_onWheel);
 
     EDITOR_baseElement.addEventListener('contextmenu', async event => {
         let optionList = [
@@ -3572,6 +3567,20 @@ function EDITOR_registerHandlers() {
     get_EDITOR_horizontal_scrollbar().addEventListener('scroll', () => {
         EDITOR_baseElement.scrollLeft = get_EDITOR_horizontal_scrollbar().scrollLeft;
     });
+}
+
+/**
+ * Very non-scientific measurement:
+ * - run the app with this as an arrow function, open editorGlobal.js, take the initial heap snapshot, scroll wheel "20 times", take another heap snapshot, view objects allocated between diff 1 and diff 2
+ * - change it to a function and then repeat...
+ * The only noticeable change is that the compiled code is 5kB smaller.
+ * The total heap size is 4.2 MB for both cases.
+ */
+function EDITOR_onWheel(event) {
+    if (event.shiftKey) {
+        EDITOR_baseElement.scrollBy(event.deltaY, 0);
+        get_EDITOR_horizontal_scrollbar().scrollLeft = EDITOR_baseElement.scrollLeft;
+    }
 }
 
 function EDITOR_findOverlay_doSearch() {
