@@ -1688,14 +1688,14 @@ async function copyClipboardAbsolutePathToDirectory(event, directory, menuOption
 - Describe the correct case
 {
 
-let onAaa_active = false;
-let onAaa_idTimeout = null;
-let onAaa_idTicking = null;
+let onAaa_active = false;   // track leading edge
+let onAaa_idTimeout = null; // track trailing edge / reset leading edge
+let onAaa_idTicking = null; // track rAF (requestAnimationFrame)
 
 function onAaa() {
     if (!onAaa_active) {
         onAaa_active = true;
-        onAaa_LeadingEdge();
+        onAaa_leadingEdge();
     }
 
     onAaa_requestTick();
@@ -1703,15 +1703,15 @@ function onAaa() {
     clearTimeout(onAaa_idTimeout);
     onAaa_idTimeout = setTimeout(() => {
         onAaa_active = false; // Reset the state flag
-        onAaa_TrailingEdge();
+        onAaa_trailingEdge();
     }, 150); // 150ms is standard for catching a user's natural aaa pause
 }
 
-function onAaa_LeadingEdge() {
+function onAaa_leadingEdge() {
 
 }
 
-function onAaa_TrailingEdge() {
+function onAaa_trailingEdge() {
 
 }
 
@@ -1728,8 +1728,18 @@ function onAaa_performLayoutUpdate() {
 
 }
 
+// I want to put "correct" in quotes only because there might be an even more correct answer than this.
+// But that would be annoying to read so I'll just call this the correct answer but without quote.
+//
+// The correct answer has a lot of code broken out into functions.
+//
+// I believe this is because the timeOut will capture the surrounding context, and result in all the variables not being garbage collected
+// until the timeout is resolved.
+//
+// Thus the overhead of any function invocation is far less than the cost of massive context capturing of the timeout.
+
 }
-    
+
 
 
 
