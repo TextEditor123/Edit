@@ -449,30 +449,33 @@ let EXPLORER_menuOptionCut_object = null;
 let EXPLORER_director = new EXPLORER_TreeViewDirector();
 
 function EXPLORER_init() {
-
     const EXPLORER_pickFolderOrWorkspaceButton = document.getElementById('EXPLORER_folderOrWorkspaceButtons');
     if (!EXPLORER_pickFolderOrWorkspaceButton) return;
 
-    EXPLORER_pickFolderOrWorkspaceButton.addEventListener('click', async () => {
-        const EXPLORER_pickFolderOrWorkspaceButton = document.getElementById('EXPLORER_folderOrWorkspaceButtons');
-        let optionList = [
-            new MenuOption(get_CommandKind_Copy(), 'Folder', null),
-            new MenuOption(get_CommandKind_Cut(), 'Workspace', null),
-        ];
-        let boundingClientRect = EXPLORER_pickFolderOrWorkspaceButton.getBoundingClientRect();
-        menuSet(/*context*/ 'EXPLORER_pickFolderOrWorkspaceButton', /*target*/ null, optionList, /*left*/ boundingClientRect.left, /*top*/ boundingClientRect.top + boundingClientRect.height, /*NOTshouldFocus*/ false, /*index*/ 0, /*onHideAction*/ null);
-    });
+    EXPLORER_pickFolderOrWorkspaceButton.addEventListener('click', EXPLORER_pickFolderOrWorkspaceButton_onClick);
     
     let toggleShowExplorerButton = document.getElementById('HEADER_toggleShowExplorer');
     toggleShowExplorerButton.checked = EXPLORER_show;
-    toggleShowExplorerButton.addEventListener('click', () => {
-    	// TODO: Will shadowing 'toggleShowExplorerButton' with a declaration of the same name in here cause any oddities in relation to app long garbage collection overhead....
-    	// ...presumably the answer is 99.999% no but I can't bear to deal with this right now, thus the variable name 'avoidClosureCausingAppLongLivingVariable_toggleShowExplorerButton'.
-    	let avoidClosureCausingAppLongLivingVariable_toggleShowExplorerButton = document.getElementById('HEADER_toggleShowExplorer');
-    	if (avoidClosureCausingAppLongLivingVariable_toggleShowExplorerButton) {
-    		EXPLORER_setShow(avoidClosureCausingAppLongLivingVariable_toggleShowExplorerButton.checked);
-    	}
-    });
+    toggleShowExplorerButton.addEventListener('click', toggleShowExplorerButton_onClick);
+}
+
+function toggleShowExplorerButton_onClick() {
+    // TODO: Will shadowing 'toggleShowExplorerButton' with a declaration of the same name in here cause any oddities in relation to app long garbage collection overhead....
+    // ...presumably the answer is 99.999% no but I can't bear to deal with this right now, thus the variable name 'avoidClosureCausingAppLongLivingVariable_toggleShowExplorerButton'.
+    let avoidClosureCausingAppLongLivingVariable_toggleShowExplorerButton = document.getElementById('HEADER_toggleShowExplorer');
+    if (avoidClosureCausingAppLongLivingVariable_toggleShowExplorerButton) {
+        EXPLORER_setShow(avoidClosureCausingAppLongLivingVariable_toggleShowExplorerButton.checked);
+    }
+}
+
+async function EXPLORER_pickFolderOrWorkspaceButton_onClick() {
+    const EXPLORER_pickFolderOrWorkspaceButton = document.getElementById('EXPLORER_folderOrWorkspaceButtons');
+    let optionList = [
+        new MenuOption(get_CommandKind_Copy(), 'Folder', null),
+        new MenuOption(get_CommandKind_Cut(), 'Workspace', null),
+    ];
+    let boundingClientRect = EXPLORER_pickFolderOrWorkspaceButton.getBoundingClientRect();
+    menuSet(/*context*/ 'EXPLORER_pickFolderOrWorkspaceButton', /*target*/ null, optionList, /*left*/ boundingClientRect.left, /*top*/ boundingClientRect.top + boundingClientRect.height, /*NOTshouldFocus*/ false, /*index*/ 0, /*onHideAction*/ null);
 }
 
 /**
