@@ -7582,5 +7582,8 @@ Conversely, translateY is treated as a visual-only paint effect handled by the G
 
 "Sarah go back to your room, play with your toys and your costumes, forget about the baby"
 
+There's another quote something about once she realizes she has to start all over again she'll give up.
+I had the code in C#, I deleted it all off my own computer and restarted with vanilla js.
+
 
 */
