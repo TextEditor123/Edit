@@ -7621,4 +7621,6 @@ to see what old links I've linked show up to determine what the github admins ar
 I'm driving myself insane I have like constant panic anxiety and paranoia over this I sit here doing this all day
 trying to figure out what the github admins are doing
 
+I also have an incognito mode of this repo and I refresh it to see if I'm banned over and over and over all day
+
 */
