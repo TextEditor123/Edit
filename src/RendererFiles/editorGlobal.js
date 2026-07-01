@@ -7591,5 +7591,8 @@ Conversely, translateY is treated as a visual-only paint effect handled by the G
 
 I gotta stop rambing it's been an hour
 
+you're goal is a throttle in lots of cases if so use bool?
+anxiety can't think much right now
+maybe taking break
 
 */
