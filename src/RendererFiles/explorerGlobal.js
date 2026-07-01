@@ -987,8 +987,25 @@ async function get_CommandKind_RenameFile_File_InputText_callback(result) {
 }
 
 /*
-I didn't plan on mentioning anything about the movies today.
-But I saw the last one and it was just an odd premise that stood out.
-Everyone is color blind and you take red, blue, green pills to see each color but only 1 at a time.
-It was odd.
+I ask Google AI:
+"
+I have a text editor that uses a gap buffer to edit the text.
+I wrote some language server protocol for the editor client, and wrote some of my own language server so I can communicate to it.
+
+My editor uses electron.
+When I "finalize" the gap buffer, I send an electron IPC from the renderer process to the main process with the LSP
+description of what edit occurred. My main process then writes to the stdin of my own language server the entire LSP notification.
+
+I have more information after this...
+"
+
+> Whether you are sending an individual IPC message for every single keystroke or chunking/debouncing them.
+
+
+I am chunking/debouncing them.
+
+My issue is that the code which "finalizes" the gap buffer edit,
+and in turn notifies the LSP; this code is synchronous.
+So I have this nasty hack in order to ensure that I can notify the LSP multiple times, and have each notification occur in the correct order.
+
 */
