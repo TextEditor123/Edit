@@ -7615,4 +7615,7 @@ I haven't been interested in for a long time now.
 So the only thought I have is that they must be looking at it and now youtube is pushing this content
 because it sees a surge in interactions and knows I used to so it says hey this is big again.
 
+And so these last few days I've been obsessively refreshing my youtube home page
+to see what old links I've linked show up to determine what the github admins are looking at in my history.
+
 */
